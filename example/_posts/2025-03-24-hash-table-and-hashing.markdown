@@ -127,3 +127,111 @@ ChainedHash 클래스는 필드 2개로만 구성이 돼
 
 #### 키로 원소를 검색하는 search() 함수
 
+~~~python
+    def search(self, key: Any) -> Any:
+        """키가 key인 원소를 검색하여 값을 반환"""
+        hash = self.hash_value(key)  # 검색하는 키의 해시값
+        p = self.table[hash]         # 노드를 노드
+
+        while p is not None:
+            if p.key == key:
+                 return p.value  # 검색 성공
+            p = p.next           # 뒤쪽 노드를 주목
+
+        return None              # 검색 실패
+~~~
+
+search 함수는 key인 원소를 검색.
+
+해시값이 동일하고 key 값은 다른 원소중에 제일 마지막에 있는것 찾는다 했을때, 먼저 해시값을 찾고 해시값을 순차적으로 찾아간다.
+
+만약 해시값에 대해 해시테이블에 존재하지 않으면 검색 실패
+
+조금 더 자세하게 알려주면,
+
+- 해시 함수를 사용하여 키를 해시값으로 변환
+
+- 해시값을 인덱스로 하는 버킷에 주목
+
+- 버킷이 참조하는 연결 리스트를 맨 앞부터 차례로 스캔
+
+### 원소를 추가하는 add() 함수
+
+add 함수는 키가 key 이고 값이 value인 원소를 추가한다.
+
+~~~python
+    def add(self, key: Any, value: Any) -> bool:
+        """키가 key이고 값이 value인 원소를 삽입"""
+        hash = self.hash_value(key)  # 삽입하는 키의 해시값
+        p = self.table[hash]         # 주목하는 노드
+
+        while p is not None:
+            if p.key == key:
+                return False         # 삽입 실패
+            p = p.next               # 뒤쪽 노드에 주목
+
+        temp = Node(key, value, self.table[hash])
+        self.table[hash] = temp      # 노드를 삽입
+        return True                  # 삽입 성공
+~~~
+
+add함수의 lifecycle을 정리하자면 아래와 같다
+
+- 해시값을 먼저 구한다
+
+- 해시값을 인덱스로 하는 버킷에 주목
+
+- 버킷이 비어 있다면, value를 저장하는 노드 생성/ 버킷이 참조하는 연결 리스트가 있으면, 연결 리스트 맨 앞부터 선형 검색을 진행 -> 키와 같은 값이 발견되면 추가 실패, 그렇지 않고 맨끝까지 같은 키가 없다!? 그러면 해시캆인 리스트의 맨 앞에 노드 추가
+
+### 원소를 삭제하는 remove() 함수
+
+add와는 다르게 값이 value는 보지 않고 키가 key인 원소를 삭제한다
+
+~~~python
+    def remove(self, key: Any) -> bool:
+        """키가 key인 원소를 삭제"""
+        hash = self.hash_value(key)  # 삭제할 키의 해시값
+        p = self.table[hash]         # 주목하고 있는 노드
+        pp = None                    # 바로 앞 주목 노드
+
+        while p is not None:
+            if p.key == key:  # key를 발견하면 아래를 실행
+                if pp is None:
+                    self.table[hash] = p.next
+                else:
+                    pp.next = p.next
+                return True  # key 삭제 성공
+            pp = p
+            p = p.next       # 뒤쪽 노드에 주목
+        return False         # 삭제 실패(key가 존재하지 않음)
+~~~
+
+remove함수의 lifecycle을 정리하자면 아래와 같다
+
+- 해시값을 먼저 구한다
+
+- 해시값을 인덱스로 하는 버킷에 주목
+
+- 버킷이 참조하는 연결 리스트를 맨 앞부터 선형 검색, 키와 같은 값이 발견되면 그 노드를 버킷에서 삭제(삭제한다는 의미는 되쪽 원소에 앞쪽 원소 참조를 넣거나 앞쪽 원소가 없을때, 버킷에 참조를 대입하면 노드는 삭제됨)
+
+- 여기서도 마찬가지로 선형 검색중 키를 못찾으면 삭제 실패
+
+### 원소를 출력하는 dump() 함수
+
+모든 원소를 보고 싶나? 그러면 dump를 사용해보자
+
+~~~python
+    def dump(self) -> None:
+        """해시 테이블을 덤프"""
+        for i in range(self.capacity):
+            p = self.table[i]
+            print(i, end='')
+            while p is not None:
+                print(f'  → {p.key} ({p.value})', end='')  # 해시 테이블에 있는 키와 값을 출력
+                p = p.next
+            print()
+~~~
+
+해시 테이블이 지워지진 않는다. table[0] 부터 table[capacity -1] 까지 뒤쪽 노드를 찾아가면서 각 노드의 키와 값을 출력하는 작업 반복. 
+
+이렇게 체인법의 해시 함수들을 나열하였고 이제 오픈 주소법에 대해서 알아보자
