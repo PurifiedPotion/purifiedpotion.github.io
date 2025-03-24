@@ -52,7 +52,35 @@ def seq_search(dat: Data, key: any):
 
 ### 이진 검색(Binary search)
 
-예제 : 이진 검색같은 경우 정렬된 데이터에서만 적용이 가능하며, 정수뿐만 아니고 문자열 또는 실수에도 사용이 가능하다. 다만, 실수에 사용시 부동소수점 오차를 방지를 위한 epsilon 을 사용하는것이 좋다.
+- 이진 검색같은 경우 정렬된 데이터에서만 적용이 가능하며, 정수뿐만 아니고 문자열 또는 실수에도 사용이 가능하다. 다만, 실수에 사용시 부동소수점 오차를 방지를 위한 epsilon 을 사용하는것이 좋다.
+
+- 정렬이 왜 되어 있어야 하냐면, 중앙 원소와 먼저 대소관계 비교를 하고 위쪽 또는 아래쪽의 중앙 원소끼리 대소 관계를 비교하는데, 이 과정이 정렬이 되어 있어야만 적용이 가능하기 때문이다
+
+- pl과 pr이 존재하며 (pl + pr) //2 인 pc도 존재한다다
+
+예제 : 
+~~~python
+from typing import Any, Sequence
+
+def bin_search(a: Sequence, key: Any) -> int:
+    """시퀀스 a에서 key와 일치하는 원소를 이진 검색"""
+    pl = 0           # 검색 범위 맨 앞 원소의 인덱스
+    pr = len(a) - 1  # 검색 범위 맨 끝 원소의 인덱스
+
+    while True:
+        pc = (pl + pr) // 2  # 중앙 원소의 인덱스
+        if a[pc] == key:
+            return pc    # 검색 성공
+        elif a[pc] < key:
+            pl = pc + 1  # 검색 범위를 뒤쪽의 절반으로 좁힘
+        else:
+            pr = pc - 1  # 검색 범위를 앞쪽의 절반으로 좁힘
+        if pl > pr:
+            break
+    return -1            # 검색 실패
+~~~
+
+예제 : DFS 사용
 ~~~python
 def dfs(path, depth, n):
     if depth == n:
@@ -66,36 +94,4 @@ def dfs(path, depth, n):
 dfs([], 0, 3)
 ~~~
 
-
-### 이진 검색
-
-예제 : N-Queen 문제 (8x8 체스판에서 퀸 8개 배치)
-~~~python
-def is_valid(board, row, col):
-    for i in range(row):
-        if board[i] == col or abs(board[i] - col) == abs(i - row):
-            return False
-    return True
-
-def solve_n_queens(n, board=[], row=0):
-    if row == n:
-        print(board)
-        return
-    
-    for col in range(n):
-        if is_valid(board, row, col):
-            solve_n_queens(n, board + [col], row + 1)
-
-solve_n_queens(4)
-~~~
-
-이렇게 완전 탐색의 경우의 수를 알아보았다. 그렇다면 탐색 방법의 특징과 시간 복잡도를 알아보자. 아래 표를 참고하면 된다.
-
-| 탐색 방법 | 설명 | 시간 복잡도 |
-|:---:|:---:|:---:|
-| 완전탐색 | 모든 경우 탐색 | O(N!) (순열) |
-| 백트래킹 | 가지치기 최적화 | O(N!) (최적화됨) |
-| BFS/DFS | 그래프 탐색 | O(V+E) |
-| 이진 탐색 | 정렬된 데이터에서 탐색 | O(log N) |
-
-완전탐색 특성상 유용하지 않을것 같지만 앞으로 나열하는 경우에는 유용할수도 있겠다. 작은 범위의 모든 경우를 확인할 때, 정확한 최적해를 구해야 할 때, 모든 조합을 확인해야 할때(ex: 비밀번호 크래킹)나 백트래킹 적용 정 접근할때
+129 페이지에 뭔가 신기한 표현법이 있는데, 스킵했다. 나중에 시간되면 보도록 하자
