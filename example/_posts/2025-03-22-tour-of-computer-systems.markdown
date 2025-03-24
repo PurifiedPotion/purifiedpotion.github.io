@@ -29,9 +29,11 @@ hide_last_modified: true
 
 hello 프로그램은 인간이 이해하고 읽을 수 있기 때문에 고급 C프로그램으로 일생이 시작되고 다른 프로그램들에 의해 저급 기계어 인스트럭션들로 변역이 돼. 그 후 인스트럭션들은 실행가능 목적 프로그램이라고 하는 형태로 합쳐져서 바이너리 디스크 파일로 저장된다.
 
-| hello.c              | 전처리 단계(pre-processing)                                                                                           | hello.i                         | 컴파일 단계 | 어셈블리 단계 | 링크 단계 |
-|:---:                 |:---:                                                                                                                 |:---:                     |:---:|:---:|:---:|
-| Source program(text) | 컴파일하기 전에 처리하는 단계로 C언어의 중요한 역할, 결과는 소스 코드는 컴파일러가 이해할 수 있는 순수한 C 코드 형태로 정리됨 | Modified source program(tex)                     | 컴파일 단계 | 어셈블리 단계 | 링크 단계 |
+### 아래는 hello 파일이 어떻게 저장되는지의 라이프 사이클을 정리했다. 각 단계는 더 세부적인 과정들이 있는데, 일단은 생략
+
+| hello.c              | 전처리 단계(pre-processing)                                                                                           | hello.i                         | 컴파일 단계                                                                             | hello.s                | 어셈블리 단계                                                                                                | hello.o                              | 링크 단계                                                                                                                                                                                                                  | hello                              |
+|:---:                 |:---:                                                                                                                 |:---:                     |:---:                                                                                   |:---:                   |:---:                                                                                               |                                     |                                                                                                                                                                                                                                                    |                                    |
+| Source program(text) | 컴파일하기 전에 처리하는 단계로 C언어의 중요한 역할, 결과는 소스 코드는 컴파일러가 이해할 수 있는 순수한 C 코드 형태로 정리됨 | Modified source program(tex)                     | 컴파일러(ccl)는 텍스트 파일 .i를 hello.s로 번역하며 이 파일에는 어셈블리어 프로그램이 저장됨 | Assembly program(text) | 어셈블러(as)가 heelo.s를 기계어 인스트럭션으로 번역하고 재배치가능 목적프로그램의 형태로 묶어서 hell.o로 라는 목적파일에 결과 저장장 | Relocatable object programs(binary) | printf 함수는 C 컴파일러에서 제공하는 표준 C 라이브러리에 있다. 그래서 별도의 목적파일에 있으며, hello.o 파일과 어떤 형태로 결햅되어야 하기 때문에 링커(ld)가 통합작업을 수행한다. 그 결과로 hello 파일은 실행가능 목적파일(실행파일)로 메모리에 적재된다. | Executable object program(binary) |
 
 
 ## 버스
