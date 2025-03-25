@@ -28,7 +28,7 @@ description:           >
   A blog for computer science
 
 # A shorter description for the sidebar.
-tagline:               Change `tagline` in `_config.yml`
+tagline:               Blog for Computer Science
 
 # A list of keywords for your blog
 keywords:              []
@@ -52,8 +52,6 @@ menu:
     url:               /blog/
   - title:             Projects
     url:               /projects/
-  - title:             Résumé*
-    url:               /resume/
   - title:             Documentation
     url:               /docs/
 
