@@ -235,3 +235,83 @@ remove함수의 lifecycle을 정리하자면 아래와 같다
 해시 테이블이 지워지진 않는다. table[0] 부터 table[capacity -1] 까지 뒤쪽 노드를 찾아가면서 각 노드의 키와 값을 출력하는 작업 반복. 
 
 이렇게 체인법의 해시 함수들을 나열하였고 이제 오픈 주소법에 대해서 알아보자
+
+## 오픈 주소법(open addressing)
+
+오픈 주소법은 충돌이 발생했을 때 재해시(rehashing)를 수행하여 빈 버킷을 찾는 방법을 말하며 ***닫힌 해시법(closed hashing)*** 이라고 해. 
+
+### 원소 추가하기
+
+~~~python
+    def add(self, key: Any, value: Any) -> bool:
+        """키가 key이고 값이 value인 요소를 추가"""
+        if self.search(key) is not None:
+            return False             # 이미 등록된 키
+
+        hash = self.hash_value(key)  # 추가하는 키의 해시값
+        p = self.table[hash]         # 버킷을 주목
+        for i in range(self.capacity):
+            if p.stat == Status.EMPTY or p.stat == Status.DELETED:
+                self.table[hash] = Bucket(key, value, Status.OCCUPIED)
+                return True
+            hash = self.rehash_value(hash)  # 재해시
+            p = self.table[hash]
+        return False                        # 해시 테이블이 가득 참
+~~~
+
+- 쉽게 설명하자면, 충돌이 발생하면 재해시를 위한 해시 함수를 수행해. 만약 또 충돌하면 재해시를 위한 해시 함수를 또 수행하고...
+
+- 이처럼 오픈 주소법은 빈 버킷이 나올 떄까지 재해시를 반복하므로 ***선형 탐사법(linear probing)*** 이라고도 해
+
+- 만약 모든 버킷이 다 찼다면? 그럼 추가하기를 실패해
+
+### 원소 삭제하기
+
+~~~python
+    def remove(self, key: Any) -> int:
+        """키가 key인 갖는 요소를 삭제"""
+        p = self.search_node(key)  # 버킷을 주목
+        if p is None:
+            return False           # 이 키는 등록되어 있지 않음
+        p.set_status(Status.DELETED)
+        return True
+~~~
+
+- 원소를 삭제하기 전에, ***EMPTY/OCCUPIED/DELETED*** 같은 속성이 오픈 주소법의 버킷에 등록되어 있다는걸 알아야 해
+
+- 키를 못찾으면 실패하고, 키를 찾으면 DELETED 속성을 부여하고 끝나
+
+### 원소 검색하기
+
+~~~python
+    def search_node(self, key: Any) -> Any:
+        """키가 key인 버킷을 검색"""
+        hash = self.hash_value(key)  # 검색하는 키의 해시값
+        p = self.table[hash]         # 버킷을 주목
+
+        for i in range(self.capacity):
+            if p.stat == Status.EMPTY:
+                break
+            elif p.stat == Status.OCCUPIED and p.key == key:
+                return p
+            hash = self.rehash_value(hash)  # 재해시
+            p = self.table[hash]
+        return None
+~~~
+
+- 원소 추가하는것과 비슷하게 처음에는 해시값의 버킷을 검색해. 검색했을때 EMPTY 상태면 실패. 왜냐하면 EMPTY였었다면 추가한적도 없고 삭제한적도 없는데, 뭐하러 더 재해시를 하겠어
+
+- status가 OCCUPIED 이면서 key값이 찾으려는 키값과 같으면, 버킷(인덱스)를 반환해
+
+- 만약 OCCUPIED 이면서 key 값이 다르거나 or DELETED면 뒤쪽으로 순차적으로 검색해
+
+
+## 마무리
+
+해시법과 해시 테이블같은 경우 동시에 설명해야 하는 내용이라 설명을 순조롭게 못한거 같은데, 다 읽고 한번더 읽으면 괜찮지 않을까 싶다
+
+해시법의 충돌 방지용으로 체인법과 오픈 주소법을 설명했는데, 둘의 특징을 간단하게 정리해본다면 아래와 같을거 같아
+
+| 체인법법 | 버킷을 참조하는 노드 제한이 없음 | 제한이 없지만 노드가 많아지면 메모리에 부하가 많이 걸릴 수 있어 |
+|:---:|:---:|:---:|
+| 오픈 주소법법 | 버킷 갯수에 따라서 원소 추가 불가 | 제한은 있지만 메모리 부하 걱정은 덜해도 될거 같아 |
