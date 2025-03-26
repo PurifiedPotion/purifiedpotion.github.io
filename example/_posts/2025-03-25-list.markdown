@@ -118,4 +118,71 @@ head.next is None
 head.next.next is None
 ~~~
 
-### LinkedList 클래스 seartch() 함수
+### LinkedList 클래스 search(), __contains__() 함수
+
+검색 같은 경우 선형 검색(처음부터 차례대로 검색)을 사용
+
+예제 : search() 함수
+~~~python
+    def search(self, data: Any) -> int:
+        """data와 값이 같은 노드를 검색"""
+        cnt = 0
+        ptr = self.head
+        while ptr is not None:
+            if ptr.data == data:
+                self.current = ptr
+                return cnt
+            cnt += 1
+            ptr = ptr.next
+        return -1
+~~~
+
+검색이 성공하면, cnt를 반환하고 검색이 실패하면 -1을 반환한다.
+
+예제 : __contains__() 함수
+~~~python
+    def __contains__(self, data: Any) -> bool:
+        """연결 리스트에 data가 포함되어 있는가?"""
+        return self.search(data) >= 0
+~~~
+
+위 search 함수 사용하는데, self 에 data와 같은 같이 있는지 판단, True or False 반환
+
+### LinkedList 클래스 add_first(), add_last() 함수
+
+예제 : add_first() 함수
+~~~python
+    def add_first(self, data: Any) -> None:
+        """맨 앞에 노드를 삽입"""
+        ptr = self.head  # 삽입 전의 머리 노드
+        self.head = self.current = Node(data, ptr)
+        self.no += 1
+~~~
+
+- A포인터에 현재!머리 노드를 저장
+
+- 현재! 머리 노드에 노드(date, ptr(A포인터로써 원래의 머리노드를 참조))가 추가된다.
+
+예제 : add_last() 함수
+~~~python
+    def add_last(self, data: Any):
+        """맨 끝에 노드를 삽입"""
+        if self.head is None :    # 리스트가 비어 있으면
+            self.add_first(data)  # 맨앞에 노드 삽입
+        else:
+            ptr = self.head
+            while ptr.next is not None:
+                ptr = ptr.next  # while문을 종료할 때 ptr은 꼬리 노드를 참조
+            ptr.next = self.current = Node(data, None)
+            self.no += 1
+~~~
+
+- 먼저 리스트가 비어있는지 확인
+
+- ptr is None을 찾을때까지 순차적으로 노드를 탐색
+
+- prt이 None을 갖고있는 ptr.next를 찾았을때, 추가할 노드의 정보(next : None으로)를 대입한다.
+
+- LinkedList의 number를 1추가
+
+### LinkedList 클래스 remove_first(), remove_last() 함수
