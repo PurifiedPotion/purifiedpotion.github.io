@@ -5,6 +5,8 @@ date:   2025-03-26
 hide_last_modified: true
 ---
 
+image: /assets/img/blog/computerscience/연결%20리스트의%20기본%20구조.png
+
 * toc  
 {:toc .large-only}
 
@@ -14,9 +16,7 @@ hide_last_modified: true
 
 구조가 단순한 리스트이며, 
 
-
-image:
-  path:    /assets/img/blog/computerscience/연결 리스트의 기본 구조.png
+![연결 리스트 기본 구조](/assets/img/blog/computerscience/연결%20리스트의%20기본%20구조.png)
 
 | 키 | 5 | 6 | 14 | 20 | 29 | 34 | 37 | 51 | 69 | 75 |
 |:---:|:---:|:---:|
