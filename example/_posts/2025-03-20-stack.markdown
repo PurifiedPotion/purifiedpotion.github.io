@@ -1,9 +1,13 @@
 ---
 layout: post
-title:  "Stack"
+title:  "스택(Stack)"
 date:   2025-03-20
 hide_last_modified: true
 ---
+
+* toc  
+{:toc .large-only}
+
 스택이란, Data를 임시 저장할 때 사용하는 자료구조로, 후입선출 방식이다. 데이터를 넣을땐 push, 데이터를 꺼낼땐 pop이라 한다.
 
 스택의 특징을 아래 정리해봤다.

@@ -163,6 +163,10 @@ head.next.next is None
 
 - 현재! 머리 노드에 노드(date, ptr(A포인터로써 원래의 머리노드를 참조))가 추가된다.
 
+#### 중요!!!!중요
+
+- 여기서 self.current가 왜 중간에 삽입이 되었을까? 궁금하지 않아? 저 수식(A=B=C)같은 경우에 결국에는 C를 A와 B에 저장하겠다는 거야. 그렇다면 current는 왜 있냐. 가장 마지막에 함수를 쓰면 current값이 update가 될거야. 내가 아래에 더 함수를 더 나열할건데, 아래에 current를 기준으로 함수를 사용해. 이점 알아두면 돼
+
 예제 : add_last() 함수
 ~~~python
     def add_last(self, data: Any):
@@ -186,3 +190,170 @@ head.next.next is None
 - LinkedList의 number를 1추가
 
 ### LinkedList 클래스 remove_first(), remove_last() 함수
+
+예제 : remove_first() 함수
+~~~python
+    def remove_first(self) -> None:
+        """머리 노드를 삭제"""
+        if self.head is not None:  # 리스트가 비어 있으면
+            self.head = self.current = self.head.next
+        self.no -= 1
+~~~
+
+first 용어를 통해 알겠지만, 머리 노드를 삭제하는 함수이다.
+
+- 먼저 머리 노드가 None이면 안됨
+
+- 머리 노드에 다음 노드 대입
+
+- number 1개 감소
+
+
+예제 : remove_last() 함수
+~~~python
+    def remove_last(self):
+        """꼬리 노드 삭제"""
+        if self.head is not None:
+            if self.head.next is None :  # 노드가 1개 뿐이라면
+                self.remove_first()      # 머리 노드를 삭제
+            else:
+                ptr = self.head  # 스캔 중인 노드
+                pre = self.head  # 스캔 중인 노드의 앞쪽 노드
+
+                while ptr.next is not None:
+                    pre = ptr
+                    ptr = ptr.next # while문 종료시 ptr은 꼬리 노드를 참조하고 pre는 맨끝에서 두 번째 노드를 참조
+                pre.next = None  # pre는 삭제 뒤 꼬리 노드
+                self.current = pre
+                self.no -= 1
+~~~
+
+이번것은 꼬리 노드를 삭제하는 함수이다.
+
+- 먼저 머리 노드가 None이면 안됨
+
+- 머리 노드밖에 없다면, 머리 노드를 삭제한다
+
+- 머리 노드외에도 더 있다면, 임의의 변수 ptr과 pre가 생성됨. 이때 ptr과 pre는 머리 노드임
+
+- ptr.next가 None이 아니라면, pre는 ptr의 값이 되고 ptr은 자기보다 앞 노드를 참조(위에서 보면 알겠지만, 처음에만 pre와 ptr이 같지 나중에는 ptr이 꼬리 노드를 참조하고 pre는 꼬리 노드의 앞쪽 노드이다)
+
+- 이제 알겠지만 pre.next가 None이 되면서 꼬리 노드가 짤리게 돼
+
+- number 1 감소하면서 마무리
+
+### LinkedList 클래스 remove(), remove_current_node() 함수
+
+예제 : remove_last() 함수
+~~~python
+    def remove(self, p: Node) -> None:
+        """노드 p를 삭제"""
+        if self.head is not None:
+            if p is self.head:       # p가 머리 ​​노드이면
+                self.remove_first()  # 머리 노드를 삭제
+            else:
+                ptr = self.head
+
+                while ptr.next is not p:
+                    ptr = ptr.next
+                    if ptr is None:
+                        return  # ptr은 리스트에 존재하지 않음
+                ptr.next = p.next
+                self.current = ptr
+                self.no -= 1
+~~~
+
+특정 노드를 삭제하고 싶다면 remove_last()함수를 써야해
+
+- 먼저 머리 노드가 None이면 안돼, 만약 특정 노득가 머리 노드라면 -> 머리 노드를 삭제
+
+- 먼저 포인터(ptr)을 머리 노드로 지정하고 포인터의 next가 특정 노드가 아니라면, 다음 노드로 넘어감
+
+- 포인터의 next가 특정 노드라면, 포인터의 next를 특정 노드의 next로 바꿔. 쉽게 설명하면, 특정 노드는 뒤에 있고 포인터는 앞에 있으니까 포인터의 넥스트는 특정 노드 뒤쪽 노드 참조로 바꿔 버리는 거지
+
+- 만약에 포인터의 next가 특정 노드로 나온게 없다면 return으로 끝나
+
+
+예제 : remove_current_node() 함수
+~~~python
+    def remove_current_node(self) -> None:
+        """주목 노드를 삭제"""
+        self.remove(self.current)
+~~~
+
+이제야 current가 쓰이게 되었네. 아까부터 current가 계속 업데이트 됐었잖아? 업데이트 될때마다 current 값이 바뀌게 되는데, 그 값을 지워버리는 함수야
+
+### LinkedList 클래스 clear(), next() 함수
+
+예제 : clear() 함수
+~~~python
+    def clear(self) -> None:
+        """전체 노드를 삭제"""
+        while self.head is not None:  # 전체가 비어 있게 될 때까지
+            self.remove_first()       # 머리 노드를 삭제
+        self.current = None
+        self.no = 0
+~~~
+
+모든 노드를 지울때, 쓰는 함수로써 머리 노드가 None이라면 수행이 안되지만, 그렇지 않다면 머리 노드를 계속 삭제한다.
+
+예제 : next() 함수
+~~~python
+    def next(self) -> bool:
+        """주목 노드를 한 칸 뒤로 진행"""
+        if self.current is None or self.current.next is None:
+            return False  # 진행할 수 없음
+        self.current = self.current.next
+        return True
+~~~
+
+현재 주목 노드(current node)가 None 또는 next가 None이 아니라면 주목노드를 next인 노드로 바꿔
+
+### LinkedList 클래스 print_current_node(), print() 함수
+
+예제 : print_current_node() 함수
+~~~python
+    def print_current_node(self) -> None:
+        """주목 노드를 출력"""
+        if self.current is None:
+            print('주목 노드가 존재하지 않습니다.')
+        else:
+            print(self.current.data)
+~~~
+
+현재 주목 노드가 None이라면 '주목 노드가 존재하지 않습니다.' 문구를 띄우고, None이 아니라면 현재 주목 노드의 data 값을 print한다
+
+예제 : print() 함수
+~~~python
+    def print(self) -> None:
+        """모든 노드를 출력"""
+        ptr = self.head
+
+        while ptr is not None:
+            print(ptr.data)
+            ptr = ptr.next
+~~~
+
+포인터를 먼저 머리노드로 입력 후, 머리 노드 부터 뒤쪽까지 None이 나올때까지 옮겨가면서 data 값을 print한다
+
+### 각 함수 수행 후 주목(current) 노드의 값 정리
+
+| 함수 | 주목 노드 |
+|:---:|:---:|
+| __init__() | None |
+| __len__() | 변화 X |
+| search() | 검색 성공시, 검색된 노드 |
+| __contains__() | 변화 X |
+| add_first() | 머리 노드 |
+| add_last() | 꼬리 노드 |
+| remove_first() | 머리 노드 |
+| remove_last() | 꼬리 노드 |
+| remove() | 삭제한 노드의 앞쪽 노드 |
+| remove_current_node() | 삭제한 노드의 앞쪽 노드 |
+| clear() | None |
+| next() | 주목 노드 한칸 뒤로 이동 |
+| print_current_node() | 변화 X |
+| print() | 변화 X |
+
+
+## 커서로 연결 리스트 만들기
