@@ -357,3 +357,78 @@ first 용어를 통해 알겠지만, 머리 노드를 삭제하는 함수이다.
 
 
 ## 커서로 연결 리스트 만들기
+
+
+![커서 연결 리스트](/assets/img/blog/computerscience/커서연결리스트.png)
+
+위 사진을 보면 뒤쪽 포인터는 뒤쪽 노드가 저장되는 원소의 인덱스야. 여기서는 이 포인터를 "커서"라고 칭해. 여기서 A의 뒤쪽 커서 4는 노드 B를 가리키는거지.
+
+***꼬리 노드***의 뒤쪽 커서는 -1이고 ***머리 노드***는 위에 보면 인덱스 1을 기리키니까 A가 머리 노드이지
+
+그렇다면 노드를 추가하면 어떻게 될까
+
+![커서 연결 리스트 원소 추가](/assets/img/blog/computerscience/커서연결리스트원소추가.png)
+
+위 사진 같은 경우 Z가 추가가 된건데, 보면 머리 인덱스값과 6번 인덱스에 값이 추가된것을 확인할 수 있다. 따로 원소들을 대이동할 필요 없다는 것이다.
+
+그러면, 커서로 연결 리스트를 구현하는 함수에 대해 알아보자
+
+### 선형 리스트 클래스 __init__(), __len__() 함수
+
+Null = -1 값을 포함하고 시작해
+
+예제 : 선형 리스트 클래스, init() 함수
+~~~python
+from __future__ import annotations
+from typing import Any, Type
+
+Null = -1
+
+class ArrayLinkedList:
+    """선형 리스트 클래스(배열 커서 버전)"""
+
+    def __init__(self, capacity: int):
+        """초기화"""
+        self.head = Null                   # 머리 노드
+        self.current = Null                # 주목 노드
+        self.max = Null                    # 사용 중인 맨끝 레코드
+        self.deleted = Null                # 프리 리스트의 머리 노드
+        self.capacity = capacity           # 리스트의 크기
+        self.n = [Node()] * self.capacity  # 리스트 본체
+        self.no = 0
+~~~
+
+선형 리스트 클래스에는 총 필드가 7개 있어
+
+예제 : len() 함수, 연결리스트의 개수를 반환하는 함수
+~~~python
+    def __len__(self) -> int:
+        """선형 리스트의 노드 수를 반환"""
+        return self.no
+~~~
+
+### 선형 리스트 클래스 get_insert_index(), delete_index() 함수
+
+예제 : get_insert_index() 함수, 
+~~~python
+    def get_insert_index(self):
+        """다음에 삽입할 레코드의 첨자를 구합니다"""
+        if self.deleted == Null:  # 삭제 레코드는 존재하지 않습니다
+            if self.max+1 < self.capacity:
+                self.max += 1
+                return self.max   # 새 레코드를 사용
+            else:
+                return Null       # 크기 초과
+        else:
+            rec = self.deleted                # 프리 리스트에서
+            self.deleted = self.n[rec].dnext  # 맨 앞 rec를 꺼내기
+            return rec
+~~~
+
+아직 조사중....
+
+
+## 원형 이중 연결 리스트
+
+복잡한 원형 이중 연결 리스트를 알아보자
+

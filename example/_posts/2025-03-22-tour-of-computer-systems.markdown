@@ -34,22 +34,23 @@ hello 프로그램은 인간이 이해하고 읽을 수 있기 때문에 고급 
 
 각 단계는 더 세부적인 과정들이 있는데, 일단은 생략
 
-| hello.c                | 전처리 단계(pre-processing)                                                                                          |
-|:---:                   |:---:                                                                                                                |
-| Source ↓ program(text) ↓| 컴파일하기 전에 처리하는 단계로 C언어의 중요한 역할, 결과는 소스 코드는 컴파일러가 이해할 수 있는 순수한 C 코드 형태로 정리됨 |
+| hello.c               | 전처리 단계(pre-processing)                                                                                           |
+|:---:                  |:---:                                                                                                                 |
+| Source program(text) ↓| 컴파일하기 전에 처리하는 단계로 C언어의 중요한 역할, 결과는 소스 코드는 컴파일러가 이해할 수 있는 순수한 C 코드 형태로 정리됨 |
 
-| hello.i                          | 컴파일 단계 |
-|:---:                             |:---:                                                                                   |
-| Modified source ↓ program(text) ↓| 컴파일러(ccl)는 텍스트 파일 .i를 hello.s로 번역하며 이 파일에는 어셈블리어 프로그램이 저장됨 | 
+| hello.i                        | 컴파일 단계 |
+|:---:                           |:---:                                                                                   |
+| Modified source program(text) ↓| 컴파일러(ccl)는 텍스트 파일 .i를 hello.s로 번역하며 이 파일에는 어셈블리어 프로그램이 저장됨 | 
 
-| hello.s                  | 어셈블리 단계                                                                                                              |
-|:---:                     |:---:                                                                                                                      |
-| Assembly ↓ program(text) ↓| 어셈블러(as)가 hello.s를 기계어 인스트럭션으로 번역하고 재배치가능 목적프로그램의 형태로 묶어서 hell.o로 라는 목적파일에 결과 저장 |
+| hello.s                 | 어셈블리 단계                                                                                                              |
+|:---:                    |:---:                                                                                                                      |
+| Assembly program(text) ↓| 어셈블러(as)가 hello.s를 기계어 인스트럭션으로 번역하고 재배치가능 목적프로그램의 형태로 묶어서 hell.o로 라는 목적파일에 결과 저장 |
 
 | hello.o                | 링크 단계 | hello |
 |:---:                   |:---: |:---: |
 | Relocatable object → programs(binary) →| printf 함수는 C 컴파일러에서 제공하는 표준 C 라이브러리에 있다. 그래서 별도의 목적파일에 있으며, hello.o 파일과 어떤 형태로 결햅되어야 하기 때문에 링커(ld)가 통합작업을 수행한다. 그 결과로 hello 파일은 실행가능 목적파일(실행파일)로 메모리에 적재된다. |Executable object program(binary) |
 
+![하드웨어 구조](/assets/img/blog/computerscience/하드웨어구조.png)
 
 ## 버스
 
@@ -267,7 +268,7 @@ SIMD 인스트럭션들은 영상, 소리, 동영상 데이터 처리를 위해 
 
 ## 컴퓨터 시스템 추상화의 중요성
 
-추상화 사진
+![추상화](/assets/img/blog/computerscience/추상화.png)
 
 복잡한 걸 단순하게 표현, 핵심만 보여주기는 추상화에 대한 정의로써, 사용자가 내부 동작 이해 없이도 Python에서 프로그래밍 연습을 할수 있게 해준다.
 
