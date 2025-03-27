@@ -222,7 +222,7 @@ first 용어를 통해 알겠지만, 머리 노드를 삭제하는 함수이다.
 
                 while ptr.next is not None:
                     pre = ptr
-                    ptr = ptr.next # while문 종료시 ptr은 꼬리 노드를 참조하고 pre는 맨끝에서 두 번째 노드를 참조
+                    ptr = ptr.next # while문 종료시 ptr은 꼬리 노드를 참조하고 pre는 맨끝에서 두 번째 노드 참조
                 pre.next = None  # pre는 삭제 뒤 꼬리 노드
                 self.current = pre
                 self.no -= 1
