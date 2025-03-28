@@ -12,7 +12,7 @@ hide_last_modified: true
 
 - 트리에서는 폭 우선/가로 우선/수평 검색이라고 하며, 낮은 레벨부터 왼쪽에서 오른쪽으로 검색해
 
-- ***큐(Queue)***를 사용해서 구현해
+- 트리 제외하고는 ***큐(Queue)***를 사용해서 구현해
 
 ~~~python
 from collections import deque
