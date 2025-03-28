@@ -64,11 +64,11 @@ hide_last_modified: true
 
 노드가 왼쪽 자식과 오른쪽 자식만을 갖는 트리를 이진 트리라고 한다. 자식은 하나만 있거나 없어도 된다.
 
-# 이진 트리 사진
+![이진 트리](/assets/img/blog/computerscience/이진트리.png)
 
 - 이진 트리는 왼쪽 자식과 오른쪽 자식을 구분해. ***왼쪽 자식을 루트***로 하는 서브트리를 ***왼쪽 서브트리(left subtree)***, ***오른쪽 자식을 루트***로 하는 서브트리를 ***오른쪽 서브트리(right subtree)***라고 해.
 
-# 왼쪽 오른쪽 서브트리 사진
+![왼쪽 서브 트리](/assets/img/blog/computerscience/왼쪽서브트리.png)
 
 ## 완전 이진 트리
 
