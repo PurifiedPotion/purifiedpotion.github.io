@@ -18,7 +18,7 @@ hide_last_modified: true
 from collections import deque
 
 def bfs(graph, start):
-    visited = {node: False for node in graph} # visited 딕셔너리에 graph의 모든 노드 받아와서 node : False를 저장
+    visited = {node: False for node in graph} # visited 딕셔너리에 graph의 모든 노드 받아와서 node:False 저장
     queue = deque([start]) # start를 deque로 변환
     visited[start] = True # visited[start] == False 였는데, True로 변환
 
