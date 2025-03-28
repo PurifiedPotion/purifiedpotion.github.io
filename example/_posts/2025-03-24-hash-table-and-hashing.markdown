@@ -5,6 +5,10 @@ date:   2025-03-24
 hide_last_modified: true
 ---
 
+* toc  
+{:toc .large-only}
+
+
 긁어모음, 뒤죽박죽이라는 의미를 가진 해시라는 단어가 파이썬에서는 어떻게 쓰일까.
 데이터를 키(key)와 값(value)의 쌍으로 저장하는 자료구조인 딕셔너리(dict) 또는 해시(hashing)를 배워보자. 
 
