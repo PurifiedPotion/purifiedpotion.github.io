@@ -41,8 +41,8 @@ def topological_sort(graph):
         for v in graph[u]: # 노드 하나의 이웃
             indegree[v] += 1 # indegree[이웃]에 1 증가, 최종적으로는 C와 F가 값이 많다
 
-    queue = deque([node for node in graph if indegree[node] == 0]) # queue라는 데크에 indegree[node] == 0 인 것들을 추가 (A,B)
-    result = [] # 리스트 생성
+    queue = deque([node for node in graph if indegree[node] == 0]) # queue라는 데크에 indegree[node] == 0 인 
+    result = [] # 리스트 생성                                        # 것들을 추가 (A,B)
 
     while queue: # 큐에 노드가 있다면
         node = queue.popleft() # 큐에서 첫번째 원소를 팝한것을 노드에 저장, queue -1
