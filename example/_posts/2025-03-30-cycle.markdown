@@ -177,7 +177,7 @@ A → B → C
 
 그러면 함수로 넘어가 보자
 
-## 진입 차수 위상 정렬(In-degree Topological Sort) 기반 사이클 탐지 함수
+### 진입 차수 위상 정렬(In-degree Topological Sort) 기반 사이클 탐지 함수
 
 ~~~python
 from collections import deque, defaultdict 
@@ -215,7 +215,7 @@ graph = {
 print(has_cycle_topo_sort(graph))  # True
 ~~~
 
-## 위상정렬과 DFS 기반 사이클 탐지 비교
+### 위상정렬과 DFS 기반 사이클 탐지 비교
 
 | 항목 | DFS 방식 | 위상 정렬 방식 |
 |:---:|:---:|:---:|
@@ -393,7 +393,7 @@ rank   = {'A': 1, 'B': 0, 'C': 0}
 
 이 두가지 기법을 사용하면 ***거의 O(1)***에 가까운 속도로 사이클을 탐지할 수 있어
 
-## Union-Find와 DFS 기반 사이클 탐지 비교
+### Union-Find와 DFS 기반 사이클 탐지 비교
 
 | 항목 | Union-Find 방식 | DFS 기반 방식 |
 |:---:|:---:|:---:|

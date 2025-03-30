@@ -90,8 +90,8 @@ parent = {}
 def find(x):
     # 경로 압축 기법 사용
     if parent[x] != x: # parent[원소 값]가 원소와 다르다면
-        parent[x] = find(parent[x]) 
-    return parent[x]
+        parent[x] = find(parent[x]) # parent[원소 값] 의 최종 root를 저장한다
+    return parent[x] # root 값 반환
 
 def union(x, y):
     root_x = find(x)
@@ -110,10 +110,55 @@ for edge in edges:
 # 5. MST 구성
 mst = [] # mst라는 빈 리스트 생성
 for weight, u, v in edges: # edges 원소들의 가중치, 처음값, 마지막값 하나씩
-    if find(u) != find(v):  # ↑ 사이클 안 생기면
-        union(u, v) # 
-        mst.append((u, v, weight))
+    if find(u) != find(v):  # ↑ 사이클 안 생기면, 루트값 비교, 트리 납작하게
+        union(u, v) # parent 트리를 납작하게 만듦
+        mst.append((u, v, weight)) # 사이클 없는 간선만 mst에 처음값, 마지막값, 가중치 저장
 
 # 6. 결과 출력
 print("최소 신장 트리:", mst)
 ~~~
+
+## 프림(Prim) 알고리즘 기본
+
+크루스칼이 간선 중심이라면, 프림은 정점 중심으로 최소 신장 트리를 만들어 나가는 방식이야. 시작 정점 하나를 기준으로, 가장 가까운 정점을 하나씩 연결하면서 트리를 확장해 나가는 방식
+
+알기쉽게 시각화를 예로 들어보자
+
+### 프림 알고리즘 시각화
+
+~~~mathematica
+   A ---1--- B
+   |         |
+   3         4
+   |         |
+   C ---5--- D
+~~~
+
+간선 목록 (가중치 포함) :
+- (A-B:1), (A-C:3), (B-D:4), (C-D:5)
+
+🎯 프림 알고리즘 동작 (시작점: A)
+
+1️⃣ 초기 상태
+- 시작 정점: A
+
+- MST에 A 추가
+
+- 후보 간선: (A-B:1), (A-C:3)
+
+2️⃣ (A-B:1) 선택
+- 정점 B 추가
+
+- 후보 간선: (A-C:3), (B-D:4)
+
+3️⃣ (A-C:3) 선택
+- 정점 C 추가
+
+- 후보 간선: (B-D:4), (C-D:5)
+
+4️⃣ (B-D:4) 선택
+- 정점 D 추가 → 끝!
+
+📌 MST 구성:
+
+- (A-B), (A-C), (B-D)
