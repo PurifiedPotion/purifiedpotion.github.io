@@ -40,7 +40,7 @@ def topological_sort(graph):
     for u in graph: # 그래프의 모든 노드 하나씩
         for v in graph[u]: # 노드 하나의 이웃
             indegree[v] += 1 # indegree[이웃]에 1 증가, 최종적으로는 C와 F가 값이 많다
-
+                                                                   # 아래는 진입 차수(in-degree) == 0 분류
     queue = deque([node for node in graph if indegree[node] == 0]) # queue라는 데크에 indegree[node] == 0  
     result = [] # 리스트 생성                                        # 인 것들을 추가 (A,B)
 
