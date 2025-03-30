@@ -118,6 +118,8 @@ for weight, u, v in edges: # edges 원소들의 가중치, 처음값, 마지막�
 print("최소 신장 트리:", mst)
 ~~~
 
+먼저 첫번째 정렬한 것이 핵심인거 같아. 정렬을 안했으면 긴것들이 mst에 들어갈 수 있으니까
+
 ## 프림(Prim) 알고리즘 기본
 
 크루스칼이 간선 중심이라면, 프림은 정점 중심으로 최소 신장 트리를 만들어 나가는 방식이야. 시작 정점 하나를 기준으로, 가장 가까운 정점을 하나씩 연결하면서 트리를 확장해 나가는 방식
@@ -138,26 +140,103 @@ print("최소 신장 트리:", mst)
 
 🎯 프림 알고리즘 동작 (시작점: A)
 
-    1️⃣ 초기 상태
+1️⃣ 초기 상태
 - 시작 정점: A
 
 - MST에 A 추가
 
 - 후보 간선: (A-B:1), (A-C:3)
 
-    2️⃣ (A-B:1) 선택
+2️⃣ (A-B:1) 선택
 - 정점 B 추가
 
 - 후보 간선: (A-C:3), (B-D:4)
 
-    3️⃣ (A-C:3) 선택
+3️⃣ (A-C:3) 선택
 - 정점 C 추가
 
 - 후보 간선: (B-D:4), (C-D:5)
 
-    4️⃣ (B-D:4) 선택
+4️⃣ (B-D:4) 선택
 - 정점 D 추가 → 끝!
 
-    📌 MST 구성:
+📌 MST 구성:
 
 - (A-B), (A-C), (B-D)
+
+### 프림(Prim) 알고리즘 함수
+
+~~~python
+import heapq
+from collections import defaultdict
+
+# 1. 그래프 정의 (인접 리스트 형태)
+graph = defaultdict(list)
+graph['A'].extend([('B', 1), ('C', 3)])
+graph['B'].extend([('A', 1), ('D', 4)])
+graph['C'].extend([('A', 3), ('D', 5)])
+graph['D'].extend([('B', 4), ('C', 5)])
+
+# 2. 프림 알고리즘 함수
+def prim(start): # A가 start
+    visited = set() # visited라는 집합 자료형 생성
+    mst = [] # 나중에 반환할 빈 mst 생성
+    total_weight = 0 # 총 가중치 0으로 시작
+    pq = [] # heapq 사용할 리스트 생성
+
+    # 시작 정점에서 연결된 간선을 모두 큐에 추가
+    visited.add(start) # 자신의 값 visited에 추가
+    for neighbor, weight in graph[start]: # graph start의 모든 이웃과 가중치 하나씩
+        heapq.heappush(pq, (weight, start, neighbor)) # pq에 가중치, start, 이웃 추가, 처음에는 (1,'A','B'), (3,'A','C')
+
+    while pq: # pq에 원소가 있을 때
+        weight, u, v = heapq.heappop(pq) # pq에서 팝한거를 weight, u, v에 저장
+        if v not in visited: # v가 visited에 없다면 
+            visited.add(v) # 추가
+            mst.append((u, v, weight)) # u, v, 가중치를 mst에 저장
+            total_weight += weight # 총 가중치에 가중치 추가
+            for neighbor, w in graph[v]: # 이웃의 이웃들과 가중치 하나씩
+                if neighbor not in visited: # 이웃이 visited에 없으면
+                    heapq.heappush(pq, (w, v, neighbor)) # pq에 가중치, 시작, 이웃을 push 한다
+
+    return mst, total_weight
+
+# 3. 실행
+mst_result, cost = prim('A') # prim('A') 를 실행해서 mst_result와 cost를 받아온다
+print("최소 신장 트리:", mst_result)
+print("총 비용:", cost)
+~~~
+
+Prim 알고리즘도 마찬가지로 heapq를 사용해서 push 되는 값들이 최솟값이다. 이것이 특징이라고 생각이 된다.
+
+## 마무리
+
+### 공통점 (크루스칼 & 프림)
+
+| 항목 | 설명 |
+|:---:|:---:|
+| 💡 목표 | 모든 정점을 최소 비용으로 연결하는 MST 찾기 |
+| 🌐 입력 | 가중치가 있는 무방향 그래프 |
+| 🔁 동작 방식 | 가장 작은 비용의 간선을 선택해 하나씩 추가 |
+| 🚫 사이클 방지 | 사이클이 생기면 간선 추가 X |
+| 📦 결과 | 간선 수 = 정점 수 - 1 인 트리 구조 |
+
+### 차이점 (크루스칼 & 프림)
+
+| 항목 | 크루스칼(Kruskal) | 프림(Prim) |
+|:---:|:---:|:---:|
+| ⚙️ 알고리즘 방식 | 간선 중심 (Edge-based) | 정점 중심 (Vertex-based) |
+| 📊 시작 방법 | 간선 전체를 정렬한 후 하나씩 선택 | 하나의 정점에서 시작, 주변 확장 |
+| 🔁 선택 기준 | 가중치 작은 간선부터 차례로 선택 | 가장 가까운 정점을 선택 |
+| 🛠 자료구조 | 유니온-파인드 (Disjoint Set) 사용 | 우선순위 큐 (Heap) 사용 |
+| 🔄 간선 정렬 필요 | O (처음에 전체 간선 정렬) | X (큐에서 최소 간선 선택) |
+| 📈 효율 | 간선 수가 적은 그래프에 유리 | 간선 수가 많은 그래프에 유리 |
+| ⛔ 사이클 확인 방법 | 유니온-파인드로 확인 | 방문 여부로 확인 |
+| 💥 가중치 음수 | O (문제 없음) | O (가능, 다익스트라와는 다름) |
+
+### 비유 (크루스칼 & 프림)
+
+| 알고리즘 | 비유 |
+|:---:|:---:|
+| 크루스칼 | "전국 도로 목록을 정리해서, 가장 싸고 필요 없는 건 빼면서 도로 연결해 나가는 느낌" |
+| 프림 | "서울에서 시작해서, 점점 가까운 도시를 하나씩 연결해서 전국으로 확장해 나가는 느낌" |
