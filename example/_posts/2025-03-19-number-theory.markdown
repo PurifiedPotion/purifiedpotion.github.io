@@ -4,6 +4,10 @@ title:  "정수론(Number Theory)"
 date:   2025-03-19
 hide_last_modified: true
 ---
+
+* toc  
+{:toc .large-only}
+
 알고리즘 최적화와 암호학에 활용할 수 있는 정수론은 수학적인 성질을 다뤄, 소수(prime number)/최대공약수(GCD)/최소공배수(LCM)/모듈러 연산(modular arithmetic)을 포함한다.
 
 그러면 아래 정수론을 정리한 표를 보여주겠다. 솔직히 확장 유클리드부터는 처음 들어보는 이야기이다...

@@ -4,6 +4,10 @@ title:  "Essay written in KRAFTON JUNGLE"
 date:   2025-03-14
 hide_last_modified: true
 ---
+
+* toc  
+{:toc .large-only}
+
 크래프톤 8기 0주차를 마치며, Essay를 작성하게 되었다
 
 ## 지나온 과거에 대한 성찰

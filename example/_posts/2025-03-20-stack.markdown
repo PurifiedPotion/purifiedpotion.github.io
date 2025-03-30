@@ -16,7 +16,7 @@ hide_last_modified: true
 - 스택의 최대 크기를 나타내는 capacity 같은 경우 len(stk)와 같음
 - 스택 포인터: ptr 은 스택의 개수를 나타낸다. 스택이 비어있으면 0 가득차면 capacity와 같아짐
 
-### 스택 포인터 응용
+## 스택 포인터 응용
 
 예제 : 스택이 비어 있는지 확인해보자
 ~~~python
@@ -44,7 +44,7 @@ def is_full(stklist):
 
 예외(Exception)에 대해 설명하자면, 파이썬이 제공하는 예외처리가 있는데, 표준 내장 예외 처리이다. 표준 내장 예외 처리는 BaseException 클래스와 직간접적으로 파생한 클래스이며, 사용자 정의 예외 처리는 BaseException이 아닌 Exception 클래스이다. 왜냐하면, Eceoption 클래스는 사용자 정의 클래스가 파생하는 것을 전제로 하기 때문이다.
 
-### 예외 처리
+## 예외 처리
 
 예제 : Empty, pop()함수 또는 peek()함수를 호출할 때 스택이 비어 있으면 내보내는 예외 처리리
 ~~~python
@@ -62,7 +62,7 @@ class Full(Exceiption):
 
 이제부터는 stack에 사용되는 함수들을 나열하겠다.
 
-### 스택(Stack) 함수
+## 스택(Stack) 함수
 
 예제 : __init__() 함수, 스택 배열을 생성한다. 이때 stack ptr == 0
 ~~~python

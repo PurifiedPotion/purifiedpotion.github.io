@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "다익스트라(Dijkstra's)/플로이드-와샬(Floyd-Warshall)/벨만-포드 알고리즘(Bellman-Ford Algorithm) 알고리즘"
+title:  "최단 거리(Shortest path)"
 date:   2025-03-29
 hide_last_modified: true
 ---
@@ -8,7 +8,7 @@ hide_last_modified: true
 * toc  
 {:toc .large-only}
 
-파이썬 그래프에서 정점과 정점 사이의 ***최소 거리***를 구할때 쓰는 알고리즘 다익스트라(Dijkstra's), 플로이드-와샬(Floyd-Warshall), 벨만-포드 알고리즘(Bellman-Ford Algorithm) 알고리즘에 대해 설명할게. 세 알고리즘은 가중 방향 그래프가 기본이야
+파이썬 그래프에서 정점과 정점 사이의 ***최소 거리***를 구할때 쓰는 알고리즘 ***다익스트라(Dijkstra's), 플로이드-와샬(Floyd-Warshall), 벨만-포드 알고리즘(Bellman-Ford Algorithm)*** 알고리즘에 대해 설명할게. 세 알고리즘은 가중 방향 그래프가 기본이야
 
 ## 다익스트라 알고리즘 (Dijkstra's Algorithm) 기본
 
