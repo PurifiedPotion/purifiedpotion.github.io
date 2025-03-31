@@ -70,6 +70,118 @@ hide_last_modified: true
 
 ![왼쪽 서브 트리](/assets/img/blog/computerscience/왼쪽서브트리.png)
 
+예제 : 이진 트리(BinaryTree) Class
+~~~python
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+
+    # 삽입
+    def insert(self, value):
+        self.root = self._insert_recursive(self.root, value)
+
+    def _insert_recursive(self, node, value):
+        if node is None:
+            return Node(value)
+        if value < node.value:
+            node.left = self._insert_recursive(node.left, value)
+        elif value > node.value:
+            node.right = self._insert_recursive(node.right, value)
+        return node
+
+    # 탐색
+    def search(self, value):
+        return self._search_recursive(self.root, value)
+
+    def _search_recursive(self, node, value):
+        if node is None or node.value == value:
+            return node
+        if value < node.value:
+            return self._search_recursive(node.left, value)
+        else:
+            return self._search_recursive(node.right, value)
+
+    # 삭제
+    def delete(self, value):
+        self.root = self._delete_recursive(self.root, value)
+
+    def _delete_recursive(self, node, value):
+        if node is None:
+            return None
+
+        if value < node.value:
+            node.left = self._delete_recursive(node.left, value)
+        elif value > node.value:
+            node.right = self._delete_recursive(node.right, value)
+        else:
+            # 삭제할 노드 찾음
+            if node.left is None:
+                return node.right
+            elif node.right is None:
+                return node.left
+            
+            # 양쪽 자식이 있는 경우
+            min_node = self._find_min(node.right)
+            node.value = min_node.value
+            node.right = self._delete_recursive(node.right, min_node.value)
+        return node
+
+    def _find_min(self, node):
+        while node.left:
+            node = node.left
+        return node
+
+    # 트리 높이 계산
+    def height(self):
+        return self._height_recursive(self.root)
+
+    def _height_recursive(self, node):
+        if node is None:
+            return -1  # 높이는 노드 수가 아니라 "간선 수"
+        return 1 + max(self._height_recursive(node.left), self._height_recursive(node.right))
+
+    # 전위 순회
+    def preorder(self, node):
+        if node:
+            print(node.value, end=' ')
+            self.preorder(node.left)
+            self.preorder(node.right)
+
+    # 중위 순회 (오름차순 정렬된 값 출력)
+    def inorder(self, node):
+        if node:
+            self.inorder(node.left)
+            print(node.value, end=' ')
+            self.inorder(node.right)
+
+    # 후위 순회
+    def postorder(self, node):
+        if node:
+            self.postorder(node.left)
+            self.postorder(node.right)
+            print(node.value, end=' ')
+
+    # 레벨 순회 (BFS)
+    def level_order(self):
+        from collections import deque
+        if not self.root:
+            return
+        queue = deque([self.root])
+        while queue:
+            node = queue.popleft()
+            print(node.value, end=' ')
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+~~~
+
 ## 완전 이진 트리
 
 - 그럼 완전 이진 트리는 뭐냐, ***마지막 레벨 제외하고는 모든 노드가 가득 차 있어야 하는데, 이 의미는 자식이 모두 2개씩 있어야 한다는 점이다.***
