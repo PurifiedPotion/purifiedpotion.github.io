@@ -49,7 +49,9 @@ author:
 # Add links to the sidebar.
 menu:
   - title:             Algorithms with Python
-    url:               /blog/
+    url:               /blog/algorithm
+  - title:             Computer Science
+    url:               /blog/computer_science
   - title:             Projects
     url:               /projects/
   - title:             Documentation
