@@ -71,7 +71,7 @@ graph = {
 print(topological_sort(graph)) # 출력 : ['A', 'B', 'C', 'D', 'E', 'H', 'F', 'G']
 ~~~
 
-### DFS 기반 위상 정렬
+## DFS 기반 위상 정렬
 
 재귀적으로 모든 하위 작업을 먼저 처리한 후, 스택에 넣음
 
