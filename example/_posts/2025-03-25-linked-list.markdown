@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "리스트(List)"
+title:  "연결 리스트(Linked List)"
 date:   2025-03-26
 hide_last_modified: true
 ---
@@ -428,7 +428,298 @@ class ArrayLinkedList:
 아직 조사중....
 
 
-## 원형 이중 연결 리스트
+## 원형 이중 연결 리스트의 기반
 
-복잡한 원형 이중 연결 리스트를 알아보자
+### 원형 리스트(Circular list)
 
+**원형 리스트(Circular list)**는 연결 리스트의 꼬리 노드가 다시 머리 노드를 가리킨다. 고리 모양으로 늘어선 데이터를 표현하는 데 알맞은 리스트 구조이다.
+
+### 이중 연결 리스트(Doubly linked list)
+
+**이중 연결 리스트(Doubly linked list)**는 기존 연결 리스트의 앞쪽 노드 찾지 못하는 단점을 개선한 리스트 구조이다. 그럼 어떻게 앞쪽 노드로 갈 수 있냐? 기존 next 포인터 뿐만 아니고 previous 포이터도 주어지기 때문에 앞쪽 노드로 갈 수 있다.
+
+| data | 데이터에 대한 참조(임의의 형) |
+|:---:|:---:|
+| prev | 앞쪽 노드에 대한 참조(앞쪽 포인터 : Node형) |
+| next | 뒤쪽 노드에 대한 참조(뒤쪽 포인터 : Node형) |
+
+## 원형 이중 연결 리스트(Circular doubly linked list)
+
+원형 이중 연결 리스트는 원형 리스트와 이중 연결 리스트를 결한한 형태이다
+
+이제 원형 이중 연결 리스트의 함수에 대해 알아보자
+
+### 노드 클래스 __init__() 함수
+
+~~~python
+class Node:
+    """원형 이중 연결 리스트용 노드 클래스"""
+
+    def __init__(self, data: Any = None, prev: Node = None,
+                       next: Node = None) -> None:
+        """초기화"""
+        self.data = data          # 데이터
+        self.prev = prev or self  # 앞쪽 포인터
+        self.next = next or self  # 뒤쪽 포인터
+~~~
+
+- 원형 이중 연결 리스트용 노드 클래스 Node는 필드 3개(data, prev, next)로 구성됨
+
+- __init__() 함수는 노드의 초기화를 수행하기 위해 매개변수 data, prev, next로 전달받은 값에 해당 필드에 대입.
+
+- prev, next로 전달받은 값이 None이면, prev와 next에 None이 아닌 self 대입
+
+- 그 결과 앞쪽 포인터와 뒤쪽 포인터는 자신의 인스턴스를 참조 → self.prev = self
+
+### DoubleLinkedList 클래스 __init__(), __len__(), is_empty() 함수
+
+~~~python
+class DoubleLinkedList:
+    """원형 이중 연결 리스트 클래스"""
+
+    def __init__(self) -> None:
+        """초기화"""
+        self.head = self.current = Node()  # 더미 노드를 생성
+        self.no = 0
+
+    def __len__(self) -> int:
+        """선형 리스트의 노드 수를 반환"""
+        return self.no
+
+    def is_empty(self) -> bool:
+        """리스트가 비어 있는가?"""
+        return self.head.next is self.head  
+~~~
+
+- __init__() 함수는 비어 있는 이중 연결 리스트를 생성. 데이터가 없는 노드를 1개 생성하는 것이다. 이때 prev와 next는 Node의 __init__() 함수 동작으로 자신의 노드를 참조. head와 current가 참조하는 곳은 생성한 더미 노드
+
+- __len__() 함수는 리스트에 등록되어 있는 데이터 개수를 반환
+
+- is_empty() 함수는 리스트가 비어 있는지 확인하는데, 더미 노드의 뒤쪽 포인터 head.next가 더미 노디인 head를 참조하면 비어있는것이 확인된다. True or False로 반환
+
+- 원형 이중 연결 리스트를 나타내는 클래스로 필드 3개로 구성됨
+
+| no | 리스트에서 노드의 개수 |
+|:---:|:---:|
+| head | 머리 노드에 대한 참조 |
+| current | 주목 노드에 대한 참조(주목 포인터) |
+
+### DoubleLinkedList 클래스 search(), __contains__() 함수
+
+~~~python
+    def search(self, data: Any) -> Any:
+        """data와 값이 같은 노드를 검색"""
+        cnt = 0
+        ptr = self.head.next  # 현재 스캔 중인 노드
+        while ptr is not self.head:
+            if data == ptr.data:
+                self.current = ptr
+                return cnt  # 검색 성공
+            cnt += 1
+            ptr = ptr.next  # 뒤쪽 노드에 주목
+        return -1           # 검색 실패
+
+    def __contains__(self, data: Any) -> bool:
+        """연결 리스트에 data가 포함되어 있는가?"""
+        return self.search(data) >= 0
+~~~
+
+- search() 함수 처음에는 head.next로 시작을 한다. head는 더미 노드이며, 값을 계속 찾다가 한바퀴 돌아오게 될 때 더미노드이자 head에 가게됨다. 이 때 while문에서 탈락한다
+
+- 찾으려는 값을 찾으면 count 값을 반환한다
+
+- __contains__() 함수는 리스트에 데이터와 값이 같은 노드가 존재하는지 판단하는 함수이며, 존재하면 True 그렇지 않으면 False 반환
+
+#### p가 참조하는 노드의 위치 판단하기
+
+| p.prev is head | p는 머리 노드인가? (더미 노드 미포함) |
+|:---:|:---:|
+| p.prev.prev is head | p는 맨 앞에서 2번째 노드인가? (더미 노드 미포함) |
+| p.next is head | p는 꼬리 노드인가? |
+| p.next.next is head | p는 맨 끝에서 2번째 노드인가? |
+
+### DoubleLinkedList 클래스 print_current_nod(), print(), print_reverse() 함수
+
+~~~python
+    def print_current_node(self) -> None:
+        """주목 노드를 출력"""
+        if self.is_empty():
+            print('주목 노드는 없습니다.')
+        else:
+            print(self.current.data)
+
+    def print(self) -> None:
+        """모든 노드를 출력"""
+        ptr = self.head.next  # 더미 노드의 뒤쪽 노드
+        while ptr is not self.head:
+            print(ptr.data)
+            ptr = ptr.next
+
+    def print_reverse(self) -> None:
+        """모든 노드를 역순으로 출력"""
+        ptr = self.head.prev  # 더미 노드의 앞쪽 노드
+        while ptr is not self.head:
+            print(ptr.data)
+            ptr = ptr.prev
+~~~
+
+- print_current_nod() 함수는 주목 노드의 데이터를 출력하는 함수로써 리스트가 비어 있으면 '주목 노드는 없습니다.' 출력
+
+- print() 함수는 리스트의 모든 노드를 맨 앞부터 맨 끝까지 순서대로 출력
+
+- print_reverse() 함수는 모든 노드를 맨 끝부터 맨 앞까지 순서대로 출력
+
+### DoubleLinkedList 클래스 next(), prev() 함수
+
+~~~python
+    def next(self) -> bool:
+        """주목 노드를 한 칸 뒤로 이동"""
+        if self.is_empty() or self.current.next is self.head:
+            return False  # 이동할 수 없음
+        self.current = self.current.next
+        return True
+
+    def prev(self) -> bool:
+        """주목 노드를 한 칸 앞으로 이동"""
+        if self.is_empty() or self.current.prev is self.head:
+            return False  # 이동할 수 없음
+        self.current = self.current.prev
+        return True
+~~~
+
+- next() 함수는 주목 노드를 한 칸 뒤로 이동시키는 함수인데, 리스트가 비어있지 않아야 하고 주목 노드에 뒤쪽 노드가 존재해야 이동한다
+
+- prev() 함수는 주목 노드를 한 칸 앞으로 이동시키는 함수로서 리스트가 비어있지 않아야 하고 주목 노드에 앞쪽 노드가 존재해야 이동한다
+
+### DoubleLinkedList 클래스 add(), add_first(), add_last() 함수
+
+~~~python
+    def add(self, data: Any) -> None:
+        """주목 노드의 바로 뒤에 노드를 삽입"""
+        node = Node(data, self.current, self.current.next) # data, prev, next 순
+        self.current.next.prev = node # 다음 노드의 이전값에 자기 자신 저장
+        self.current.next = node # 본인의 앞 위치의 next 에 자기 자신 저장
+        self.current = node # 주목 노드에 자기 본인 저장 
+        self.no += 1
+
+    def add_first(self, data: Any) -> None:
+        """맨 앞에 노드를 삽입"""
+        self.current = self.head  # 더미 노드 head의 바로 뒤에 삽입
+        self.add(data)
+
+    def add_last(self, data: Any) -> None:
+        """맨 뒤에 노드를 삽입"""
+        self.current = self.head.prev  # 꼬리 노드 head.prev의 바로 뒤에 삽입
+        self.add(data)
+~~~
+
+- add() 함수는 주목 노드 바로 뒤에 노드를 삽입하는데, 삽입하면서 다음 노드의 prev 값과 이전 노드의 next 값, 그리고 마지막으로 주목노드에 자기 자신을 저장한다
+
+- add_first() 함수는 주목노드를 머리노드로 바꾼 후 맨 앞쪽에 add() 함수 실행
+
+- add_last() 함수는 주목노드를 꼬리노드로 바꾼 후 맨 뒤쪽에 add() 함수 실행
+
+### DoubleLinkedList 클래스 remove_current_node(), remove(p) 함수
+
+~~~python
+    def remove_current_node(self) -> None:
+        """주목 노드 삭제"""
+        if not self.is_empty():
+            self.current.prev.next = self.current.next
+            self.current.next.prev = self.current.prev
+            self.current = self.current.prev
+            self.no -= 1
+            if self.current is self.head:
+                self.current = self.head.next
+
+    def remove(self, p: Node) -> None:
+        """노드 p를 삭제"""
+        ptr = self.head.next
+
+        while ptr is not self.head:
+            if ptr is p:  # p를 발견
+                self.current = p
+                self.remove_current_node()
+                break
+            ptr = ptr.next
+~~~
+
+- remove_current_node() 함수는 주목 노드를 삭제하는 함수로써 먼저 리스트가 비어있는지 확인한다. 주목 노드의 이전값의 next를 주목노드의 next 값으로 바꾸고 주목 노드의 이후값의 prev를 주목 노드의 이전값으로 저장한다. 그리고 주목노드를 앞쪽 노드로 바꾸고 노드의 수를 1 뺀다. 모든 과정 진행 후에 주목 노드가 머리 노드가 된다면, 주목노드 값을 첫번째 노드로 저장해
+
+- remove(p)함수는 p를 찾을때까지 주목 노드를 update하고 찾았다면 remove_current_node()함수를 수행하게 된다. 만약 못 찾으면 아무일도 일어나지 않게 된다
+
+### DoubleLinkedList 클래스 remove_first(), remove_last(), clear() 함수
+
+~~~python
+    def remove_first(self) -> None:
+        """머리 노드 삭제"""
+        self.current = self.head.next  # 머리 노드 head.next를 삭제
+        self.remove_current_node()
+
+    def remove_last(self) -> None:
+        """꼬리 노드 삭제"""
+        self.current = self.head.prev  # 꼬리 노드 head.prev를 삭제
+        self.remove_current_node()
+
+    def clear(self) -> None:
+        """모든 노드를 삭제"""
+        while not self.is_empty():  # 리스트 전체가 빌 때까지
+            self.remove_first()  # 머리 노드를 삭제
+        self.no = 0
+~~~
+
+- remove_first() 함수는 주목 노드를 맨 앞 노드로 바꾼 후 remove_current_node()함수를 수행
+
+- remove_last() 함수는 주목 노드를 맨 뒤 노드로 바꾼 후 remove_current_node()함수를 수행
+
+- clear() 함수는 모든 노드를 삭제하는 함수로써 모든 노드가 빌 때까지 remove_first() 함수 수행. 수행 후 number 0으로 저장
+
+### DoubleLinkedListIterator 클래스
+
+반복문 수행을 위해서 아래와 같이 Iterator 클래스 사용이 가능해
+
+~~~python
+    def __iter__(self) -> DoubleLinkedListIterator:
+        """반복자를 반환"""
+        return DoubleLinkedListIterator(self.head)
+
+    def __reversed__(self) -> DoubleLinkedListReverseIterator:
+        """내림차순 반복자를 반환"""
+        return DoubleLinkedListReverseIterator(self.head)
+
+class DoubleLinkedListIterator:
+    """DoubleLinkedList의 반복자용 클래스"""
+
+    def __init__(self, head: Node):
+        self.head = head
+        self.current = head.next
+
+    def __iter__(self) -> DoubleLinkedListIterator:
+        return self
+
+    def __next__(self) -> Any:
+        if self.current is self.head:
+            raise StopIteration
+        else:
+            data = self.current.data
+            self.current = self.current.next
+            return data
+
+class DoubleLinkedListReverseIterator:
+    """DoubleLinkedList의 내림차순 반복자용 클래스"""
+
+    def __init__(self, head: Node):
+        self.head = head
+        self.current = head.prev
+
+    def __iter__(self) -> DoubleLinkedListReverseIterator:
+        return self
+
+    def __next__(self) -> Any:
+        if self.current is self.head:
+            raise StopIteration
+        else:
+            data = self.current.data
+            self.current = self.current.prev
+            return data
+~~~
