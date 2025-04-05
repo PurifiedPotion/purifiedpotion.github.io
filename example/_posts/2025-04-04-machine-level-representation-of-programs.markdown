@@ -135,3 +135,85 @@ movsx eax, al      ; eax = 0xFFFFFFFF (-1) ← sign-extension
 | 축소(Casting down) | 상위 비트 잘림 (주의 필요) |
 | 부호 해석 | 같은 비트라도 signed/unsigned로 다르게 해석됨 |
 | 주요 명령어 | mov, movzx, movsx, cmp, imul, mul |
+
+### C언어에서의 signed vs unsigned 기본 개념
+
+| 타입 | 표현 가능한 값 |
+|:---:|:---:|
+| signed(기본) | 음수 ~ 양수 |
+| unsigned | 0 ~ 양수 (두 배 범위) |
+
+예 : char는 1바이트니까 총 256개의 값을 표현할 수 있음
+
+- signed char : -128 ~ 127
+
+- unsigned char : 0 ~ 255
+
+#### 왜 굳이 unsigned를 쓸까?
+
+**음수가 절대 나올 수 없는 값에 적절함**
+
+예 : 나이, 인덱스, 배열 크기, 파일 크기, 시간 등
+
+→ 당연히 음수가 될 수 없으니 unsigned를 쓰면 안전하고 의미도 더 분명함
+
+~~~c
+unsigned int age = 23;
+~~~
+
+**저장 범위를 최대한 활용하고 싶을 때**
+
+unsigned는 같은 크기에서 더 큰 수까지 표현 가능하니까, 한정된 메모리로 최대한 많은 값을 표현하고 싶을 때 유용해.
+
+예 : 색상값 (0~255)
+~~~c
+unsigned char red = 255;  // 딱 1바이트로 0~255 표현
+~~~
+
+** 비트 연산을 명확하게 할 때
+
+unsigned는 부호 비트(맨 앞 비트) 를 걱정하지 않아도 돼서 비트 마스크, 쉬프트 연산 등을 더 안정적으로 할 수 있어
+~~~c
+unsigned char mask = 0xF0;
+value = value & mask;
+~~~
+
+#### 그럼 signed는 왜 따로 쓸까?
+
+사실 C에서는 int, char는 기본적으로 signed야.(char는 컴파일러마다 다름) 명시적으로 부호 있는 정수라는 걸 강조하거나, 플랫폼 독립적으로 정확한 표현 범위를 보장하고 싶을 때 signed를 명시해
+~~~c
+signed char temperature = -20;
+~~~
+
+#### C에서 char, signed char, unsigned char의 차이
+
+| 타입 | 범위 | 용도 |
+|:---:|:---:|:---:|
+| char | 컴파일러에 따라 signed/unsigned 다름 | 문자 표현용 |
+| signed char | -128 ~ 127 | 음수 포함할 때 |
+| unsigned char | 0 ~ 255 | 바이트 데이터 처리, 파일 읽기 등 |
+
+예를 들어 이미지 파일을 바이트 단위로 읽을 때는 unsigned char가 더 적절해. 0xFF(255)가 음수로 해석되면 문제가 생기거든
+
+#### 정수 오버플로/언더플로와 관련 
+
+**unsigned**는 overflow/underflow 시 모듈로 연산처럼 동작
+
+**signed**는 overflow시 동작이 정의되지 않음(UB, undefined behavior)
+
+~~~c
+unsigned int x = 0;
+x--;  // x = 4294967295 (underflow)
+
+int y = 2147483647;
+y++;  // UB (비정상 동작 가능성)
+~~~
+
+#### unsigned/signed 정리
+
+| 쓰는 이유 | 설명 |
+|:---:|:---:|
+| 의미 명확히 하기 | 나이는 음수가 될 수 없으니 unsigned 사용 |
+| 범위 확장 | 같은 바이트로 더 큰 수 저장 |
+| 비트 연산 안전성 | 부호 없는 연산이 더 예측 가능함 |
+| 성능/메모리 최적화 | char 1바이트 단위로 다루고 싶을 때 등 |
