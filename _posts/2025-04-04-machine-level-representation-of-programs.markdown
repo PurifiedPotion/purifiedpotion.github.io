@@ -2,6 +2,8 @@
 layout: post
 title:  "프로그램의 기계수준 표현(Machine-Level Representation of Programs)"
 date:   2025-04-04
+categories: computer_system
+tags: [기계수준, 프로그램, Machine, Level, Representation, Program]
 hide_last_modified: true
 ---
 
