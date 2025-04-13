@@ -189,7 +189,7 @@ make clean  # 중간파일 삭제
 ~~~
 
 
-- gdb로 디버깅하기, 위에 Makefile 보면 아래와 같은 코드가 보일거야
+- gdb로 디버깅하기(C 프로그램을 한 줄씩 실행해보거나 변수 추적), 위에 Makefile 보면 아래와 같은 코드가 보일거야
 
 ~~~makefile
 CFLAGS = -Wall -g
