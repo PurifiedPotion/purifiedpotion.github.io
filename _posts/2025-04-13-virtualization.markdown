@@ -1,7 +1,6 @@
 ---
 layout: post
 title:  "가상화(Virtualization)"
-categories: C
 date:   2025-04-13
 hide_last_modified: true
 ---
