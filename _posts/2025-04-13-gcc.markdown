@@ -1,0 +1,320 @@
+---
+layout: post
+title:  "gcc(GNU Compiler Collection)"
+date:   2025-04-13
+hide_last_modified: true
+---
+
+* toc  
+{:toc .large-only}
+
+## gcc란?
+
+gcc는 GNU Compiler Collection의 약자로, 원래는 C 언어 **컴파일러(GNU C Compiler)**로 시작했지만 지금은 C, C++, Objective-C, Fortran, Ada, Go 등 다양한 언어를 지원하는 컴파일러 모음이야
+
+- C 언어 컴파일러로 가장 유명하고, 리눅스에서 표준처럼 사용돼
+
+- 윈도우에서도 MinGW, WSL, 또는 MSYS2 등을 통해 사용할 수 있어
+
+- 오픈소스이고 성능도 좋기 때문에 많은 시스템과 프로젝트에서 쓰이고 있어
+
+## gcc의 기본 사용법
+
+### 가장 기본적인 사용
+
+~~~bash
+gcc hello.c -o hello
+~~~
+
+- hello.c : 소스 파일
+
+- -o hello : 출력 파일 이름을 hello로 설정
+
+### 실행
+
+~~~bash
+./hello
+~~~
+
+## 컴파일 단계의 gcc 내부 동작
+
+C 코드를 실행 파일로 만들기 위해 gcc는 다음 네 가지 단계를 거쳐:
+
+1. 전처리(Preprocessing) :
+
+- #include, #define 등의 전처리 지시문 처리
+
+- gcc -E hello.c -o hello.i
+
+2. 컴파일(Compilation) :
+
+- C 코드를 어셈블리어로 변환
+
+- gcc -S hello.i -o hello.s
+
+3. 어셈블(Assembly) :
+
+- 어셈블리어 코드를 기계어로 변환 (객체 파일 .o)
+
+- gcc -c hello.s -o hello.o
+
+4. 링크(Linking) :
+
+- 라이브러리와 함께 실행 파일을 생성
+
+- gcc hello.o -o hello
+
+✅ 위 단계를 한 줄 명령어로 묶은 게 그냥 gcc hello.c -o hello 라고 보면 돼!
+
+## 자주 쓰는 옵션들
+
+| 옵션 | 설명 |
+|:---:|:---:|
+| -o <file> | 출력 파일 이름 지정 |
+| -wall | 모든 경고 출력 |
+| -g | 디버깅 정보 포함 (gdb로 디버깅할 때 필요) |
+| -O0, -O1, -O2, -O3 | 최적화 수준 설정 |
+| -std=c99, -std=c11 등 | C 표준 지정 |
+| -c | 링크하지 않고 객체 파일까지만 생성 |
+| -I<dir> | 헤더 파일 포함 디렉토리 지정 |
+| -L<dir> | 라이브러리 디렉토리 지정 |
+| -l<lib> | 라이브러리 링크 (-lm은 수학 라이브러리 libm.so를 의미) |
+
+1. 예제 : 디버깅용 컴파일
+~~~bash
+gcc -g hello.c -o hello
+~~~
+
+2. 예제 : 최적화 적용
+~~~bash
+gcc -O2 hello.c -o hello
+~~~
+
+3. 예제 : 여러 파일 컴파일
+~~~bash
+gcc main.c utils.c -o myprogram
+~~~
+
+4. 예제 : 객체 파일 따로 만들기
+~~~bash
+gcc -c main.c -o main.o
+gcc -c utils.c -o utils.o
+gcc main.o utils.o -o myprogram
+~~~
+
+## 기타 유용한 gcc 관련 도구들
+
+| 도구 | 설명 |
+|:---:|:---:|
+| make | 컴파일 자동화 도구(Makefile 사용) |
+| gdb | GNU debugger |
+| valgrind | 메모리 누수 검사 |
+| objdump, nm, readelf | 바이너리 분석 도구들 |
+
+### Makefile이란?
+
+Makefile은 C 프로젝트 빌드 자동화 도구인 make 명령어의 설정 파일이야. 컴파일 명령을 일일이 타이핑 안 해도 **make**만 치면 자동으로 빌드해줘!
+
+#### 구조(예제)
+
+디렉토리 구조
+~~~css
+myproject/
+├── main.c
+├── utils.c
+├── utils.h
+├── Makefile
+~~~
+
+C 예시 파일(main.c)
+~~~c
+#include <stdio.h>
+#include "utils.h"
+
+int main() {
+    print_hello();
+    return 0;
+}
+~~~
+
+C 예시 파일(utils.c)
+~~~c
+#include <stdio.h>
+
+void print_hello() {
+    printf("Hello from utils!\n");
+}
+~~~
+
+C 예시 파일(utils.h)
+~~~c
+#ifndef UTILS_H
+#define UTILS_H
+
+void print_hello();
+
+#endif
+~~~
+
+Makefile 예시
+~~~makefile
+# 변수 설정
+CC = gcc
+CFLAGS = -Wall -g
+
+# 타겟: 의존 파일들
+# 명령 (앞에 tab 필수!)
+all: main
+
+main: main.o utils.o
+	$(CC) $(CFLAGS) -o main main.o utils.o
+
+main.o: main.c utils.h
+	$(CC) $(CFLAGS) -c main.c
+
+utils.o: utils.c utils.h
+	$(CC) $(CFLAGS) -c utils.c
+
+clean:
+	rm -f *.o main
+~~~
+
+#### 사용 방법
+
+- bash에서 아래 실행
+
+~~~bash
+make        # main 실행파일 빌드
+make clean  # 중간파일 삭제
+~~~
+
+
+- gdb로 디버깅하기(C 프로그램을 한 줄씩 실행해보거나 변수 추적), 위에 Makefile 보면 아래와 같은 코드가 보일거야
+
+~~~makefile
+CFLAGS = -Wall -g
+~~~
+
+- 디버깅 실행은 bash에서
+
+~~~bash
+gdb ./main
+~~~
+
+
+## Docker에서 C 파일을 컴파일하고 실행하기
+
+### 구조(간단 예제)
+
+C 예시 파일(hello.c)
+~~~c
+#include <stdio.h>
+
+int main() {
+    printf("Hello, Dockerized C!\n");
+    return 0;
+}
+~~~
+
+Dockerfile 예시
+~~~c
+# 1. gcc가 포함된 베이스 이미지 사용
+FROM gcc:latest
+
+# 2. 작업 디렉토리 설정
+WORKDIR /usr/src/app
+
+# 3. 현재 디렉토리의 파일을 컨테이너로 복사
+COPY . .
+
+# 4. hello.c 파일 컴파일
+RUN gcc -o hello hello.c
+
+# 5. 컨테이너 실행 시 hello 실행
+CMD ["./hello"]
+~~~
+
+### 실행(간단 예제)
+
+1. 도커 이미지 빌드
+~~~bash
+docker build -t my-c-program .
+~~~
+
+2. 컨테이너 실행
+~~~bash
+docker run --rm my-c-program
+~~~
+
+- 출력 결과
+
+~~~mathematica
+Hello, Dockerized C!
+~~~
+
+### 구조(복잡한 예제, Makefile 추가 사용)
+
+디렉토리 구조
+~~~css
+my-c-project/
+├── main.c
+├── utils.c
+├── utils.h
+├── Makefile
+├── Dockerfile
+~~~
+
+Dockerfile 예시
+~~~Dockerfile
+FROM gcc:latest
+
+WORKDIR /app
+
+COPY . .
+
+RUN make
+
+CMD ["./app"]
+~~~
+
+Makefile 예시
+~~~makefile
+all: app
+
+app: main.o utils.o
+	gcc -o app main.o utils.o
+
+main.o: main.c utils.h
+	gcc -c main.c
+
+utils.o: utils.c utils.h
+	gcc -c utils.c
+
+clean:
+	rm -f *.o app
+~~~
+
+### 실행(복잡한 예제, Makefile 추가 사용)
+
+~~~bash
+docker build -t my-make-c-app .
+docker run --rm my-make-c-app
+~~~
+
+## 자주 쓰는 Dockerfile 팁
+
+| 용도 | 예시 |
+|:---:|:---:|
+| 디버깅용 빌드 | RUN gcc -g -o hello hello.c |
+| 최적화 빌드 | RUN gcc -02 hello hello.c |
+| 빌드 캐시 활용 | COPY hello.c → Run gcc ... 순서 중요 |
+| 헤더/라이브러리 추가 | apt-get install로 필요 패키지 추가 |
+
+## 정리
+
+- gcc는 컴파일러의 왕이자, 오픈소스 생태계의 심장
+
+- 그냥 C 코드 실행파일 만드는 툴이 아니라, 시스템 프로그래밍, 임베디드, 운영체제 개발까지 두루 쓰여
+
+- 옵션을 자유자재로 다루면 성능 개선이나 디버깅도 더 수월해져
+
