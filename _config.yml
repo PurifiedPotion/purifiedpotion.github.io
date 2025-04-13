@@ -50,8 +50,10 @@ author:
 menu:
   - title:             Algorithms with Python
     url:               /blog/algorithm
-  - title:             Computer Science
-    url:               /blog/computer_science
+  - title:             Computer System
+    url:               /blog/computer_system
+  - title:             회고
+    url:               /blog/diary
   - title:             Projects
     url:               /projects/
   - title:             Documentation
@@ -75,7 +77,7 @@ permalink:             /blog/:categories/:year-:month-:day-:title/
 
 # Pagination configuration (used by the `blog` layout)
 paginate:              10
-paginate_path:         /blog/:num/
+paginate_path:         /blog/diary/:num/
 
 
 # Theme
