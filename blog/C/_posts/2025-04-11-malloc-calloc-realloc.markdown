@@ -2,7 +2,6 @@
 layout: post
 title:  "동적 메모리 할당(Dynamic memory allocation)"
 date:   2025-04-11
-categories: C
 tags: [malloc, calloc, realloc, 동적, 메모리, 할당]
 hide_last_modified: true
 ---

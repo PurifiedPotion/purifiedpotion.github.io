@@ -2,7 +2,6 @@
 layout: post
 title:  "가상화(Virtualization)"
 date:   2025-04-13
-categories: C
 tags: [C, 가상화, Virtualization]
 hide_last_modified: true
 ---

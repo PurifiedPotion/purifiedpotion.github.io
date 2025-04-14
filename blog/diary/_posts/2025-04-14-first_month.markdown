@@ -48,4 +48,6 @@ Python 외적으로는 **Computer Systems A Programmer's Perspective** 책 1장�
 
 ## 4주차
 
-Python을 통해 알고리즘을 배우는 마지막 주 4주차에서는 많은 것을 얻어간것 같다. 알고리즘을 많이 배우진 않았지만, Computer System쪽에서 지식을 많이
+Python을 통해 알고리즘을 배우는 마지막 주 4주차에서는 많은 것을 얻어간것 같다. 알고리즘을 많이 배우진 않았지만, Computer System쪽에서 지식을 많이 얻게 되는 한 주였다. **Computer Systems A Programmer's Perspective** 책 3장 전체를 다 보라는 과제가 있었고 아쉽게도 다 보진 못했지만, 레지스터에서 어떻게 인수를 저장하고 또 메모리에서 값을 받아오는 행위의 세부적인걸 알게 되었다.
+
+알고리즘으로는 동적 프로그래밍과 그리디 알고리즘 
