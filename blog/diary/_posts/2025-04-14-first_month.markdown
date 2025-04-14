@@ -48,3 +48,4 @@ Python 외적으로는 **Computer Systems A Programmer's Perspective** 책 1장�
 
 ## 4주차
 
+Python을 통해 알고리즘을 배우는 마지막 주 4주차에서는 많은 것을 얻어간것 같다. 알고리즘을 많이 배우진 않았지만, Computer System쪽에서 지식을 많이
