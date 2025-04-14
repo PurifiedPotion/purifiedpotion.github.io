@@ -19,7 +19,7 @@ layout: page
 
 {{ content }}
 
-{% assign slug_path = '/' | append: page.slug | append: '/' %}
+{% assign slug_path = page.slug | append: '/_posts/' %}
 {% assign posts = site.posts | where_exp: "post", "post.path contains slug_path" %}
 
 {% assign date_formats  = site.data.strings.date_formats               %}
