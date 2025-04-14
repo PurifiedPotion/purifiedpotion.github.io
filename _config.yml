@@ -51,7 +51,7 @@ menu:
   - title:             Algorithms with Python
     url:               /algorithm
   - title:             C
-    url:               /C 
+    url:               /C
   - title:             Computer System
     url:               /computer_system
   - title:             회고
