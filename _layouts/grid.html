@@ -3,7 +3,7 @@
 layout: page
 ---
 
-{% assign slug_path = '/blog/' | append: page.slug | append: '/_posts/' %}
+{% assign slug_path = '/' | append: page.slug | append: '/' %}
 {% assign posts = site.posts | where_exp: "post", "post.path contains slug_path" %}
 
 {{ content }}
