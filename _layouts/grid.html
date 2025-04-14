@@ -8,48 +8,23 @@ layout: page
 
 {{ content }}
 
-<p style="color:red;">[디버그] page.title = {{ page.title }}</p>
-<p style="color:red;">[디버그] page.layout = {{ page.layout }}</p>
-<p style="color:red;">[디버그] page.slug = {{ page.slug }}</p>
-
-<p style="color:blue;">[디버그] page.slug = {{ page.slug }}</p>
-<p style="color:blue;">[디버그] slug_path = {{ slug_path }}</p>
-
-<h3 style="color:red;">[디버그용] 현재 post.path 리스트</h3>
-<ul>
-  {% for post in site.posts %}
-    <li>{{ post.path }}</li>
-  {% endfor %}
-</ul>
-
-<h3 style="color:blue;">[디버그] 필터링된 포스트 경로</h3>
-<ul>
-  {% for post in filtered_posts %}
-    <li>{{ post.path }}</li>
-  {% endfor %}
-</ul>
-
 {% assign date_formats  = site.data.strings.date_formats               %}
 {% assign list_group_by = date_formats.list_group_by | default:"%Y"    %}
 {% assign no_third_column = page.no_third_column | default:site.hydejack.no_third_column | default:false %}
 
 {% assign prev_date = 0 %}
 {% if page.no_groups %}<div class="columns {% unless no_third_column %}columns-break{% endunless %}">{% endif %}
-{% for post in filtered_posts %}
+{% for post in site.posts %}
   {% assign current_date = post.date | date:list_group_by %}
-
   {% unless page.no_groups %}{% if current_date != prev_date %}
     {% unless forloop.first %}</div>{% endunless %}
-
     <h2 id="{{ list_group_by | slugify }}-{{ current_date | slugify }}">{{ current_date }}</h2>
     <div class="columns columns-break">
     {% assign prev_date = current_date %}
   {% endif %}{% endunless %}
-
   {% assign featured = page.featured | default:post.featured %}
   <div class="column {% if featured %}column-1{% else %}column-1-2{% endif %}">
-    {% include pro/post-card.html post=post featured=featured %}
+    {% include_cached pro/post-card.html post=post featured=featured %}
   </div>
-
   {% if forloop.last %}</div>{% endif %}
 {% endfor %}

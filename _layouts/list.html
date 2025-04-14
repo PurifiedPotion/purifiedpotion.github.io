@@ -19,42 +19,13 @@ layout: page
 
 {{ content }}
 
-<p>[디버그] page.title = {{ page.title }}</p>
-<p>[디버그] page.slug = {{ page.slug }}</p>
-<p>[디버그] slug_path = {{ slug_path }}</p>
-<p>[디버그] filtered_posts 수 = {{ filtered_posts | size }}</p>
-
-<p style="color:red;">[디버그] page.title = {{ page.title }}</p>
-<p style="color:red;">[디버그] page.layout = {{ page.layout }}</p>
-<p style="color:red;">[디버그] page.slug = {{ page.slug }}</p>
-
-<p style="color:blue;">[디버그] page.slug = {{ page.slug }}</p>
-<p style="color:blue;">[디버그] slug_path = {{ slug_path }}</p>
-
-<h3 style="color:red;">[디버그용] 현재 post.path 리스트</h3>
-<ul>
-  {% for post in site.posts %}
-    <li>{{ post.path }}</li>
-  {% endfor %}
-</ul>
-
-<h3 style="color:blue;">[디버그] 필터링된 포스트 경로</h3>
-<ul>
-  {% for post in filtered_posts %}
-    <li>{{ post.path }}</li>
-  {% endfor %}
-</ul>
-
-{% assign slug_path = 'blog/' | append: page.slug | append: '/_posts/' %}
-{% assign filtered_posts = site.posts | where_exp: "post", "post.path contains slug_path" %}
-
 {% assign date_formats  = site.data.strings.date_formats               %}
 {% assign list_group_by = date_formats.list_group_by | default:"%Y"    %}
 {% assign list_entry    = date_formats.list_entry    | default:"%d %b" %}
 
 {% assign prev_date = 0 %}
 {% if page.no_groups %}<ul class="related-posts">{% endif %}
-{% for post in filtered_posts %}
+{% for post in site.posts %}
   {% assign current_date = post.date | date:list_group_by %}
   {% unless page.no_groups %}{% if current_date != prev_date %}
     {% unless forloop.first %}</ul>{% endunless %}
@@ -62,6 +33,6 @@ layout: page
     <ul class="related-posts">
     {% assign prev_date = current_date %}
   {% endif %}{% endunless %}
-  {% include components/post-list-item.html post=post format=list_entry %}
+  {% include_cached components/post-list-item.html post=post format=list_entry %}
   {% if forloop.last %}</ul>{% endif %}
 {% endfor %}
