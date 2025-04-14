@@ -29,5 +29,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          personal_token: ${{ secrets.GITHUB_TOKEN }}   # ← 이걸로 변경!
+          external_repository: PurifiedPotion/purifiedpotion.github.io
+          publish_branch: gh-pages
           publish_dir: ./_site
