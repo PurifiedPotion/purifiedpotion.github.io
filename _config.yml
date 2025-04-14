@@ -48,18 +48,18 @@ author:
 
 # Add links to the sidebar.
 menu:
-  - title:             Algorithms with Python
-    url:               /Algorithms with Python
-  - title:             C
-    url:               /C
-  - title:             Computer System
-    url:               /Computer System
-  - title:             회고
-    url:               /diary
-  - title:             Projects
-    url:               /projects/
-  - title:             Documentation
-    url:               /docs/
+  - title:              Algorithms with Python
+    url:                /algorithm
+  - title:              C
+    url:                /C
+  - title:              Computer System
+    url:                /computer_system
+  - title:              회고
+    url:                /diary
+  - title:              Projects
+    url:                /projects/
+  - title:              Documentation
+    url:                /docs/
 
 # Add links to the footer.
 # Typically you'll want to link to your cookie- or privacy policy (if appliable), etc..
