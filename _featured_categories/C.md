@@ -6,5 +6,3 @@ description: >
   C 언어 공부
 menu: true
 ---
-
-<!-- Just a test line. -->
