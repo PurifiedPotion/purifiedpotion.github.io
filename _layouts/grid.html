@@ -34,7 +34,7 @@ layout: page
 
   {% assign featured = page.featured | default:post.featured %}
   <div class="column {% if featured %}column-1{% else %}column-1-2{% endif %}">
-    {% include_cached pro/post-card.html post=post featured=featured %}
+    {% include pro/post-card.html post=post featured=featured %}
   </div>
 
   {% if forloop.last %}</div>{% endif %}
