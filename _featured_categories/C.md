@@ -3,6 +3,6 @@ layout: list
 title: C
 slug: C
 description: >
-  Posts about the C programming language.
+  C 언어 공부
 menu: true
 ---

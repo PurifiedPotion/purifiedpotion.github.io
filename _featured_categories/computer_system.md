@@ -3,6 +3,6 @@ layout: list
 title: Computer System
 slug: computer_system
 description: >
-  All posts related to computer system.
+  컴퓨터 시스템 공부
 menu: true
 ---
