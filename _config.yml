@@ -322,6 +322,7 @@ exclude:
   - Gemfile.lock
   - functions
 include:
+  - _featured_categories
   - _routes.json
   - .well-known
   - LICENSE.md
