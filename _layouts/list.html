@@ -19,7 +19,8 @@ layout: page
 
 {{ content }}
 
-{% assign posts = site.posts | where_exp: "post", "post.path contains '/blog/' | append: page.slug | append: '/_posts/'" %}
+{% assign slug_path = '/blog/' | append: page.slug | append: '/_posts/' %}
+{% assign posts = site.posts | where_exp: "post", "post.path contains slug_path" %}
 
 {% assign date_formats  = site.data.strings.date_formats               %}
 {% assign list_group_by = date_formats.list_group_by | default:"%Y"    %}
