@@ -3,7 +3,7 @@ layout: post
 title:  "포인터(pointer), & 연산자와 * 연산자"
 date:   2025-04-04
 categories: [algorithm, C]
-tags: [포인터, pointer, &, *, 연산자]
+tags: [포인터, pointer, 연산자]
 hide_last_modified: true
 ---
 
