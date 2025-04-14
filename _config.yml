@@ -49,13 +49,13 @@ author:
 # Add links to the sidebar.
 menu:
   - title:             Algorithms with Python
-    url:               /blog/Algorithms with Python
+    url:               /Algorithms with Python
   - title:             C
     url:               /C
-  - title:             /blog/Computer System
+  - title:             Computer System
     url:               /Computer System
   - title:             회고
-    url:               /blog/diary
+    url:               /diary
   - title:             Projects
     url:               /projects/
   - title:             Documentation
