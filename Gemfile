@@ -8,7 +8,20 @@ source "https://rubygems.org"
 #
 # This will help ensure the proper Jekyll version is running.
 # Happy Jekylling!
-gem "jekyll", "~> 3.8"
+gem "jekyll", "~> 4.3.2"
+
+gem "jekyll-feed"
+gem "jekyll-seo-tag"
+gem "jekyll-sitemap"
+gem "jekyll-paginate"
+gem "jekyll-include-cache"
+gem "jekyll-default-layout"
+gem "jekyll-redirect-from"
+gem "jekyll-optional-front-matter"
+gem "jekyll-readme-index"
+gem "jekyll-relative-links"
+gem "jekyll-titles-from-headings"
+gem "jekyll-last-modified-at"
 
 # Fixes `jekyll serve` in ruby 3
 gem "webrick"
