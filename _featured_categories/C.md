@@ -1,8 +1,8 @@
 ---
 layout: list
 title: C
-slug: C
+slug: c
 description: >
   C 언어 공부
-menu: true
+sitemap: true
 ---
