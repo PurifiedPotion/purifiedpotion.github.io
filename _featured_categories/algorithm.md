@@ -1,6 +1,6 @@
 ---
 layout: list
-title: Algorithms with Puthon
+title: Algorithms with Python
 slug: algorithm
 description: >
   All posts related to algorithm problem solving and theory.
