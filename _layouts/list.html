@@ -19,9 +19,19 @@ layout: page
 
 {{ content }}
 
+<p style="color:blue;">[디버그] page.slug = {{ page.slug }}</p>
+<p style="color:blue;">[디버그] slug_path = {{ slug_path }}</p>
+
 <h3 style="color:red;">[디버그용] 현재 post.path 리스트</h3>
 <ul>
   {% for post in site.posts %}
+    <li>{{ post.path }}</li>
+  {% endfor %}
+</ul>
+
+<h3 style="color:blue;">[디버그] 필터링된 포스트 경로</h3>
+<ul>
+  {% for post in filtered_posts %}
     <li>{{ post.path }}</li>
   {% endfor %}
 </ul>
