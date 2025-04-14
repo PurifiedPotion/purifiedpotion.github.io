@@ -19,7 +19,14 @@ layout: page
 
 {{ content }}
 
-{% assign slug_path = page.slug | append: '/_posts/' %}
+<h3 style="color:red;">[디버그용] 현재 post.path 리스트</h3>
+<ul>
+  {% for post in site.posts %}
+    <li>{{ post.path }}</li>
+  {% endfor %}
+</ul>
+
+{% assign slug_path = 'blog/' | append: page.slug | append: '/_posts/' %}
 {% assign posts = site.posts | where_exp: "post", "post.path contains slug_path" %}
 
 {% assign date_formats  = site.data.strings.date_formats               %}
