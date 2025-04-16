@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)"
+title:  "전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성"
 date:   2025-04-16
 hide_last_modified: true
 ---
