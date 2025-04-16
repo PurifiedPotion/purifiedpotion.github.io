@@ -2,6 +2,7 @@
 layout: post
 title:  "완전 탐색(Brute Force)"
 date:   2025-03-19
+image: /assets/img/blog/postimage/Algorithm.png
 hide_last_modified: true
 ---
 

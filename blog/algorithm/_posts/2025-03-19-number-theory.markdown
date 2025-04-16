@@ -2,6 +2,7 @@
 layout: post
 title:  "정수론(Number Theory)"
 date:   2025-03-19
+image: /assets/img/blog/postimage/Algorithm.png
 hide_last_modified: true
 ---
 

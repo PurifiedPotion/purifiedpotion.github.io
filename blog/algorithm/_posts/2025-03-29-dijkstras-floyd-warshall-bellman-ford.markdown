@@ -2,6 +2,7 @@
 layout: post
 title:  "최단 거리(Shortest path)"
 date:   2025-03-29
+image: /assets/img/blog/postimage/Algorithm.png
 hide_last_modified: true
 ---
 

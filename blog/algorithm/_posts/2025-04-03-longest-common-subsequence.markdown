@@ -3,6 +3,7 @@ layout: post
 title:  "최장 공통 부분 수열(Longest Common Subsequence)"
 date:   2025-04-03
 tags: [공통, 부분, 수열, LCS, Longest, Common, Subsequence]
+image: /assets/img/blog/postimage/Algorithm.png
 hide_last_modified: true
 ---
 

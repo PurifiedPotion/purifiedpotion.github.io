@@ -2,6 +2,7 @@
 layout: post
 title:  "연결 리스트(Linked List)"
 date:   2025-03-26
+image: /assets/img/blog/postimage/Algorithm.png
 hide_last_modified: true
 ---
 

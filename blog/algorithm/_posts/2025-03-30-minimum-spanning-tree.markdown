@@ -2,6 +2,7 @@
 layout: post
 title:  "최소 신장 트리(MST, Minimum Spanning Tree)"
 date:   2025-03-30
+image: /assets/img/blog/postimage/Algorithm.png
 hide_last_modified: true
 ---
 

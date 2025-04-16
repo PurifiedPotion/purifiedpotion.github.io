@@ -2,6 +2,7 @@
 layout: post
 title:  "배낭 문제(Knapsack Problem)"
 date:   2025-04-03
+image: /assets/img/blog/postimage/Algorithm.png
 hide_last_modified: true
 ---
 
