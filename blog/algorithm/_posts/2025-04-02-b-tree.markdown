@@ -108,32 +108,32 @@ class BTreeNode:
             self.keys[i + 1] = key    # i가 -1일수도 있고 자기보다 작은 key값 다음 index 일수도 있는데, 찾고 그 다음에 본인 key를 넣는다
         else:
             # 내부 노드: 자식 노드로 내려감
-            while i >= 0 and key < self.keys[i]:    #
-                i -= 1
-            i += 1
+            while i >= 0 and key < self.keys[i]:    # i(tree 크기-1)가 0이상이고 key가 tree가장 마지막 key보다 작으면
+                i -= 1                              # 자기보다 작은 key값 찾을때까지 i 감소
+            i += 1                                  # i + 1 하면서 while문 마무리
 
-            if len(self.children[i].keys) == 2 * self.t - 1:
-                self.split_child(i)
+            if len(self.children[i].keys) == 2 * self.t - 1:  # 현재 i의 자식노드리스트의 키들의 길이가 최소 차수 tx2 -1가 같을때때
+                self.split_child(i)                           # i노드에 대해서 split_child 함수 실행
 
                 if key > self.keys[i]:
                     i += 1
             self.children[i].insert_non_full(key)
 
     def split_child(self, i):
-        t = self.t
-        y = self.children[i]
-        z = BTreeNode(t, y.leaf)
-
+        t = self.t                              # t에 최소 차수 저장
+        y = self.children[i]                    # y에 i의 자식노드리스트 저장
+        z = BTreeNode(t, y.leaf)                # z에 최소 차수와 y의 leaf 여부에 따라 z도 동일하게 leaf를 따라감
+                                                # 아직 z는 keys와 children 없음
         # 중간 키를 부모로 올림
-        self.children.insert(i + 1, z)
-        self.keys.insert(i, y.keys[t - 1])
+        self.children.insert(i + 1, z)          # 리스트 자식노드리스트에 z insert
+        self.keys.insert(i, y.keys[t - 1])      # 리스트 키리스트에 y중간 키를 insert
 
         z.keys = y.keys[t:]      # 오른쪽 절반
         y.keys = y.keys[:t - 1]  # 왼쪽 절반
 
-        if not y.leaf:
-            z.children = y.children[t:]
-            y.children = y.children[:t]
+        if not y.leaf: # y가 leaf가 아니라면
+            z.children = y.children[t:] # z의 자식노드리스트에 y 자식노드리스트의 오른쪽 절반 저장
+            y.children = y.children[:t] # y 자식노드리스트에 본인의 왼쪽 절반 저장
 
 class BTree:
     def __init__(self, t):
