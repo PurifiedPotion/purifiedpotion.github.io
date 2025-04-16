@@ -2,6 +2,7 @@
 layout: post
 title:  "컴퓨터 시스템으로의 여행"
 date:   2025-03-22
+image: /assets/img/blog/postimage/ComputerSystem.png
 hide_last_modified: true
 ---
 

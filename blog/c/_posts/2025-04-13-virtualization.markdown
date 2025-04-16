@@ -3,6 +3,7 @@ layout: post
 title:  "가상화(Virtualization)"
 date:   2025-04-13
 tags: [C, 가상화, Virtualization]
+image: /assets/img/blog/postimage/C.png
 hide_last_modified: true
 ---
 

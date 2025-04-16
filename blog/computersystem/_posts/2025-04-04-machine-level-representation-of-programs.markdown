@@ -2,6 +2,7 @@
 layout: post
 title:  "프로그램의 기계수준 표현(Machine-Level Representation of Programs)"
 date:   2025-04-04
+image: /assets/img/blog/postimage/ComputerSystem.png
 hide_last_modified: true
 ---
 

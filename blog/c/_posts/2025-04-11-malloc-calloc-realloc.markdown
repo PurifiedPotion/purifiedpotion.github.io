@@ -3,6 +3,7 @@ layout: post
 title:  "동적 메모리 할당(Dynamic memory allocation)"
 date:   2025-04-11
 tags: [malloc, calloc, realloc, 동적, 메모리, 할당]
+image: /assets/img/blog/postimage/C.png
 hide_last_modified: true
 ---
 
