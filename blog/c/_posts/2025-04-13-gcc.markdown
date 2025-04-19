@@ -30,7 +30,7 @@ gcc hello.c -o hello
 
 - hello.c : 소스 파일
 
-- -o hello : 출력 파일 이름을 hello로 설정
+ - o hello : 출력 파일 이름을 hello로 설정
 
 ### 실행
 
