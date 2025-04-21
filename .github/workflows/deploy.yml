@@ -1,18 +1,18 @@
-name: Deploy Jekyll site to GitHub Pages
+name: Deploy Jekyll Site
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # 🟡 여기 아래에 붙이면 됨!
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -24,11 +24,11 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
-      - name: Build site
+      - name: Build Jekyll site
         run: bundle exec jekyll build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          personal_token: ${{ secrets.GH_PAGES_DEPLOY_TOKEN }}
           publish_dir: ./_site
