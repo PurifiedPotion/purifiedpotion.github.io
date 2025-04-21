@@ -46,25 +46,33 @@ C 코드를 실행 파일로 만들기 위해 gcc는 다음 네 가지 단계를
 
 - #include, #define 등의 전처리 지시문 처리
 
-- gcc -E hello.c -o hello.i
+~~~bash
+gcc -E hello.c -o hello.i
+~~~
 
 2. 컴파일(Compilation) :
 
 - C 코드를 어셈블리어로 변환
 
-- gcc -S hello.i -o hello.s
+~~~bash
+gcc -S hello.i -o hello.s
+~~~
 
 3. 어셈블(Assembly) :
 
 - 어셈블리어 코드를 기계어로 변환 (객체 파일 .o)
 
-- gcc -c hello.s -o hello.o
+~~~bash
+gcc -c hello.s -o hello.o
+~~~
 
 4. 링크(Linking) :
 
 - 라이브러리와 함께 실행 파일을 생성
 
-- gcc hello.o -o hello
+~~~bash
+gcc hello.o -o hello
+~~~
 
 ✅ 위 단계를 한 줄 명령어로 묶은 게 그냥 gcc hello.c -o hello 라고 보면 돼!
 
@@ -102,6 +110,17 @@ gcc main.c utils.c -o myprogram
 gcc -c main.c -o main.o
 gcc -c utils.c -o utils.o
 gcc main.o utils.o -o myprogram
+↑여러 객체 파일들을 하나의 실행파일로 합치는 과정(함수 참조 등 이 단계에서 해결됨, 예 : main.c가 utils.c의 함수 호출)
+~~~
+
+- 4번 예제 같은 경우, 저 3개의 코드를 실행한 후, utils.c 만 수정한다면, 아래처럼 코드 실행이 필요함
+
+~~~bash
+utils.c 수정됨
+↓
+gcc -c utils.c
+↓ 
+gcc main.o utils.o -o myprogram(링크)
 ~~~
 
 ## 기타 유용한 gcc 관련 도구들
