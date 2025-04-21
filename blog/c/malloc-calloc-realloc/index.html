@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+
+
+
+
+
+
+<head>
+  
+
+
+
+
+
+
+  
+    
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>동적 메모리 할당(Dynamic memory allocation) | PurifiedPotion’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="동적 메모리 할당(Dynamic memory allocation)" />
+<meta name="author" content="Kwansoo Kim" />
+<meta property="og:locale" content="ko_KR, en_US" />
+<meta name="description" content="A blog for computer science" />
+<meta property="og:description" content="A blog for computer science" />
+<meta property="og:site_name" content="PurifiedPotion’s Blog" />
+<meta property="og:image" content="/assets/img/blog/postimage/C.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-04-11T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/assets/img/blog/postimage/C.png" />
+<meta property="twitter:title" content="동적 메모리 할당(Dynamic memory allocation)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Kwansoo Kim"},"dateModified":"2025-04-11T00:00:00+00:00","datePublished":"2025-04-11T00:00:00+00:00","description":"A blog for computer science","headline":"동적 메모리 할당(Dynamic memory allocation)","image":"/assets/img/blog/postimage/C.png","mainEntityOfPage":{"@type":"WebPage","@id":"/blog/c/malloc-calloc-realloc/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/PurifiedPotion.png"},"name":"Kwansoo Kim"},"url":"/blog/c/malloc-calloc-realloc/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  
+
+
+
+  <meta name="color-scheme" content="dark light">
+
+
+
+  <meta name="theme-color" content="rgb(200,200,200)">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PurifiedPotion's Blog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="application-name" content="PurifiedPotion's Blog">
+
+<meta name="generator" content="Hydejack v9.2.1" />
+
+
+<link rel="alternate" href="/blog/c/malloc-calloc-realloc/" hreflang="ko-kr, en-us">
+
+<link type="application/atom+xml" rel="alternate" href="/feed.xml" title="PurifiedPotion&apos;s Blog" />
+
+
+<link rel="shortcut icon"    href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+
+<link rel="manifest" href="/assets/site.webmanifest">
+
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"><link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+
+
+<link rel="preload" href="/assets/img/swipe.svg" as="image" id="_hrefSwipeSVG">
+
+<link rel="dns-prefetch" href="/assets/js/search-worker-9.2.1.js" as="worker" id="_hrefSearch">
+
+
+
+
+
+<script>((r,a)=>{function d(e,t,n,o){e.addEventListener?e.addEventListener(t,n,o):e.attachEvent?e.attachEvent("on"+t,n):e["on"+t]=n}r.loadJS=function(e,t){var n=a.createElement("script"),e=(n.src=e,t&&d(n,"load",t,{once:!0}),a.scripts[0]);return e.parentNode.insertBefore(n,e),n},r._loaded=!1,r.loadJSDeferred=function(e,t){var n=a.createElement("script");function o(){r._loaded=!0,t&&d(n,"load",t,{once:!0});var e=a.scripts[0];e.parentNode.insertBefore(n,e)}return n.src=e,r._loaded?o():d(r,"load",o,{once:!0}),n},r.setRel=r.setRelStylesheet=function(e){d(a.getElementById(e),"load",function(){this.rel="stylesheet"},{once:!0})}})(window,document);
+!function(a){"use strict";var b=function(b,c,d){function e(a){return h.body?a():void setTimeout(function(){e(a)})}function f(){i.addEventListener&&i.removeEventListener("load",f),i.media=d||"all"}var g,h=a.document,i=h.createElement("link");if(c)g=c;else{var j=(h.body||h.getElementsByTagName("head")[0]).childNodes;g=j[j.length-1]}var k=h.styleSheets;i.rel="stylesheet",i.href=b,i.media="only x",e(function(){g.parentNode.insertBefore(i,c?g:g.nextSibling)});var l=function(a){for(var b=i.href,c=k.length;c--;)if(k[c].href===b)return a();setTimeout(function(){l(a)})};return i.addEventListener&&i.addEventListener("load",f),i.onloadcssdefined=l,l(f),i};"undefined"!=typeof exports?exports.loadCSS=b:a.loadCSS=b}("undefined"!=typeof global?global:this);
+!function(a){if(a.loadCSS){var b=loadCSS.relpreload={};if(b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}},b.poly=function(){for(var b=a.document.getElementsByTagName("link"),c=0;c<b.length;c++){var d=b[c];"preload"===d.rel&&"style"===d.getAttribute("as")&&(a.loadCSS(d.href,d,d.getAttribute("media")),d.rel=null)}},!b.support()){b.poly();var c=a.setInterval(b.poly,300);a.addEventListener&&a.addEventListener("load",function(){b.poly(),a.clearInterval(c)}),a.attachEvent&&a.attachEvent("onload",function(){a.clearInterval(c)})}}}(this);
+!function(w) {
+  w._baseURL = '/';
+  w._publicPath = '/assets/js/';
+  w._noPushState = false;
+  w._noDrawer = false;
+  w._noNavbar = false;
+  w._noToc = false;
+  w._noSearch = false;
+  w._advertise = false;
+  w._search = {
+    DATA_URL: '/assets/sitedata.json?no-cache',
+    STORAGE_KEY: 'mini-search/',
+    INDEX_KEY: 'index--2025-04-21T11:57:03+00:00',
+  };
+  w._clapButton = true;
+}(window);</script>
+
+
+<script async src="/assets/bower_components/MathJax/es5/tex-mml-chtml.js" id="_MathJax"></script>
+
+
+<!--[if gt IE 8]><!---->
+
+  
+
+
+
+
+<link rel="stylesheet" href="/assets/css/hydejack-9.2.1.css" id="_stylePreload">
+<link rel="stylesheet" href="/assets/icomoon/style.css" id="_iconsPreload">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700%7CNoto+Sans:400,400i,700,700i&display=swap" id="_fontsPreload">
+
+
+
+  <style id="_pageStyle">
+
+html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5);--accent-color-highlight: rgba(200,200,200,0.1);--accent-color-darkened: #b5b5b5;--theme-color: rgb(200,200,200);--dark-mode-body-bg: #2d2d2d;--dark-mode-border-color: #393939}
+
+</style>
+
+
+<!--<![endif]-->
+
+
+
+
+
+</head>
+
+<body class="no-break-layout">
+  
+<script>
+  window._sunrise = 6;
+  window._sunset =  18;
+  ((e,s)=>{var d="light-mode",a="dark-mode",o=(new Date).getHours();"matchMedia"in e&&e.matchMedia("(prefers-color-scheme)")||(e=(o=o<=e._sunrise||o>=e._sunset?a:d)==a?d:a,s.body.classList.add(o),s.body.classList.remove(e))})(window,document);
+
+</script>
+
+
+
+<hy-push-state
+  id="_pushState"
+  replace-selector="#_main"
+  link-selector="a[href]:not([href^='/assets/']):not(.external):not(.no-push-state)"
+  script-selector="script"
+  duration="500"
+  hashchange
+>
+  
+  
+  <div id="_navbar" class="navbar fixed-top">
+  <div class="content">
+    <span class="sr-only">Jump to:</span>
+    <div class="nav-btn-bar">
+      <a id="_menu" class="nav-btn no-hover" href="#_drawer--opened">
+        <span class="sr-only">Navigation</span>
+        <span class="icon-menu"></span>
+      </a>
+      <div class="nav-span"></div>
+    </div>
+  </div>
+</div>
+<hr class="sr-only" hidden />
+
+  <main
+  id="_main"
+  class="content layout-post"
+  role="main"
+>
+  <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+    <li><a href="/">home</a></li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/">blog</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/c/">c</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          <span>malloc-calloc-realloc</span>
+        
+      </li>
+    
+  
+</ul></nav>
+  
+
+
+
+
+
+
+
+
+
+
+<article id="post-blog-c-malloc-calloc-realloc" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      
+        동적 메모리 할당(Dynamic memory allocation)
+      
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2025-04-11T00:00:00+00:00">11 Apr 2025</time> in <span>Blog</span> / <a href="/c/" class="flip-title">C 언어</a> on <span>Malloc</span>, <span>Calloc</span>, <span>Realloc</span>, <span>동적</span>, <span>메모리</span>, <span>할당</span>
+      </span>
+      
+    </div>
+
+    
+    
+      
+        <div class="img-wrapper lead aspect-ratio sixteen-nine flip-project-img">
+          
+
+
+<img
+  
+    src="/assets/img/blog/postimage/C.png"
+  
+  alt="동적 메모리 할당(Dynamic memory allocation)"
+  
+  
+  width="864"
+  height="486"
+  loading="lazy"
+/>
+
+        </div>
+      
+      
+    
+
+    
+
+
+
+  
+
+
+  </header>
+
+  
+    <ul class="large-only" id="markdown-toc">
+  <li><a href="#동적-메모리-할당을-사용할-때는-언제일까" id="markdown-toc-동적-메모리-할당을-사용할-때는-언제일까">동적 메모리 할당을 사용할 때는 언제일까?</a>    <ul>
+      <li><a href="#c언어에서의-정적-할당과-동적-할당의-예시" id="markdown-toc-c언어에서의-정적-할당과-동적-할당의-예시">C언어에서의 정적 할당과 동적 할당의 예시</a></li>
+      <li><a href="#동적-메모리-할당-vs-정적-메모리-할당-차이점" id="markdown-toc-동적-메모리-할당-vs-정적-메모리-할당-차이점">동적 메모리 할당 vs 정적 메모리 할당 차이점</a></li>
+    </ul>
+  </li>
+  <li><a href="#동적-메모리-할당malloc-calloc-realloc-free" id="markdown-toc-동적-메모리-할당malloc-calloc-realloc-free">동적 메모리 할당(malloc, calloc, realloc, free)</a>    <ul>
+      <li><a href="#용어-정리" id="markdown-toc-용어-정리">용어 정리</a></li>
+      <li><a href="#mallocmemory-allocation" id="markdown-toc-mallocmemory-allocation">malloc(Memory Allocation)</a></li>
+      <li><a href="#calloccontinguous-allocation" id="markdown-toc-calloccontinguous-allocation">calloc(Continguous Allocation)</a></li>
+      <li><a href="#reallocreallocation" id="markdown-toc-reallocreallocation">realloc(Reallocation)</a>        <ul>
+          <li><a href="#기존-블록에서-크기-조정이-가능한-경우realloc의-두-가지-시나리오" id="markdown-toc-기존-블록에서-크기-조정이-가능한-경우realloc의-두-가지-시나리오">기존 블록에서 크기 조정이 가능한 경우(realloc의 두 가지 시나리오)</a></li>
+          <li><a href="#기존-블록에서-확장-불가능한-경우realloc의-두-가지-시나리오" id="markdown-toc-기존-블록에서-확장-불가능한-경우realloc의-두-가지-시나리오">기존 블록에서 확장 불가능한 경우(realloc의 두 가지 시나리오)</a></li>
+        </ul>
+      </li>
+      <li><a href="#freeptr" id="markdown-toc-freeptr">free(ptr)</a>        <ul>
+          <li><a href="#free-사용하면-안-되는-경우" id="markdown-toc-free-사용하면-안-되는-경우">free() 사용하면 안 되는 경우</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#주의할-점" id="markdown-toc-주의할-점">주의할 점</a></li>
+  <li><a href="#마무리" id="markdown-toc-마무리">마무리</a></li>
+  <li><a href="#추가내용" id="markdown-toc-추가내용">추가내용</a></li>
+</ul>
+
+<p>C언어에서의 동적 메모리 관리를 위해 사용하는 표준 라이브러리 함수 malloc, calloc, realloc, free에 대해서 알아보자. 이 함수들은 <stdio.h>에 정의 되어 있어.</stdio.h></p>
+
+<h2 id="동적-메모리-할당을-사용할-때는-언제일까">동적 메모리 할당을 사용할 때는 언제일까?</h2>
+
+<ul>
+  <li>
+    <p>입력 크기를 미리 알 수 없을 때 (ex. 사용자 입력)</p>
+  </li>
+  <li>
+    <p>메모리를 효율적으로 쓰고 싶을 때</p>
+  </li>
+  <li>
+    <p>복잡한 자료구조를 다룰 때 (ex. 트리, 그래프, 연결 리스트)</p>
+  </li>
+</ul>
+
+<p>먼저 동적 메모리 할당(dynamic memory allocation) 설명 전에 정적 메모리 할당(static memory allocation)에 대해 간략하게 소개할게</p>
+
+<h3 id="c언어에서의-정적-할당과-동적-할당의-예시">C언어에서의 정적 할당과 동적 할당의 예시</h3>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 정적 할당</span>
+<span class="kt">int</span> <span class="n">arr</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>  <span class="c1">// 크기 10으로 고정</span>
+<span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="c1">// 동적 할당</span>
+<span class="kt">int</span><span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>  <span class="c1">// 실행 중 필요한 만큼 할당</span>
+</code></pre></div></div>
+
+<h3 id="동적-메모리-할당-vs-정적-메모리-할당-차이점">동적 메모리 할당 vs 정적 메모리 할당 차이점</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">구분</th>
+      <th style="text-align: center">정적 메모리 할당</th>
+      <th style="text-align: center">동적 메모리 할당</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">할당 영역</td>
+      <td style="text-align: center">스택</td>
+      <td style="text-align: center">힙</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">크기 제한</td>
+      <td style="text-align: center">작음(MB 단위)</td>
+      <td style="text-align: center">큼(GB까지도 가능)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">특징</td>
+      <td style="text-align: center">자동 관리, 빠름, 고정 크기</td>
+      <td style="text-align: center">수동 관리, 느림, 유연함</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">시점</td>
+      <td style="text-align: center">컴파일 타임(프로그램을 빌드할 때, 저장)</td>
+      <td style="text-align: center">런타임(실행 중에 운영체제로부터 메모리를 요청해서 사용)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">예시</td>
+      <td style="text-align: center">배열처럼 크기가 고정된 변수</td>
+      <td style="text-align: center">리스트처럼 크기가 유동적인 구조</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">메모리 해제</td>
+      <td style="text-align: center">자동 해제 or 함수 종료 시</td>
+      <td style="text-align: center">직접 해제 필요 (ex. free() in C)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="동적-메모리-할당malloc-calloc-realloc-free">동적 메모리 할당(malloc, calloc, realloc, free)</h2>
+
+<h4 id="용어-정리">용어 정리</h4>
+
+<ul>
+  <li>
+    <p>void* 는 “타입이 정해지지 않은 주소값”으로</p>
+
+    <ul>
+      <li>
+        <p>메모리 주소를 가리키는 포인터인데, 어떤 타입인지 아직 모르겠다는 뜻</p>
+      </li>
+      <li>
+        <p>그래서 나중에 원하는 타입으로 형변환 (cast) 해서 써야 해</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>예시 : malloc()은 void ptr를 반환하니까, int ptr 로 형변환. 하지만 c언어에서 *은 자동 형변환됨</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span><span class="p">);</span>
+
+</code></pre></div></div>
+
+<h3 id="mallocmemory-allocation">malloc(Memory Allocation)</h3>
+
+<p>지정한 바이트만큼의 메모리를 할당</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span><span class="o">*</span> <span class="nf">malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
+</code></pre></div></div>
+<ul>
+  <li>
+    <p>초기화: ❌ 초기화되지 않음. 메모리의 내용은 쓰레기값(garbage values)일 수 있음</p>
+  </li>
+  <li>
+    <p>반환값: 성공하면 void 포인터(void*)를 반환. 실패하면 NULL 반환</p>
+  </li>
+</ul>
+
+<p>예제 : int 5개를 저장할 수 있는 메모리를 동적으로 할당함</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+</code></pre></div></div>
+
+<h3 id="calloccontinguous-allocation">calloc(Continguous Allocation)</h3>
+
+<p>num 개의 요소 각각 size 바이트 크기로 메모리를 할당.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span><span class="o">*</span> <span class="nf">calloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">num</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>초기화: ✅ 0으로 초기화됨(할당 대상이 배열이라면, calloc이 더 안전 - 초기화 누락 방지)</p>
+  </li>
+  <li>
+    <p>반환값: 성공하면 void* 반환. 실패하면 NULL</p>
+  </li>
+</ul>
+
+<p>예제 : int 5개 크기의 메모리를 0으로 초기화한 채 할당.</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">calloc</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+</code></pre></div></div>
+
+<h3 id="reallocreallocation">realloc(Reallocation)</h3>
+
+<p>이미 할당된 메모리 블록의 크기를 변경 (확장 또는 축소)</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span><span class="o">*</span> <span class="nf">realloc</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">new_size</span><span class="p">);</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>ptr이 NULL이면 malloc처럼 동작</p>
+  </li>
+  <li>
+    <p>new_size가 0이면 free(ptr)처럼 동작</p>
+  </li>
+</ul>
+
+<p>예제 : int 10개 크기로 확장함</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">realloc</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>초기화: 새로 늘어난 부분은 초기화되지 않음</p>
+  </li>
+  <li>
+    <p>새 크기의 메모리를 새로 확보하고, 기존 데이터는 유지함. 새 영역으로 이동할 수도 있음(새로운 블록이 현재 블록의 “바로 뒤”에 있으면)</p>
+  </li>
+</ul>
+
+<h4 id="기존-블록에서-크기-조정이-가능한-경우realloc의-두-가지-시나리오">기존 블록에서 크기 조정이 가능한 경우(realloc의 두 가지 시나리오)</h4>
+
+<ul>
+  <li>
+    <p>힙 영역에서 현재 블록 뒤쪽에 충분한 여유 공간이 있는 경우, 기존 위치에서 확장이 가능해</p>
+  </li>
+  <li>
+    <p>이 경우 realloc은 새 메모리를 할당하지 않고, 기존 블록의 크기만 늘리고 주소도 그대로 반환</p>
+  </li>
+  <li>
+    <p>성능적으로 가장 좋음! (복사 불필요요)</p>
+  </li>
+</ul>
+
+<h4 id="기존-블록에서-확장-불가능한-경우realloc의-두-가지-시나리오">기존 블록에서 확장 불가능한 경우(realloc의 두 가지 시나리오)</h4>
+
+<ul>
+  <li>
+    <p>기존 블록 뒤쪽에 다른 메모리 할당이 있어서 공간 확장이 불가</p>
+  </li>
+  <li>
+    <p>realloc은 내부적으로 malloc(new_size)로 새 블록을 만들고, memcpy로 기존 데이터를 복사한 다음, 기존 블록은 free()처리하고, 새 주소를 반환환</p>
+  </li>
+</ul>
+
+<h3 id="freeptr">free(ptr)</h3>
+
+<p>동적 메모리 할당 사용시 메모리 수동해제가 필수야! 아래처럼 사용이 끝났을 때 호출해야해</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">);</span>
+
+<span class="c1">// ... ptr을 사용해서 작업 수행 ...</span>
+
+<span class="n">free</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>  <span class="c1">// 사용이 끝났으면 반드시 해제해야 함!</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>같은 포인터를 두 번 free()하면 안 돼! → “Double Free” 에러</p>
+  </li>
+  <li>
+    <p>보통 free() 한 뒤에는 NULL로 초기화하는 습관이 좋아</p>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+<span class="c1">// ...</span>
+<span class="n">free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>  <span class="c1">// 꼭 해제!</span>
+<span class="n">data</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">// 안전을 위해 초기화</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="free-사용하면-안-되는-경우">free() 사용하면 안 되는 경우</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">잘못된 예시</th>
+      <th style="text-align: center">이유</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">free() 없이 종료</td>
+      <td style="text-align: center">메모리 누수 발생</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">스택에 할당한 변수에 free()</td>
+      <td style="text-align: center">malloc 등으로 할당한 메모리만 해제 가능</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">같은 포인터를 두 번 free()</td>
+      <td style="text-align: center">프로그램이 비정상 종료될 수 있음</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">다른 포인터로 free()</td>
+      <td style="text-align: center">정확히 할당했던 포인터로만 해제해야 함</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>예제 : 스택 메모리에 free()</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="n">free</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span>  <span class="c1">// ❌ 이렇게 하면 안 됨! (스택 메모리는 해제하지 마!)</span>
+</code></pre></div></div>
+
+<h2 id="주의할-점">주의할 점</h2>
+
+<ul>
+  <li>
+    <p>반환값이 NULL인지 반드시 체크할 것! malloc이나 calloc은 실패할 수 있음</p>
+  </li>
+  <li>
+    <p>메모리 누수 방지를 위해 사용 후 free(ptr)를 꼭 호출해야 함</p>
+  </li>
+  <li>
+    <p>malloc은 초기화를 안 해줘서 쓰기 전에 꼭 값 채워야 해</p>
+  </li>
+  <li>
+    <p>realloc은 새로운 주소로 이동될 수 있으니, 반드시 반환값을 다시 변수에 할당해야 함</p>
+  </li>
+  <li>
+    <p>free() 이후 그 포인터를 다시 쓰면 “댕글링 포인터(dangling pointer)” 문제가 생길 수 있어</p>
+  </li>
+</ul>
+
+<h2 id="마무리">마무리</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">함수</th>
+      <th style="text-align: center">역할</th>
+      <th style="text-align: center">초기화 여부</th>
+      <th style="text-align: center">사용 시기</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">malloc</td>
+      <td style="text-align: center">지정한 크기만큼 할당</td>
+      <td style="text-align: center">❌ 안 됨</td>
+      <td style="text-align: center">빠르게 할당만 하고 싶을 때</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">calloc</td>
+      <td style="text-align: center">여러 개 요소를 할당 + 초기화</td>
+      <td style="text-align: center">✅ 0으로 초기화</td>
+      <td style="text-align: center">배열 등 초기화가 필요한 경우</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">realloc</td>
+      <td style="text-align: center">기존 메모리 크기 변경</td>
+      <td style="text-align: center">❌ 안 됨</td>
+      <td style="text-align: center">크기를 동적으로 바꿔야 할 때</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="추가내용">추가내용</h2>
+
+<ul>
+  <li>realloc이 ‘이동했는지’ 알아낼 수 있을까?</li>
+</ul>
+
+<p>예제 : realloc이 반환한 포인터와 기존 포인터를 비교</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="kt">int</span> <span class="o">*</span><span class="n">new_ptr</span> <span class="o">=</span> <span class="n">realloc</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">ptr</span> <span class="o">==</span> <span class="n">new_ptr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 같은 위치에서 확장 성공 (이동 없음)</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// 다른 위치로 이동해서 데이터 복사함</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>realloc이 실패하면 NULL값 반환되는데, 이때 기존 포인터는 해제되지 않아서 안전하게 쓰는 방법은 아래와 같아</li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="o">*</span><span class="n">tmp</span> <span class="o">=</span> <span class="n">realloc</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">new_size</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">;</span> <span class="c1">// 성공하면 ptr을 새 주소로 갱신</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">// 실패해도 ptr은 여전히 유효한 메모리, 누수 방지 가능</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+  
+</article>
+
+
+
+  <hr class="dingbat related mb6" />
+
+
+
+
+
+
+  
+     
+
+
+  <aside class="about related mt4 mb4" role="complementary">
+    
+    
+
+<div class="author mt4">
+  
+
+  
+    
+
+
+<img
+  
+    src="https://via.placeholder.com/128x128"
+    srcset="https://via.placeholder.com/128x128 1x,https://via.placeholder.com/256x256 2x"
+    
+  
+  alt="Kwansoo Kim"
+  class="avatar"
+  
+  width="120"
+  height="120"
+  loading="lazy"
+/>
+
+  
+
+  
+  
+  <h2  class="page-title hr-bottom">
+    About
+  </h2>
+
+  <p>noob in Computer Science, currently getting education in Krafton Jungle.</p>
+
+
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+
+  </aside>
+
+
+  
+
+  
+    
+
+
+  
+
+  
+    
+
+
+  <aside class="other-projects related mb0" role="complementary">  <h2>Related Posts</h2>  <div class="columns">          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/computersystem/linking/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/ComputerSystem.png"    alt="링커(Linking)"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/computersystem/linking/" class="flip-title">링커(Linking)</a>  </h3>      <p class="project-card-text fine" property="disambiguatingDescription">      링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.    </p>      <a class="fill-card no-hover" href="/blog/computersystem/linking/" tabindex="-1"><span class="sr-only">Continue reading 링커(Linking)</span></a></article>              </div>          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/algorithm/pre-order-post-order/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/Algorithm.png"    alt="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/algorithm/pre-order-post-order/" class="flip-title">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</a>  </h3>      <a class="fill-card no-hover" href="/blog/algorithm/pre-order-post-order/" tabindex="-1"><span class="sr-only">Continue reading 전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</span></a></article>              </div>      </div></aside>
+
+  
+
+  
+    
+
+
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/longest-common-subsequence/" class="flip-title"><span>최장 공통 부분 수열(Longest Common Subsequence)</span></a>  <time class="faded fine" datetime="2025-04-03T00:00:00+00:00">03 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/tree/" class="flip-title"><span>트리(tree)</span></a>  <time class="faded fine" datetime="2025-03-24T00:00:00+00:00">24 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/topological-sort/" class="flip-title"><span>위상 정렬(Topological sort)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>      </ul></aside>
+
+  
+
+  
+    
+
+  
+
+
+  
+<footer class="content" role="contentinfo">
+  <hr/>
+  
+    <p><small class="copyright">© 2024. All rights reserved.
+</small></p>
+  
+  
+    <nav class="legal"><small>
+    
+      
+      <a class="heading flip-title" href="/LICENSE/">LICENSE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/NOTICE/">NOTICE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/CHANGELOG/">CHANGELOG</a>
+      
+    
+    </small></nav>
+  
+  
+  <hr class="sr-only"/>
+</footer>
+
+
+</main>
+
+  <hy-drawer
+  id="_drawer"
+  class=""
+  side="left"
+  threshold="10"
+  noscroll
+  
+>
+  <header id="_sidebar" class="sidebar" role="banner">
+    
+
+
+
+
+<div class="sidebar-bg sidebar-overlay" style="background-color:rgb(200,200,200);background-image:url(/assets/img/sidebar-bg.png)"></div>
+
+    <div class="sidebar-sticky">
+  <div class="sidebar-about">
+    
+      <a class="no-hover" href="/" tabindex="-1">
+        <img src="/assets/img/PurifiedPotion.png" class="avatar" alt="PurifiedPotion's Blog" width="120" height="120" loading="lazy" />
+      </a>
+    
+    <a class="sidebar-title" href="/"><h2 class="h1">PurifiedPotion's Blog</h2></a>
+    
+    
+      <p class="">
+        Blog for Computer Science
+
+      </p>
+    
+  </div>
+
+  <nav class="sidebar-nav heading" role="navigation">
+    <span class="sr-only">Navigation:</span>
+<ul>
+  
+    
+      
+      <li>
+        <a
+          id="_drawer--opened"
+          href="/algorithm/"
+          class="sidebar-nav-item "
+          
+        >
+          ALGORITHM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/c/"
+          class="sidebar-nav-item "
+          
+        >
+          C 언어
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/computersystem/"
+          class="sidebar-nav-item "
+          
+        >
+          COMPUTER SYSTEM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/diary/"
+          class="sidebar-nav-item "
+          
+        >
+          회고
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/projects/"
+          class="sidebar-nav-item "
+          
+        >
+          PROJECTS
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/docs/"
+          class="sidebar-nav-item "
+          
+        >
+          DOCUMENTATION
+        </a>
+      </li>
+    
+  
+</ul>
+
+  </nav>
+
+  
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+  </header>
+</hy-drawer>
+<hr class="sr-only" hidden />
+
+</hy-push-state>
+
+
+  <!--[if gt IE 10]><!---->
+  <script nomodule>(()=>{var t,n=document.createElement("script");!("noModule"in n)&&"onbeforeload"in n&&(t=!1,document.addEventListener("beforeload",function(e){if(e.target===n)t=!0;else if(!e.target.hasAttribute("nomodule")||!t)return;e.preventDefault()},!0),n.type="module",n.src=".",document.head.appendChild(n),n.remove())})();
+</script>
+  <script src="/assets/js/hydejack-9.2.1.js" type="module"></script>
+  <script src="/assets/js/LEGACY-hydejack-9.2.1.js" nomodule defer></script>
+  
+
+  
+
+  <script type="module">
+    if ('serviceWorker' in navigator) {
+      /**/
+      navigator.serviceWorker.getRegistration()
+        .then(r => r.unregister())
+        .catch(() => {});
+      /**/
+    }
+  </script>
+<!--<![endif]-->
+  
+
+
+
+<div hidden>
+  
+  <h2 class="sr-only">Templates (for web app):</h2>
+
+  <template id="_animation-template">
+  <div class="animation-main fixed-top">
+    <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+</ul></nav>
+    <div class="content">
+      <div class="page"></div>
+    </div>
+  </div>
+</template>
+
+  <template id="_loading-template">
+  <div class="loading nav-btn fr">
+    <span class="sr-only">Loading…</span>
+    <span class="icon-cog"></span>
+  </div>
+</template>
+
+  <template id="_error-template">
+  <div class="page">
+    <h1 class="page-title">Error</h1>
+    
+    
+    <p class="lead">
+      Sorry, an error occurred while loading <a class="this-link" href=""></a>.
+
+    </p>
+  </div>
+</template>
+
+  <template id="_permalink-template">
+  <a href="#" class="permalink">
+    <span class="sr-only">Permalink</span>
+    <span class="content-hash"></span>
+  </a>
+</template>
+
+  
+    <template id="_cookies-banner-template">
+  <div id="_cookies-banner" class="navbar fixed-bottom CookiesOK">
+    <div class="content">
+      <div class="nav-btn-bar">
+        <small class="faded">
+          <span>This site uses cookies. <a href="/cookies-policy/">Cookies Policy</a>.
+</span>
+          <button id="_cookies-ok" class="btn btn-primary btn-sm">Okay</button>
+        </small>
+      </div>
+    </div>
+  </div>
+</template>
+
+  
+  
+    <template id="_dark-mode-template">
+  <button id="_dark-mode" class="nav-btn no-hover" >
+    <span class="sr-only">Dark Mode</span>
+    <span class="icon-brightness-contrast"></span>
+  </button>
+</template>
+
+  
+  
+    <template id="_search-template">
+  <button id="_search" class="nav-btn no-hover">
+    <label class="sr-only" for="_search-input">Search</label>
+    <span class="icon-search"></span>
+  </button>
+  <div id="_search-box">
+    <div class="nav-btn">
+      <span class="icon-search"></span>
+    </div>
+    <input 
+      id="_search-input"
+      type="search"
+      class="form-control form-control-lg nav-btn"
+      placeholder="Build with JEKYLL_ENV=production to enable search."
+    />
+    <button type="reset" class="nav-btn no-hover">
+      <span class="sr-only">Close</span>
+      <span class="icon-cross"></span>
+    </button>
+  </div>
+  <div id="_hits"></div>
+</template>
+
+  
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+
+
+
+
+
+
+<head>
+  
+
+
+
+
+
+
+  
+    
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>사이클 탐지(Cycle detection) | PurifiedPotion’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="사이클 탐지(Cycle detection)" />
+<meta name="author" content="Kwansoo Kim" />
+<meta property="og:locale" content="ko_KR, en_US" />
+<meta name="description" content="A blog for computer science" />
+<meta property="og:description" content="A blog for computer science" />
+<meta property="og:site_name" content="PurifiedPotion’s Blog" />
+<meta property="og:image" content="/assets/img/blog/postimage/Algorithm.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-03-30T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/assets/img/blog/postimage/Algorithm.png" />
+<meta property="twitter:title" content="사이클 탐지(Cycle detection)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Kwansoo Kim"},"dateModified":"2025-03-30T00:00:00+00:00","datePublished":"2025-03-30T00:00:00+00:00","description":"A blog for computer science","headline":"사이클 탐지(Cycle detection)","image":"/assets/img/blog/postimage/Algorithm.png","mainEntityOfPage":{"@type":"WebPage","@id":"/blog/algorithm/cycle/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/PurifiedPotion.png"},"name":"Kwansoo Kim"},"url":"/blog/algorithm/cycle/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  
+
+
+
+  <meta name="color-scheme" content="dark light">
+
+
+
+  <meta name="theme-color" content="rgb(200,200,200)">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PurifiedPotion's Blog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="application-name" content="PurifiedPotion's Blog">
+
+<meta name="generator" content="Hydejack v9.2.1" />
+
+
+<link rel="alternate" href="/blog/algorithm/cycle/" hreflang="ko-kr, en-us">
+
+<link type="application/atom+xml" rel="alternate" href="/feed.xml" title="PurifiedPotion&apos;s Blog" />
+
+
+<link rel="shortcut icon"    href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+
+<link rel="manifest" href="/assets/site.webmanifest">
+
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"><link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+
+
+<link rel="preload" href="/assets/img/swipe.svg" as="image" id="_hrefSwipeSVG">
+
+<link rel="dns-prefetch" href="/assets/js/search-worker-9.2.1.js" as="worker" id="_hrefSearch">
+
+
+
+
+
+<script>((r,a)=>{function d(e,t,n,o){e.addEventListener?e.addEventListener(t,n,o):e.attachEvent?e.attachEvent("on"+t,n):e["on"+t]=n}r.loadJS=function(e,t){var n=a.createElement("script"),e=(n.src=e,t&&d(n,"load",t,{once:!0}),a.scripts[0]);return e.parentNode.insertBefore(n,e),n},r._loaded=!1,r.loadJSDeferred=function(e,t){var n=a.createElement("script");function o(){r._loaded=!0,t&&d(n,"load",t,{once:!0});var e=a.scripts[0];e.parentNode.insertBefore(n,e)}return n.src=e,r._loaded?o():d(r,"load",o,{once:!0}),n},r.setRel=r.setRelStylesheet=function(e){d(a.getElementById(e),"load",function(){this.rel="stylesheet"},{once:!0})}})(window,document);
+!function(a){"use strict";var b=function(b,c,d){function e(a){return h.body?a():void setTimeout(function(){e(a)})}function f(){i.addEventListener&&i.removeEventListener("load",f),i.media=d||"all"}var g,h=a.document,i=h.createElement("link");if(c)g=c;else{var j=(h.body||h.getElementsByTagName("head")[0]).childNodes;g=j[j.length-1]}var k=h.styleSheets;i.rel="stylesheet",i.href=b,i.media="only x",e(function(){g.parentNode.insertBefore(i,c?g:g.nextSibling)});var l=function(a){for(var b=i.href,c=k.length;c--;)if(k[c].href===b)return a();setTimeout(function(){l(a)})};return i.addEventListener&&i.addEventListener("load",f),i.onloadcssdefined=l,l(f),i};"undefined"!=typeof exports?exports.loadCSS=b:a.loadCSS=b}("undefined"!=typeof global?global:this);
+!function(a){if(a.loadCSS){var b=loadCSS.relpreload={};if(b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}},b.poly=function(){for(var b=a.document.getElementsByTagName("link"),c=0;c<b.length;c++){var d=b[c];"preload"===d.rel&&"style"===d.getAttribute("as")&&(a.loadCSS(d.href,d,d.getAttribute("media")),d.rel=null)}},!b.support()){b.poly();var c=a.setInterval(b.poly,300);a.addEventListener&&a.addEventListener("load",function(){b.poly(),a.clearInterval(c)}),a.attachEvent&&a.attachEvent("onload",function(){a.clearInterval(c)})}}}(this);
+!function(w) {
+  w._baseURL = '/';
+  w._publicPath = '/assets/js/';
+  w._noPushState = false;
+  w._noDrawer = false;
+  w._noNavbar = false;
+  w._noToc = false;
+  w._noSearch = false;
+  w._advertise = false;
+  w._search = {
+    DATA_URL: '/assets/sitedata.json?no-cache',
+    STORAGE_KEY: 'mini-search/',
+    INDEX_KEY: 'index--2025-04-21T11:57:03+00:00',
+  };
+  w._clapButton = true;
+}(window);</script>
+
+
+<script async src="/assets/bower_components/MathJax/es5/tex-mml-chtml.js" id="_MathJax"></script>
+
+
+<!--[if gt IE 8]><!---->
+
+  
+
+
+
+
+<link rel="stylesheet" href="/assets/css/hydejack-9.2.1.css" id="_stylePreload">
+<link rel="stylesheet" href="/assets/icomoon/style.css" id="_iconsPreload">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700%7CNoto+Sans:400,400i,700,700i&display=swap" id="_fontsPreload">
+
+
+
+  <style id="_pageStyle">
+
+html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5);--accent-color-highlight: rgba(200,200,200,0.1);--accent-color-darkened: #b5b5b5;--theme-color: rgb(200,200,200);--dark-mode-body-bg: #2d2d2d;--dark-mode-border-color: #393939}
+
+</style>
+
+
+<!--<![endif]-->
+
+
+
+
+
+</head>
+
+<body class="no-break-layout">
+  
+<script>
+  window._sunrise = 6;
+  window._sunset =  18;
+  ((e,s)=>{var d="light-mode",a="dark-mode",o=(new Date).getHours();"matchMedia"in e&&e.matchMedia("(prefers-color-scheme)")||(e=(o=o<=e._sunrise||o>=e._sunset?a:d)==a?d:a,s.body.classList.add(o),s.body.classList.remove(e))})(window,document);
+
+</script>
+
+
+
+<hy-push-state
+  id="_pushState"
+  replace-selector="#_main"
+  link-selector="a[href]:not([href^='/assets/']):not(.external):not(.no-push-state)"
+  script-selector="script"
+  duration="500"
+  hashchange
+>
+  
+  
+  <div id="_navbar" class="navbar fixed-top">
+  <div class="content">
+    <span class="sr-only">Jump to:</span>
+    <div class="nav-btn-bar">
+      <a id="_menu" class="nav-btn no-hover" href="#_drawer--opened">
+        <span class="sr-only">Navigation</span>
+        <span class="icon-menu"></span>
+      </a>
+      <div class="nav-span"></div>
+    </div>
+  </div>
+</div>
+<hr class="sr-only" hidden />
+
+  <main
+  id="_main"
+  class="content layout-post"
+  role="main"
+>
+  <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+    <li><a href="/">home</a></li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/">blog</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/algorithm/">algorithm</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          <span>cycle</span>
+        
+      </li>
+    
+  
+</ul></nav>
+  
+
+
+
+
+
+
+
+
+
+
+<article id="post-blog-algorithm-cycle" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      
+        사이클 탐지(Cycle detection)
+      
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2025-03-30T00:00:00+00:00">30 Mar 2025</time> in <span>Blog</span> / <a href="/algorithm/" class="flip-title">ALGORITHM</a> 
+      </span>
+      
+    </div>
+
+    
+    
+      
+        <div class="img-wrapper lead aspect-ratio sixteen-nine flip-project-img">
+          
+
+
+<img
+  
+    src="/assets/img/blog/postimage/Algorithm.png"
+  
+  alt="사이클 탐지(Cycle detection)"
+  
+  
+  width="864"
+  height="486"
+  loading="lazy"
+/>
+
+        </div>
+      
+      
+    
+
+    
+
+
+
+  
+
+
+  </header>
+
+  
+    <ul class="large-only" id="markdown-toc">
+  <li><a href="#그러면-사이클-탐지에-관해-총-3가지-알고리즘을-통해-알려줄게" id="markdown-toc-그러면-사이클-탐지에-관해-총-3가지-알고리즘을-통해-알려줄게">그러면 사이클 탐지에 관해 총 <strong><em>3가지 알고리즘</em></strong>을 통해 알려줄게</a></li>
+  <li><a href="#dfs-기반-사이클-탐지" id="markdown-toc-dfs-기반-사이클-탐지">DFS 기반 사이클 탐지</a>    <ul>
+      <li><a href="#방향-그래프-directed-graph" id="markdown-toc-방향-그래프-directed-graph">방향 그래프 (Directed Graph)</a></li>
+      <li><a href="#무방향-그래프-undirected-graph" id="markdown-toc-무방향-그래프-undirected-graph">무방향 그래프 (Undirected Graph)</a></li>
+      <li><a href="#dfs-기반-방향과-무방향-그래프-사이클-탐지의-차이점" id="markdown-toc-dfs-기반-방향과-무방향-그래프-사이클-탐지의-차이점">DFS 기반 방향과 무방향 그래프 사이클 탐지의 차이점</a></li>
+    </ul>
+  </li>
+  <li><a href="#위상-정렬topological-sort-기반-사이클-탐지" id="markdown-toc-위상-정렬topological-sort-기반-사이클-탐지">위상 정렬(Topological Sort) 기반 사이클 탐지</a>    <ul>
+      <li><a href="#진입-차수-위상-정렬in-degree-topological-sort-기반-사이클-탐지-함수" id="markdown-toc-진입-차수-위상-정렬in-degree-topological-sort-기반-사이클-탐지-함수">진입 차수 위상 정렬(In-degree Topological Sort) 기반 사이클 탐지 함수</a></li>
+      <li><a href="#위상정렬과-dfs-기반-사이클-탐지-비교" id="markdown-toc-위상정렬과-dfs-기반-사이클-탐지-비교">위상정렬과 DFS 기반 사이클 탐지 비교</a></li>
+    </ul>
+  </li>
+  <li><a href="#disjoint-set--union-find-기반-사이클-탐지" id="markdown-toc-disjoint-set--union-find-기반-사이클-탐지">Disjoint Set / Union-Find 기반 사이클 탐지</a>    <ul>
+      <li><a href="#경로-압축path-compression" id="markdown-toc-경로-압축path-compression">경로 압축(Path Compression)</a></li>
+      <li><a href="#랭크-최적화-union-by-rank" id="markdown-toc-랭크-최적화-union-by-rank">랭크 최적화 (Union by Rank)</a></li>
+      <li><a href="#경로-압축path-compression-와-랭크-최적화-union-by-rank-요약표" id="markdown-toc-경로-압축path-compression-와-랭크-최적화-union-by-rank-요약표">경로 압축(Path Compression) 와 랭크 최적화 (Union by Rank) 요약표</a></li>
+      <li><a href="#union-find와-dfs-기반-사이클-탐지-비교" id="markdown-toc-union-find와-dfs-기반-사이클-탐지-비교">Union-Find와 DFS 기반 사이클 탐지 비교</a></li>
+    </ul>
+  </li>
+  <li><a href="#마무리" id="markdown-toc-마무리">마무리</a></li>
+</ul>
+
+<p>사이클(순환) 탐지는 그래프에서 매우 중요한 문제 중 하나야. 특히 <strong><em>방향 그래프(Directed Graph)</em></strong>에서 많이 다루고 사이클이 존재하면 예를 들어 작업 순서 정하기(Topological Sort) 같은 문제에서 큰 문제가 생기기 때문</p>
+
+<p>아래는 사이클 탐지가 필요한 상황을 예로 들었어</p>
+
+<ul>
+  <li>
+    <p>작업 간 선후 관계 (예: A를 끝낸 후에 B를 해야 함)</p>
+  </li>
+  <li>
+    <p>종속성 관리 (패키지 설치 순서 등)</p>
+  </li>
+  <li>
+    <p>알고리즘 문제 (백준, 프로그래머스, 리트코드 등)</p>
+  </li>
+</ul>
+
+<h2 id="그러면-사이클-탐지에-관해-총-3가지-알고리즘을-통해-알려줄게">그러면 사이클 탐지에 관해 총 <strong><em>3가지 알고리즘</em></strong>을 통해 알려줄게</h2>
+
+<ul>
+  <li>
+    <p>DFS (방향/무방향)</p>
+  </li>
+  <li>
+    <p>위상 정렬 (방향)</p>
+  </li>
+  <li>
+    <p>Disjoint Set / Union-Find (무방향)</p>
+  </li>
+</ul>
+
+<h2 id="dfs-기반-사이클-탐지">DFS 기반 사이클 탐지</h2>
+
+<p>DFS는 그래프를 순회하면서 사이클이 있는지 확인하는 가장 기본적이고 널리 쓰이는 방법 중 하나로써, DFS(깊이 우선 탐색)는 그래프를 탐색할 때, 가능한 한 깊이 들어가며 노드를 방문하는 방식이야. 사이클 탐지에서는 이 DFS 경로에서 이미 방문했던 노드를 다시 만나는 경우, 조건에 따라 그것이 사이클인지 판단할 수 있어.</p>
+
+<p>DFS 기반 같은 경우 <strong><em>그래프가 적당히 작거나 중간 크기일 때, 방향 그래프인지 무방향 그래프인지 확실히 구분될 때, 빠르게 구현하고 싶을 때</em></strong> 사용하면 좋아</p>
+
+<h3 id="방향-그래프-directed-graph">방향 그래프 (Directed Graph)</h3>
+
+<p>사이클 판단 기준이 ‘현재 DFS 경로 상에 이미 있는 노드를 다시 방문’했을 때야.</p>
+
+<ul>
+  <li>
+    <p>visited: 이 노드를 한번이라도 방문했는지, 이미 한 번이라도 본 노드</p>
+  </li>
+  <li>
+    <p>rec_stack: 현재 DFS 경로에 있는 노드인지 (재귀 스택), “지금 내가 밟고 있는 길”</p>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">has_cycle</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span> <span class="c1"># graph를 함수에 적용
+</span>    <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1"># visited라는 중복 없는 요소들의 모음 생성
+</span>    <span class="n">rec_stack</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1"># rec_stack라는 중복 없는 요소들의 모음 생성
+</span>
+    <span class="k">def</span> <span class="nf">dfs</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="n">visited</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="c1"># visited에 node 추가
+</span>        <span class="n">rec_stack</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="c1"># rec_stack에 node 추가
+</span>
+        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span> <span class="c1"># 노드의 이웃들중 하나씩
+</span>            <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span> <span class="c1"># visited에 없으면
+</span>                <span class="k">if</span> <span class="n">dfs</span><span class="p">(</span><span class="n">neighbor</span><span class="p">):</span> <span class="c1"># neighbor와 함께 dfs 함수를 실행시켰을시 True가 반환된다면
+</span>                    <span class="k">return</span> <span class="bp">True</span> <span class="c1"># true 반환
+</span>            <span class="k">elif</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">rec_stack</span><span class="p">:</span> <span class="c1"># visited에 없고 rec_stack에 있으면
+</span>                <span class="k">return</span> <span class="bp">True</span>  <span class="c1"># 사이클 발견
+</span>
+        <span class="n">rec_stack</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span> <span class="c1"># 그래프의 모든 노드들중 하나씩
+</span>        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span> <span class="c1"># visited 모음에 없다면
+</span>            <span class="k">if</span> <span class="n">dfs</span><span class="p">(</span><span class="n">node</span><span class="p">):</span> <span class="c1"># node와 함께 dfs 함수를 실행시킨다
+</span>                <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">return</span> <span class="bp">False</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'A'</span><span class="p">:</span> <span class="p">[</span><span class="s">'B'</span><span class="p">],</span>
+    <span class="s">'B'</span><span class="p">:</span> <span class="p">[</span><span class="s">'C'</span><span class="p">],</span>
+    <span class="s">'C'</span><span class="p">:</span> <span class="p">[</span><span class="s">'A'</span><span class="p">],</span>  <span class="c1"># A -&gt; B -&gt; C -&gt; A (사이클)
+</span><span class="p">}</span>
+<span class="k">print</span><span class="p">(</span><span class="n">has_cycle</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>  <span class="c1"># True
+</span></code></pre></div></div>
+
+<p>위에서 첫번째 for문이 햇갈릴 수 있는데, 아래와 같이 생각해보면 쉬워</p>
+
+<div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">A</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">C</span><span class="w">
+    </span><span class="err">↑</span><span class="w">   </span><span class="err">↓</span><span class="w">
+     </span><span class="err">←</span><span class="o">--</span><span class="w">
+</span></code></pre></div></div>
+
+<p>DFS 순서 :</p>
+<ul>
+  <li>
+    <p>dfs(A) → 방문: A, 재귀 스택: A</p>
+  </li>
+  <li>
+    <p>dfs(B) → 방문: A,B, 재귀 스택: A,B</p>
+  </li>
+  <li>
+    <p>dfs(C) → 방문: A,B,C, 재귀 스택: A,B,C</p>
+  </li>
+  <li>
+    <p>C의 이웃이 A인데, A는 이미 재귀 스택에 있음! 👉 지금 내가 왔던 길을 다시 돌아가고 있으니 사이클!</p>
+  </li>
+</ul>
+
+<h3 id="무방향-그래프-undirected-graph">무방향 그래프 (Undirected Graph)</h3>
+
+<p>이번엔 단순히 DFS 중 이미 방문한 노드를 다시 만난 경우라고 해도, 그게 바로 <strong><em>이전 노드(부모)라면 사이클이 아님</em></strong>. 그래서 “부모 노드 제외” 조건이 중요해.</p>
+
+<ul>
+  <li>
+    <p>visited: 방문 여부</p>
+  </li>
+  <li>
+    <p>parent: 현재 노드를 호출한 부모 노드</p>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">has_cycle_undirected</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span> <span class="c1"># graph를 함수에 넣고 시작
+</span>    <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1"># visited라는 중복 없는 요소들의 모음 생성
+</span>
+    <span class="k">def</span> <span class="nf">dfs</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="n">visited</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="c1"># visited에 원소를 추가하고
+</span>        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span> <span class="c1"># 그 원소의 모든 이웃들 하나씩
+</span>            <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span> <span class="c1"># visited 에 없다면
+</span>                <span class="k">if</span> <span class="n">dfs</span><span class="p">(</span><span class="n">neighbor</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span> <span class="c1"># dfs에 이웃과 자신을 부모로 실행
+</span>                    <span class="k">return</span> <span class="bp">True</span> <span class="c1"># 위 함수 실행결과 True 라면 True 반환
+</span>            <span class="k">elif</span> <span class="n">neighbor</span> <span class="o">!=</span> <span class="n">parent</span><span class="p">:</span> <span class="c1"># dfs(A, C) 실행시 여기까지 오고 조건문 충족됨
+</span>                <span class="k">return</span> <span class="bp">True</span>  <span class="c1"># 사이클 발견
+</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span> <span class="c1">#graph 안에 모든 노드 중 하나씩
+</span>        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span> <span class="c1"># visited에 없다면
+</span>            <span class="k">if</span> <span class="n">dfs</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">None</span><span class="p">):</span> <span class="c1"># 자기 자신과 None을 갖고 함수 실행하고 함수 실행결과 True라면
+</span>                <span class="k">return</span> <span class="bp">True</span> <span class="c1"># True 반환
+</span>
+    <span class="k">return</span> <span class="bp">False</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'A'</span><span class="p">:</span> <span class="p">[</span><span class="s">'B'</span><span class="p">],</span>
+    <span class="s">'B'</span><span class="p">:</span> <span class="p">[</span><span class="s">'A'</span><span class="p">,</span> <span class="s">'C'</span><span class="p">],</span>
+    <span class="s">'C'</span><span class="p">:</span> <span class="p">[</span><span class="s">'B'</span><span class="p">,</span> <span class="s">'A'</span><span class="p">],</span>  <span class="c1"># A - B - C - A (사이클)
+</span><span class="p">}</span>
+<span class="k">print</span><span class="p">(</span><span class="n">has_cycle_undirected</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>  <span class="c1"># True
+</span></code></pre></div></div>
+
+<p>방향 그래프와 크게 차이가 나진 않는것 같지만, 무방향 그래프는 parent 도입해서 사이클을 찾아냈다.</p>
+
+<div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">A</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">C</span><span class="w">
+</span><span class="err">↑</span><span class="w">       </span><span class="err">↓</span><span class="w">
+</span><span class="err">←───────</span><span class="w">
+</span></code></pre></div></div>
+
+<ul>
+  <li>
+    <p>dfs(A, None)</p>
+  </li>
+  <li>
+    <p>dfs(B, A)</p>
+  </li>
+  <li>
+    <p>dfs(C, B)</p>
+  </li>
+  <li>
+    <p>dfs(A, C), 여기서 A가 C와 다르기 때문에 cycle이 탐지됨</p>
+  </li>
+</ul>
+
+<h3 id="dfs-기반-방향과-무방향-그래프-사이클-탐지의-차이점">DFS 기반 방향과 무방향 그래프 사이클 탐지의 차이점</h3>
+
+<ul>
+  <li>
+    <p>방향 그래프에서는 <strong>재귀 스택(rec_stack)</strong>을 꼭 써야 함!</p>
+  </li>
+  <li>
+    <p>무방향 그래프에서는 parent 추적이 없으면 무조건 사이클로 잘못 판단함</p>
+  </li>
+</ul>
+
+<h2 id="위상-정렬topological-sort-기반-사이클-탐지">위상 정렬(Topological Sort) 기반 사이클 탐지</h2>
+
+<p>위상 정렬(Topological Sort)은 방향 그래프에서 노드들의 선후 관계를 정렬하는 알고리즘이야. 이전에 한번 다루긴 했는데, 위상정렬을 할려면 사이클이 없는 그래프여야 해. 고로 위상 정렬이 실패한다면 → 사이클이 있다는 뜻이지!</p>
+
+<p>핵심 원리는 아래와 같아</p>
+
+<ul>
+  <li>
+    <p>모든 노드의 <strong><em>진입 차수(in-degree)</em></strong>를 센다. (들어오는 간선 수)</p>
+  </li>
+  <li>
+    <p>진입 차수가 0인 노드를 큐에 넣고 하나씩 꺼내며 줄여 나감</p>
+  </li>
+  <li>
+    <p><strong><em>만약 큐가 비었는데 아직 처리 못 한 노드가 있다면, 그건 사이클 안에 갇힌 노드란 뜻! → 사이클 존재!</em></strong></p>
+  </li>
+</ul>
+
+<p>간단한 예시를 아래에 들게</p>
+
+<div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">A</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">C</span><span class="w">
+</span><span class="err">↑</span><span class="w">       </span><span class="err">↓</span><span class="w">
+</span><span class="err">←───────</span><span class="w">
+</span></code></pre></div></div>
+
+<ul>
+  <li>
+    <p>진입 차수: A(1), B(1), C(1)</p>
+  </li>
+  <li>
+    <p>진입 차수 0인 노드가 없어 → 시작 자체가 안 됨 → 사이클 있음!</p>
+  </li>
+</ul>
+
+<p>그러면 함수로 넘어가 보자</p>
+
+<h3 id="진입-차수-위상-정렬in-degree-topological-sort-기반-사이클-탐지-함수">진입 차수 위상 정렬(In-degree Topological Sort) 기반 사이클 탐지 함수</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">defaultdict</span> 
+
+<span class="k">def</span> <span class="nf">has_cycle_topo_sort</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span> <span class="c1"># graph를 함수에 사용
+</span>    <span class="n">in_degree</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="c1"># defaultdict으로 기본값 자동 0으로 지정해주는 딕셔너리
+</span>
+    <span class="c1"># 진입 차수 계산
+</span>    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">:</span> <span class="c1"># 그래프의 모든 노드중 하나씩
+</span>        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span> <span class="c1"># 노드의 모든 이웃중 하나씩
+</span>            <span class="n">in_degree</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># 처음 보는 노드 자동으로 0부터 시작, 진입 차수 1씩 증가
+</span>
+    <span class="c1"># 진입 차수 0인 노드부터 시작
+</span>    <span class="n">queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([</span><span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span> <span class="k">if</span> <span class="n">in_degree</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">visited_count</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># 카운트용 변수 0으로 시작
+</span>
+    <span class="k">while</span> <span class="n">queue</span><span class="p">:</span> <span class="c1"># 큐에 값이 있을때
+</span>        <span class="n">current</span> <span class="o">=</span> <span class="n">queue</span><span class="p">.</span><span class="n">popleft</span><span class="p">()</span> <span class="c1"># current에 큐 pop한것을 저장, 큐 -1
+</span>        <span class="n">visited_count</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># count 1 증가
+</span>
+        <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">current</span><span class="p">]:</span> <span class="c1"># current의 모든 이웃들 중 하나씩
+</span>            <span class="n">in_degree</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span> <span class="c1"># 이웃의 진입 차수를 1 감소 시킨다
+</span>            <span class="k">if</span> <span class="n">in_degree</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># 이웃의 진입 차수가 0이 되면
+</span>                <span class="n">queue</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span> <span class="c1"># q에 추가한다
+</span>
+    <span class="c1"># 모든 노드를 방문했는가? (방문 못했으면 사이클)
+</span>    <span class="k">return</span> <span class="n">visited_count</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'A'</span><span class="p">:</span> <span class="p">[</span><span class="s">'B'</span><span class="p">],</span>
+    <span class="s">'B'</span><span class="p">:</span> <span class="p">[</span><span class="s">'C'</span><span class="p">],</span>
+    <span class="s">'C'</span><span class="p">:</span> <span class="p">[</span><span class="s">'A'</span><span class="p">],</span>  <span class="c1"># 사이클 A -&gt; B -&gt; C -&gt; A
+</span><span class="p">}</span>
+<span class="k">print</span><span class="p">(</span><span class="n">has_cycle_topo_sort</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>  <span class="c1"># True
+</span></code></pre></div></div>
+
+<h3 id="위상정렬과-dfs-기반-사이클-탐지-비교">위상정렬과 DFS 기반 사이클 탐지 비교</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">DFS 방식</th>
+      <th style="text-align: center">위상 정렬 방식</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">방향 그래프</td>
+      <td style="text-align: center">O</td>
+      <td style="text-align: center">O</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">사이클 경로 찾기</td>
+      <td style="text-align: center">가능</td>
+      <td style="text-align: center">어려움</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">정렬 순서 제공</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">가능</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">직관성</td>
+      <td style="text-align: center">쉬움</td>
+      <td style="text-align: center">약간 복잡</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">성능</td>
+      <td style="text-align: center">보통</td>
+      <td style="text-align: center">효율적 (큐 기반)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="disjoint-set--union-find-기반-사이클-탐지">Disjoint Set / Union-Find 기반 사이클 탐지</h2>
+
+<p>무방향 그래프에서 아주 빠르게 사이클을 찾는데 유용한 탐지법이다.</p>
+
+<ul>
+  <li>
+    <p>여러 개의 <strong><em>서로소 집합(disjoint set)</em></strong>을 관리하는 자료구조야.</p>
+  </li>
+  <li>
+    <p>각 노드는 하나의 집합에 속함</p>
+  </li>
+  <li>
+    <p>주로 두 노드가 같은 집합에 속해 있는지를 확인하고, <strong><em>합치기(union)</em></strong>도 할 수 있어</p>
+  </li>
+</ul>
+
+<p>무방향 그래프에서 두 노드가 이미 같은 집합에 있는데, 다시 그 둘을 연결하는 간선이 있다면 사이클이 생긴다!</p>
+
+<ul>
+  <li>
+    <p>각 노드는 어떤 <strong><em>그룹(집합)</em></strong>에 속해 있어.</p>
+  </li>
+  <li>
+    <p>간선을 연결할 때마다, 두 노드가 같은 그룹이면 → 이미 연결돼 있다는 뜻 → 사이클</p>
+  </li>
+  <li>
+    <p>다른 그룹이면 → 그룹을 합치면 됨 (union)</p>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 부모 노드를 저장하는 딕셔너리
+</span><span class="n">parent</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># find: 루트 노드 찾기
+</span><span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x</span><span class="p">:</span> <span class="c1"># parent[x] 와 x의 값이 같지 않을 때, 두번째 값 parent[B] != A 일때
+</span>        <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>  <span class="c1"># 경로 압축, parent[B] = find(parent[B]) = find(A) = parent[A] = A
+</span>    <span class="k">return</span> <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+
+<span class="c1"># union: 두 노드 연결
+</span><span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">root_x</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c1"># 처음엔 x 반환, 두번째에는 A 반환, 세번째에도 A 반환
+</span>    <span class="n">root_y</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="c1"># 처음엔 y 반환, 두번째에는 C 반환 , 세번째에는 A 반환
+</span>    <span class="k">if</span> <span class="n">root_x</span> <span class="o">==</span> <span class="n">root_y</span><span class="p">:</span> <span class="c1"># root_x 와 root_y가 같을 때
+</span>        <span class="k">return</span> <span class="bp">False</span>  <span class="c1"># 사이클 발생!
+</span>    <span class="n">parent</span><span class="p">[</span><span class="n">root_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_x</span> <span class="c1"># 같지 않다면 parent[root_y] 값에 root_x 저장.
+</span>    <span class="k">return</span> <span class="bp">True</span>             <span class="c1"># parent[B] = A, parent[C] = A,
+</span>
+<span class="k">def</span> <span class="nf">has_cycle_union_find</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span> <span class="c1"># edges로 함수 실행
+</span>    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span> <span class="c1"># edges의 모든 원소의 시작점과 마지막점 하나씩
+</span>        <span class="c1"># 초기화
+</span>        <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span> <span class="c1"># u가 parent에 없다면
+</span>            <span class="n">parent</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span> <span class="c1"># parent[u] 값에 u 저장
+</span>        <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span> <span class="c1"># v가 parent에 없다면
+</span>            <span class="n">parent</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="c1"># parent[v] 값에 v 저장
+</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">union</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span> <span class="c1"># u와 v값으로 union 함수 실행
+</span>            <span class="k">return</span> <span class="bp">True</span>  <span class="c1"># 사이클 발견!
+</span>
+    <span class="k">return</span> <span class="bp">False</span>
+
+<span class="n">edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">'A'</span><span class="p">,</span> <span class="s">'B'</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">'B'</span><span class="p">,</span> <span class="s">'C'</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">'C'</span><span class="p">,</span> <span class="s">'A'</span><span class="p">),</span>  <span class="c1"># 이 간선이 사이클을 만듦!
+</span><span class="p">]</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">has_cycle_union_find</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span>  <span class="c1"># True
+</span></code></pre></div></div>
+
+<h3 id="경로-압축path-compression">경로 압축(Path Compression)</h3>
+
+<p>Disjoint Set / Union-Find에서 아래 함수가 햇갈리지 않아?</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x</span><span class="p">:</span>
+        <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>  <span class="c1"># 경로 압축!
+</span>    <span class="k">return</span> <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>find(x)를 호출할 때, x의 부모를 따라 루트까지 올라가잖아? 그 루트를 찾은 김에 거치는 모든 노드들을 바로 루트에 연결시켜줘! 다음에 find()할 때 훨씬 빠르게 찾을 수 있어.</p>
+
+<ul>
+  <li>경로 압축 전
+    <div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">A</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">C</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">D</span><span class="w"> </span><span class="p">(</span><span class="err">루트</span><span class="p">)</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>경로 압축 후
+    <div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">A</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">D</span><span class="w">
+</span><span class="nv">B</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">D</span><span class="w">
+</span><span class="nb">C</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">D</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>find(A) 다시 하면 → 바로 D!</p>
+
+<h3 id="랭크-최적화-union-by-rank">랭크 최적화 (Union by Rank)</h3>
+
+<p>두 집합을 합칠 때, 그냥 막 합치면 트리가 한쪽으로 기울어져서 느려질 수 있어 → 그래서 작은 트리를 큰 트리 밑에 붙이는 방식으로 트리 높이를 최소화할 때 쓰는 <strong><em>랭크 최적화</em></strong> 설명해줄게</p>
+
+<p>각 루트 노드의 “랭크(rank)” (트리 높이 비슷한 개념)를 저장하는 딕셔너리를 하나 둬!</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rank</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div></div>
+
+<p>아래는 Union 구현(랭크 최적화 포함) 함수야</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+    <span class="n">parent</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span>
+    <span class="n">rank</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">root_x</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">root_y</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">root_x</span> <span class="o">==</span> <span class="n">root_y</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>  <span class="c1"># 사이클
+</span>
+    <span class="c1"># 더 랭크가 낮은 트리를 높은 트리 밑에 붙인다
+</span>    <span class="k">if</span> <span class="n">rank</span><span class="p">[</span><span class="n">root_x</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">rank</span><span class="p">[</span><span class="n">root_y</span><span class="p">]:</span>
+        <span class="n">parent</span><span class="p">[</span><span class="n">root_x</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_y</span>
+    <span class="k">elif</span> <span class="n">rank</span><span class="p">[</span><span class="n">root_x</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">rank</span><span class="p">[</span><span class="n">root_y</span><span class="p">]:</span>
+        <span class="n">parent</span><span class="p">[</span><span class="n">root_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_x</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parent</span><span class="p">[</span><span class="n">root_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_x</span> <span class="c1"># 처음에 이렇게 될 텐데, rank 값이 같다면, root_x가 parent가
+</span>        <span class="n">rank</span><span class="p">[</span><span class="n">root_x</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>       <span class="c1"># 되면서, rank도 1 증가
+</span>
+    <span class="k">return</span> <span class="bp">True</span>
+</code></pre></div></div>
+
+<p>예제 : 간선 연결 순서</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">'A'</span><span class="p">,</span> <span class="s">'B'</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">'B'</span><span class="p">,</span> <span class="s">'C'</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">'C'</span><span class="p">,</span> <span class="s">'D'</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">'D'</span><span class="p">,</span> <span class="s">'E'</span><span class="p">),</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>union(‘A’, ‘B’) 했을 시</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parent</span><span class="p">[</span><span class="s">'A'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'A'</span>
+<span class="n">parent</span><span class="p">[</span><span class="s">'B'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'B'</span>
+<span class="n">rank</span><span class="p">[</span><span class="s">'A'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">rank</span><span class="p">[</span><span class="s">'B'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div></div>
+
+<p>두 랭크가 같다면, A가 root가 되고 A의 랭크 += 1</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parent</span> <span class="o">=</span> <span class="p">{</span><span class="s">'A'</span><span class="p">:</span> <span class="s">'A'</span><span class="p">,</span> <span class="s">'B'</span><span class="p">:</span> <span class="s">'A'</span><span class="p">}</span>
+<span class="n">rank</span>   <span class="o">=</span> <span class="p">{</span><span class="s">'A'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'B'</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>union(‘B’, ‘C’) 했을 시</p>
+
+<ul>
+  <li>
+    <p>find(B) → A (경로 압축)</p>
+  </li>
+  <li>
+    <p>C는 초기화: parent[‘C’] = ‘C’, rank[‘C’] = 0</p>
+  </li>
+  <li>
+    <p>rank[A] = 1, rank[C] = 0 → C를 A 밑에 붙임</p>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">parent</span> <span class="o">=</span> <span class="p">{</span><span class="s">'A'</span><span class="p">:</span> <span class="s">'A'</span><span class="p">,</span> <span class="s">'B'</span><span class="p">:</span> <span class="s">'A'</span><span class="p">,</span> <span class="s">'C'</span><span class="p">:</span> <span class="s">'A'</span><span class="p">}</span>
+<span class="n">rank</span>   <span class="o">=</span> <span class="p">{</span><span class="s">'A'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'B'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'C'</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="경로-압축path-compression-와-랭크-최적화-union-by-rank-요약표">경로 압축(Path Compression) 와 랭크 최적화 (Union by Rank) 요약표</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">최적화 기법</th>
+      <th style="text-align: center">효과</th>
+      <th style="text-align: center">구현 방법</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Path Compression</td>
+      <td style="text-align: center">find() 속도 향상 (트리 납작하게 만듦)</td>
+      <td style="text-align: center">find() 재귀 후, 부모 갱신</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Union by Rank</td>
+      <td style="text-align: center">union() 속도 향상 (트리 높이 줄임)</td>
+      <td style="text-align: center">랭크 비교해서 낮은 쪽을 붙임</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>이 두가지 기법을 사용하면 <strong><em>거의 O(1)</em></strong>에 가까운 속도로 사이클을 탐지할 수 있어</p>
+
+<h3 id="union-find와-dfs-기반-사이클-탐지-비교">Union-Find와 DFS 기반 사이클 탐지 비교</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">Union-Find 방식</th>
+      <th style="text-align: center">DFS 기반 방식</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">✅ 아이디어</td>
+      <td style="text-align: center">같은 집합에 있는 노드를 다시 연결하려 하면 사이클 발생</td>
+      <td style="text-align: center">이미 방문한 이웃이 부모가 아니라면 사이클</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🔁 탐색 방식</td>
+      <td style="text-align: center">간선 중심 (edge list 기반)</td>
+      <td style="text-align: center">노드 중심 (DFS 순회)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🔧 구현 난이도</td>
+      <td style="text-align: center">조금 복잡 (find/union 필요)</td>
+      <td style="text-align: center">비교적 간단</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">💡 자료구조</td>
+      <td style="text-align: center">parent, rank 딕셔너리</td>
+      <td style="text-align: center">visited + 재귀 호출</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">⚡ 성능</td>
+      <td style="text-align: center">매우 빠름 (거의 O(1) per edge)</td>
+      <td style="text-align: center">O(V + E), 보통은 충분히 빠름</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">📦 사용 전제</td>
+      <td style="text-align: center">무방향 그래프 + 간선 리스트 필요</td>
+      <td style="text-align: center">무방향 그래프만 있으면 가능</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🔍 사이클 경로 추적</td>
+      <td style="text-align: center">어려움 (사이클 있음 여부만 확인)</td>
+      <td style="text-align: center">상대적으로 추적 쉬움</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🌲 트리 구조 유지</td>
+      <td style="text-align: center">트리 병합하며 유지</td>
+      <td style="text-align: center">DFS 트리 만들 수 있음</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Union-Find는</p>
+
+<ul>
+  <li>간선 연결 시 “너희 둘 이미 같은 집단 아니야?”만 체크, 사이클 유무만 초고속으로 판단하고 싶을 때 최적</li>
+</ul>
+
+<p>DFS는</p>
+
+<ul>
+  <li>재귀적으로 “내가 왔던 부모 빼고, 다른 방문 노드 만나면 사이클!”을 판별, 사이클 경로를 추적하고 싶거나, DFS 트리 자체가 필요한 상황에 유리</li>
+</ul>
+
+<h2 id="마무리">마무리</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">방법</th>
+      <th style="text-align: center">그래프 종류</th>
+      <th style="text-align: center">주요 아이디어</th>
+      <th style="text-align: center">장점</th>
+      <th style="text-align: center">비고</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">DFS + visited + rec_stack</td>
+      <td style="text-align: center">방향 그래프</td>
+      <td style="text-align: center">재귀 경로 추적</td>
+      <td style="text-align: center">직관적, 간단</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DFS + 부모 체크</td>
+      <td style="text-align: center">무방향 그래프</td>
+      <td style="text-align: center">부모 제외하고 방문 확인</td>
+      <td style="text-align: center">단순한 구현</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">위상 정렬 (Kahn)</td>
+      <td style="text-align: center">방향 그래프</td>
+      <td style="text-align: center">진입 차수 0 제거</td>
+      <td style="text-align: center">정렬 결과도 얻음</td>
+      <td style="text-align: center">전체 노드 방문 확인</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Union-Find</td>
+      <td style="text-align: center">무방향 그래프</td>
+      <td style="text-align: center">같은 집합이면 사이클</td>
+      <td style="text-align: center">빠름</td>
+      <td style="text-align: center">방향 X</td>
+    </tr>
+  </tbody>
+</table>
+
+  
+</article>
+
+
+
+  <hr class="dingbat related mb6" />
+
+
+
+
+
+
+  
+     
+
+
+  <aside class="about related mt4 mb4" role="complementary">
+    
+    
+
+<div class="author mt4">
+  
+
+  
+    
+
+
+<img
+  
+    src="https://via.placeholder.com/128x128"
+    srcset="https://via.placeholder.com/128x128 1x,https://via.placeholder.com/256x256 2x"
+    
+  
+  alt="Kwansoo Kim"
+  class="avatar"
+  
+  width="120"
+  height="120"
+  loading="lazy"
+/>
+
+  
+
+  
+  
+  <h2  class="page-title hr-bottom">
+    About
+  </h2>
+
+  <p>noob in Computer Science, currently getting education in Krafton Jungle.</p>
+
+
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+
+  </aside>
+
+
+  
+
+  
+    
+
+
+  
+
+  
+    
+
+
+  <aside class="other-projects related mb0" role="complementary">  <h2>Related Posts</h2>  <div class="columns">          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/computersystem/linking/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/ComputerSystem.png"    alt="링커(Linking)"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/computersystem/linking/" class="flip-title">링커(Linking)</a>  </h3>      <p class="project-card-text fine" property="disambiguatingDescription">      링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.    </p>      <a class="fill-card no-hover" href="/blog/computersystem/linking/" tabindex="-1"><span class="sr-only">Continue reading 링커(Linking)</span></a></article>              </div>          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/algorithm/pre-order-post-order/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/Algorithm.png"    alt="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/algorithm/pre-order-post-order/" class="flip-title">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</a>  </h3>      <a class="fill-card no-hover" href="/blog/algorithm/pre-order-post-order/" tabindex="-1"><span class="sr-only">Continue reading 전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</span></a></article>              </div>      </div></aside>
+
+  
+
+  
+    
+
+
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/pre-order-post-order/" class="flip-title"><span>전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</span></a>  <time class="faded fine" datetime="2025-04-16T00:00:00+00:00">16 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/x-marks-the-spot-in-hydejack-9-2/" class="flip-title"><span>X Marks the Spot in Hydejack 9.2</span></a>  <time class="faded fine" datetime="2024-09-08T00:00:00+00:00">08 Sep 2024</time></li>          <li class="h4">  <a href="/blog/diary/second-month/" class="flip-title"><span>크래프톤 정글에서 두번째 달을 보낸 후</span></a>  <time class="faded fine" datetime="2025-04-14T00:00:00+00:00">14 Apr 2025</time></li>      </ul></aside>
+
+  
+
+  
+    
+
+  
+
+
+  
+<footer class="content" role="contentinfo">
+  <hr/>
+  
+    <p><small class="copyright">© 2024. All rights reserved.
+</small></p>
+  
+  
+    <nav class="legal"><small>
+    
+      
+      <a class="heading flip-title" href="/LICENSE/">LICENSE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/NOTICE/">NOTICE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/CHANGELOG/">CHANGELOG</a>
+      
+    
+    </small></nav>
+  
+  
+  <hr class="sr-only"/>
+</footer>
+
+
+</main>
+
+  <hy-drawer
+  id="_drawer"
+  class=""
+  side="left"
+  threshold="10"
+  noscroll
+  
+>
+  <header id="_sidebar" class="sidebar" role="banner">
+    
+
+
+
+
+<div class="sidebar-bg sidebar-overlay" style="background-color:rgb(200,200,200);background-image:url(/assets/img/sidebar-bg.png)"></div>
+
+    <div class="sidebar-sticky">
+  <div class="sidebar-about">
+    
+      <a class="no-hover" href="/" tabindex="-1">
+        <img src="/assets/img/PurifiedPotion.png" class="avatar" alt="PurifiedPotion's Blog" width="120" height="120" loading="lazy" />
+      </a>
+    
+    <a class="sidebar-title" href="/"><h2 class="h1">PurifiedPotion's Blog</h2></a>
+    
+    
+      <p class="">
+        Blog for Computer Science
+
+      </p>
+    
+  </div>
+
+  <nav class="sidebar-nav heading" role="navigation">
+    <span class="sr-only">Navigation:</span>
+<ul>
+  
+    
+      
+      <li>
+        <a
+          id="_drawer--opened"
+          href="/algorithm/"
+          class="sidebar-nav-item "
+          
+        >
+          ALGORITHM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/c/"
+          class="sidebar-nav-item "
+          
+        >
+          C 언어
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/computersystem/"
+          class="sidebar-nav-item "
+          
+        >
+          COMPUTER SYSTEM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/diary/"
+          class="sidebar-nav-item "
+          
+        >
+          회고
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/projects/"
+          class="sidebar-nav-item "
+          
+        >
+          PROJECTS
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/docs/"
+          class="sidebar-nav-item "
+          
+        >
+          DOCUMENTATION
+        </a>
+      </li>
+    
+  
+</ul>
+
+  </nav>
+
+  
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+  </header>
+</hy-drawer>
+<hr class="sr-only" hidden />
+
+</hy-push-state>
+
+
+  <!--[if gt IE 10]><!---->
+  <script nomodule>(()=>{var t,n=document.createElement("script");!("noModule"in n)&&"onbeforeload"in n&&(t=!1,document.addEventListener("beforeload",function(e){if(e.target===n)t=!0;else if(!e.target.hasAttribute("nomodule")||!t)return;e.preventDefault()},!0),n.type="module",n.src=".",document.head.appendChild(n),n.remove())})();
+</script>
+  <script src="/assets/js/hydejack-9.2.1.js" type="module"></script>
+  <script src="/assets/js/LEGACY-hydejack-9.2.1.js" nomodule defer></script>
+  
+
+  
+
+  <script type="module">
+    if ('serviceWorker' in navigator) {
+      /**/
+      navigator.serviceWorker.getRegistration()
+        .then(r => r.unregister())
+        .catch(() => {});
+      /**/
+    }
+  </script>
+<!--<![endif]-->
+  
+
+
+
+<div hidden>
+  
+  <h2 class="sr-only">Templates (for web app):</h2>
+
+  <template id="_animation-template">
+  <div class="animation-main fixed-top">
+    <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+</ul></nav>
+    <div class="content">
+      <div class="page"></div>
+    </div>
+  </div>
+</template>
+
+  <template id="_loading-template">
+  <div class="loading nav-btn fr">
+    <span class="sr-only">Loading…</span>
+    <span class="icon-cog"></span>
+  </div>
+</template>
+
+  <template id="_error-template">
+  <div class="page">
+    <h1 class="page-title">Error</h1>
+    
+    
+    <p class="lead">
+      Sorry, an error occurred while loading <a class="this-link" href=""></a>.
+
+    </p>
+  </div>
+</template>
+
+  <template id="_permalink-template">
+  <a href="#" class="permalink">
+    <span class="sr-only">Permalink</span>
+    <span class="content-hash"></span>
+  </a>
+</template>
+
+  
+    <template id="_cookies-banner-template">
+  <div id="_cookies-banner" class="navbar fixed-bottom CookiesOK">
+    <div class="content">
+      <div class="nav-btn-bar">
+        <small class="faded">
+          <span>This site uses cookies. <a href="/cookies-policy/">Cookies Policy</a>.
+</span>
+          <button id="_cookies-ok" class="btn btn-primary btn-sm">Okay</button>
+        </small>
+      </div>
+    </div>
+  </div>
+</template>
+
+  
+  
+    <template id="_dark-mode-template">
+  <button id="_dark-mode" class="nav-btn no-hover" >
+    <span class="sr-only">Dark Mode</span>
+    <span class="icon-brightness-contrast"></span>
+  </button>
+</template>
+
+  
+  
+    <template id="_search-template">
+  <button id="_search" class="nav-btn no-hover">
+    <label class="sr-only" for="_search-input">Search</label>
+    <span class="icon-search"></span>
+  </button>
+  <div id="_search-box">
+    <div class="nav-btn">
+      <span class="icon-search"></span>
+    </div>
+    <input 
+      id="_search-input"
+      type="search"
+      class="form-control form-control-lg nav-btn"
+      placeholder="Build with JEKYLL_ENV=production to enable search."
+    />
+    <button type="reset" class="nav-btn no-hover">
+      <span class="sr-only">Close</span>
+      <span class="icon-cross"></span>
+    </button>
+  </div>
+  <div id="_hits"></div>
+</template>
+
+  
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+
+
+
+
+
+
+<head>
+  
+
+
+
+
+
+
+  
+    
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>최소 신장 트리(MST, Minimum Spanning Tree) | PurifiedPotion’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="최소 신장 트리(MST, Minimum Spanning Tree)" />
+<meta name="author" content="Kwansoo Kim" />
+<meta property="og:locale" content="ko_KR, en_US" />
+<meta name="description" content="A blog for computer science" />
+<meta property="og:description" content="A blog for computer science" />
+<meta property="og:site_name" content="PurifiedPotion’s Blog" />
+<meta property="og:image" content="/assets/img/blog/postimage/Algorithm.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-03-30T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/assets/img/blog/postimage/Algorithm.png" />
+<meta property="twitter:title" content="최소 신장 트리(MST, Minimum Spanning Tree)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Kwansoo Kim"},"dateModified":"2025-03-30T00:00:00+00:00","datePublished":"2025-03-30T00:00:00+00:00","description":"A blog for computer science","headline":"최소 신장 트리(MST, Minimum Spanning Tree)","image":"/assets/img/blog/postimage/Algorithm.png","mainEntityOfPage":{"@type":"WebPage","@id":"/blog/algorithm/minimum-spanning-tree/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/PurifiedPotion.png"},"name":"Kwansoo Kim"},"url":"/blog/algorithm/minimum-spanning-tree/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  
+
+
+
+  <meta name="color-scheme" content="dark light">
+
+
+
+  <meta name="theme-color" content="rgb(200,200,200)">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PurifiedPotion's Blog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="application-name" content="PurifiedPotion's Blog">
+
+<meta name="generator" content="Hydejack v9.2.1" />
+
+
+<link rel="alternate" href="/blog/algorithm/minimum-spanning-tree/" hreflang="ko-kr, en-us">
+
+<link type="application/atom+xml" rel="alternate" href="/feed.xml" title="PurifiedPotion&apos;s Blog" />
+
+
+<link rel="shortcut icon"    href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+
+<link rel="manifest" href="/assets/site.webmanifest">
+
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"><link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+
+
+<link rel="preload" href="/assets/img/swipe.svg" as="image" id="_hrefSwipeSVG">
+
+<link rel="dns-prefetch" href="/assets/js/search-worker-9.2.1.js" as="worker" id="_hrefSearch">
+
+
+
+
+
+<script>((r,a)=>{function d(e,t,n,o){e.addEventListener?e.addEventListener(t,n,o):e.attachEvent?e.attachEvent("on"+t,n):e["on"+t]=n}r.loadJS=function(e,t){var n=a.createElement("script"),e=(n.src=e,t&&d(n,"load",t,{once:!0}),a.scripts[0]);return e.parentNode.insertBefore(n,e),n},r._loaded=!1,r.loadJSDeferred=function(e,t){var n=a.createElement("script");function o(){r._loaded=!0,t&&d(n,"load",t,{once:!0});var e=a.scripts[0];e.parentNode.insertBefore(n,e)}return n.src=e,r._loaded?o():d(r,"load",o,{once:!0}),n},r.setRel=r.setRelStylesheet=function(e){d(a.getElementById(e),"load",function(){this.rel="stylesheet"},{once:!0})}})(window,document);
+!function(a){"use strict";var b=function(b,c,d){function e(a){return h.body?a():void setTimeout(function(){e(a)})}function f(){i.addEventListener&&i.removeEventListener("load",f),i.media=d||"all"}var g,h=a.document,i=h.createElement("link");if(c)g=c;else{var j=(h.body||h.getElementsByTagName("head")[0]).childNodes;g=j[j.length-1]}var k=h.styleSheets;i.rel="stylesheet",i.href=b,i.media="only x",e(function(){g.parentNode.insertBefore(i,c?g:g.nextSibling)});var l=function(a){for(var b=i.href,c=k.length;c--;)if(k[c].href===b)return a();setTimeout(function(){l(a)})};return i.addEventListener&&i.addEventListener("load",f),i.onloadcssdefined=l,l(f),i};"undefined"!=typeof exports?exports.loadCSS=b:a.loadCSS=b}("undefined"!=typeof global?global:this);
+!function(a){if(a.loadCSS){var b=loadCSS.relpreload={};if(b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}},b.poly=function(){for(var b=a.document.getElementsByTagName("link"),c=0;c<b.length;c++){var d=b[c];"preload"===d.rel&&"style"===d.getAttribute("as")&&(a.loadCSS(d.href,d,d.getAttribute("media")),d.rel=null)}},!b.support()){b.poly();var c=a.setInterval(b.poly,300);a.addEventListener&&a.addEventListener("load",function(){b.poly(),a.clearInterval(c)}),a.attachEvent&&a.attachEvent("onload",function(){a.clearInterval(c)})}}}(this);
+!function(w) {
+  w._baseURL = '/';
+  w._publicPath = '/assets/js/';
+  w._noPushState = false;
+  w._noDrawer = false;
+  w._noNavbar = false;
+  w._noToc = false;
+  w._noSearch = false;
+  w._advertise = false;
+  w._search = {
+    DATA_URL: '/assets/sitedata.json?no-cache',
+    STORAGE_KEY: 'mini-search/',
+    INDEX_KEY: 'index--2025-04-21T11:57:03+00:00',
+  };
+  w._clapButton = true;
+}(window);</script>
+
+
+<script async src="/assets/bower_components/MathJax/es5/tex-mml-chtml.js" id="_MathJax"></script>
+
+
+<!--[if gt IE 8]><!---->
+
+  
+
+
+
+
+<link rel="stylesheet" href="/assets/css/hydejack-9.2.1.css" id="_stylePreload">
+<link rel="stylesheet" href="/assets/icomoon/style.css" id="_iconsPreload">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700%7CNoto+Sans:400,400i,700,700i&display=swap" id="_fontsPreload">
+
+
+
+  <style id="_pageStyle">
+
+html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5);--accent-color-highlight: rgba(200,200,200,0.1);--accent-color-darkened: #b5b5b5;--theme-color: rgb(200,200,200);--dark-mode-body-bg: #2d2d2d;--dark-mode-border-color: #393939}
+
+</style>
+
+
+<!--<![endif]-->
+
+
+
+
+
+</head>
+
+<body class="no-break-layout">
+  
+<script>
+  window._sunrise = 6;
+  window._sunset =  18;
+  ((e,s)=>{var d="light-mode",a="dark-mode",o=(new Date).getHours();"matchMedia"in e&&e.matchMedia("(prefers-color-scheme)")||(e=(o=o<=e._sunrise||o>=e._sunset?a:d)==a?d:a,s.body.classList.add(o),s.body.classList.remove(e))})(window,document);
+
+</script>
+
+
+
+<hy-push-state
+  id="_pushState"
+  replace-selector="#_main"
+  link-selector="a[href]:not([href^='/assets/']):not(.external):not(.no-push-state)"
+  script-selector="script"
+  duration="500"
+  hashchange
+>
+  
+  
+  <div id="_navbar" class="navbar fixed-top">
+  <div class="content">
+    <span class="sr-only">Jump to:</span>
+    <div class="nav-btn-bar">
+      <a id="_menu" class="nav-btn no-hover" href="#_drawer--opened">
+        <span class="sr-only">Navigation</span>
+        <span class="icon-menu"></span>
+      </a>
+      <div class="nav-span"></div>
+    </div>
+  </div>
+</div>
+<hr class="sr-only" hidden />
+
+  <main
+  id="_main"
+  class="content layout-post"
+  role="main"
+>
+  <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+    <li><a href="/">home</a></li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/">blog</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/algorithm/">algorithm</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          <span>minimum-spanning-tree</span>
+        
+      </li>
+    
+  
+</ul></nav>
+  
+
+
+
+
+
+
+
+
+
+
+<article id="post-blog-algorithm-minimum-spanning-tree" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      
+        최소 신장 트리(MST, Minimum Spanning Tree)
+      
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2025-03-30T00:00:00+00:00">30 Mar 2025</time> in <span>Blog</span> / <a href="/algorithm/" class="flip-title">ALGORITHM</a> 
+      </span>
+      
+    </div>
+
+    
+    
+      
+        <div class="img-wrapper lead aspect-ratio sixteen-nine flip-project-img">
+          
+
+
+<img
+  
+    src="/assets/img/blog/postimage/Algorithm.png"
+  
+  alt="최소 신장 트리(MST, Minimum Spanning Tree)"
+  
+  
+  width="864"
+  height="486"
+  loading="lazy"
+/>
+
+        </div>
+      
+      
+    
+
+    
+
+
+
+  
+
+
+  </header>
+
+  
+    <ul class="large-only" id="markdown-toc">
+  <li><a href="#크루스칼kruskal-알고리즘-기본" id="markdown-toc-크루스칼kruskal-알고리즘-기본">크루스칼(Kruskal) 알고리즘 기본</a>    <ul>
+      <li><a href="#크루스칼-알고리즘-시각화" id="markdown-toc-크루스칼-알고리즘-시각화">크루스칼 알고리즘 시각화</a></li>
+      <li><a href="#크루스칼kruskal-알고리즘-함수" id="markdown-toc-크루스칼kruskal-알고리즘-함수">크루스칼(Kruskal) 알고리즘 함수</a></li>
+    </ul>
+  </li>
+  <li><a href="#프림prim-알고리즘-기본" id="markdown-toc-프림prim-알고리즘-기본">프림(Prim) 알고리즘 기본</a>    <ul>
+      <li><a href="#프림-알고리즘-시각화" id="markdown-toc-프림-알고리즘-시각화">프림 알고리즘 시각화</a></li>
+      <li><a href="#프림prim-알고리즘-함수" id="markdown-toc-프림prim-알고리즘-함수">프림(Prim) 알고리즘 함수</a></li>
+    </ul>
+  </li>
+  <li><a href="#마무리" id="markdown-toc-마무리">마무리</a>    <ul>
+      <li><a href="#공통점-크루스칼--프림" id="markdown-toc-공통점-크루스칼--프림">공통점 (크루스칼 &amp; 프림)</a></li>
+      <li><a href="#차이점-크루스칼--프림" id="markdown-toc-차이점-크루스칼--프림">차이점 (크루스칼 &amp; 프림)</a></li>
+      <li><a href="#비유-크루스칼--프림" id="markdown-toc-비유-크루스칼--프림">비유 (크루스칼 &amp; 프림)</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>그래프에서 모든 정점을 최소 비용으로 연결하는 최소 신장 트리에 대해 설명해볼게. 트리, 먼저 신장 트리, 최소 신장 트리의 용어에 대해 설명하자면 아래와 같아.</p>
+
+<ul>
+  <li>
+    <p><strong><em>트리</em></strong> : 사이클 없는 연결 그래프</p>
+  </li>
+  <li>
+    <p><strong><em>신장 트리</em></strong> : 그래프의 모든 정점을 연결하는 사이클이 없는 트리</p>
+  </li>
+  <li>
+    <p><strong><em>최소 신장 트리</em></strong> : 여러 신장 트리 중에서 간선들의 가중치 합이 가장 작은 것</p>
+  </li>
+</ul>
+
+<p>그렇다면 내가 이미 설명한 최단 경로를 찾는 다익스트라, 플로이드 와샬, 벨만 포드랑 최소 신장 트리는 뭐가 다를까? 최소 신장 트리를 배우기 이전에 차이점을 짚고 가자. 아래는 차이점을 정리한 표이다</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">최소 신장 트리(MST)</th>
+      <th style="text-align: center">최단 경로 알고리즘 (다익스트라 등)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">목적</td>
+      <td style="text-align: center">모든 정점을 최소 비용으로 연결</td>
+      <td style="text-align: center">한 정점에서 다른 정점까지 최단 거리 계산</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">결과</td>
+      <td style="text-align: center">간선들의 집합 (트리 구조)</td>
+      <td style="text-align: center">거리 값 (그리고 경로)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">간선 선택 기준</td>
+      <td style="text-align: center">전체 그래프에서 가중치 작은 간선을 골라 사이클 없이 연결</td>
+      <td style="text-align: center">출발점 기준으로 최단 거리 갱신</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">모든 정점과 연결?</td>
+      <td style="text-align: center">O (신장 트리이기 때문)</td>
+      <td style="text-align: center">X (도달할 수 없는 정점은 제외)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">가중치 음수 가능?</td>
+      <td style="text-align: center">O (크루스칼 가능, 프림은 불가)</td>
+      <td style="text-align: center">알고리즘마다 다름 (다익스트라는 불가능, 벨만-포드는 가능)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>최소 신장 트리의 알고리즘에는 <strong><em>크루스칼(Kruskal)과 프림(Prim)</em></strong>알고리즘이 있어. 이 두개 알고리즘에 대해 설명할게</p>
+
+<h2 id="크루스칼kruskal-알고리즘-기본">크루스칼(Kruskal) 알고리즘 기본</h2>
+
+<ul>
+  <li>
+    <p>모든 간선을 가중치 기준으로 정렬함</p>
+  </li>
+  <li>
+    <p>사이클이 생기지 않도록 간선을 하나씩 선택해서 트리를 완성</p>
+  </li>
+</ul>
+
+<h3 id="크루스칼-알고리즘-시각화">크루스칼 알고리즘 시각화</h3>
+
+<p>좀 더 이해하기 쉽도록 시각화 자료를 사용해볼게</p>
+
+<div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">   </span><span class="nv">A</span><span class="w"> </span><span class="o">---</span><span class="m">1</span><span class="o">---</span><span class="w"> </span><span class="nv">B</span><span class="w">
+   </span><span class="o">|</span><span class="w"> </span><span class="err">\</span><span class="w">       </span><span class="o">|</span><span class="w">
+   </span><span class="m">3</span><span class="w">    </span><span class="m">2</span><span class="w">    </span><span class="m">4</span><span class="w">
+   </span><span class="o">|</span><span class="w">       </span><span class="err">\</span><span class="w"> </span><span class="o">|</span><span class="w">
+   </span><span class="nb">C</span><span class="w"> </span><span class="o">---</span><span class="m">5</span><span class="o">---</span><span class="w"> </span><span class="nb">D</span><span class="w">
+</span></code></pre></div></div>
+<ul>
+  <li>
+    <p>정점 : A, B, C, D</p>
+  </li>
+  <li>
+    <p>간선들 (가중치 포함) : (A-B:1), (A-C:3), (A-D:2), (B-D:4), (C-D:5)</p>
+  </li>
+</ul>
+
+<p>먼저 기본에 따라서 가중치를 정렬한다</p>
+
+<ul>
+  <li>간선들 (가중치 정렬) : (A-B:1), (A-D:2), (A-C:3), (B-D:4), (C-D:5)</li>
+</ul>
+
+<p>이후로 사이클이 생기는 것들을 제외한다. 여기서 사이클이란 하나의 루프가 생성되는것을 말한다.</p>
+
+<ul>
+  <li>
+    <p>선택: (A-B) ✅</p>
+  </li>
+  <li>
+    <p>선택: (A-D) ✅</p>
+  </li>
+  <li>
+    <p>선택: (A-C) ✅</p>
+  </li>
+  <li>
+    <p>스킵: (B-D) ❌ (사이클 생김)</p>
+  </li>
+  <li>
+    <p>스킵: (C-D) ❌ (사이클 생김)</p>
+  </li>
+</ul>
+
+<p>그러면 MST가 완성이 된다</p>
+
+<ul>
+  <li>MST : (A-B), (A-D), (A-C) 로 총 간선 3(정점4에서-1)개가 나온다</li>
+</ul>
+
+<h3 id="크루스칼kruskal-알고리즘-함수">크루스칼(Kruskal) 알고리즘 함수</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 1. 입력: 간선 리스트 (가중치, 정점1, 정점2)
+</span><span class="n">edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">'A'</span><span class="p">,</span> <span class="s">'B'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s">'A'</span><span class="p">,</span> <span class="s">'C'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s">'A'</span><span class="p">,</span> <span class="s">'D'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s">'B'</span><span class="p">,</span> <span class="s">'D'</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s">'C'</span><span class="p">,</span> <span class="s">'D'</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># 2. 간선 정렬
+</span><span class="n">edges</span><span class="p">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># 가중치 기준 정렬됨
+</span>
+<span class="c1"># 3. 유니온 파인드를 위한 부모 노드 초기화
+</span><span class="n">parent</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="c1"># 경로 압축 기법 사용
+</span>    <span class="k">if</span> <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x</span><span class="p">:</span> <span class="c1"># parent[원소 값]가 원소와 다르다면
+</span>        <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="c1"># parent[원소 값] 의 최종 root를 저장한다
+</span>    <span class="k">return</span> <span class="n">parent</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="c1"># root 값 반환
+</span>
+<span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="n">root_x</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">root_y</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">root_x</span> <span class="o">!=</span> <span class="n">root_y</span><span class="p">:</span>
+        <span class="n">parent</span><span class="p">[</span><span class="n">root_y</span><span class="p">]</span> <span class="o">=</span> <span class="n">root_x</span>  <span class="c1"># 두 집합을 합침
+</span>
+<span class="c1"># 4. 정점 초기화
+</span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">edge</span> <span class="c1"># edges의 _에 가중치, u에 시작점, v에 마지막점 하나씩 저장
+</span>    <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span> <span class="c1"># u가 parent에 없다면
+</span>        <span class="n">parent</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span> <span class="c1"># parent에 u 저장
+</span>    <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span> <span class="c1"># v가 parent에 없다면
+</span>        <span class="n">parent</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="c1"># parent에 v 저장
+</span>
+<span class="c1"># 5. MST 구성
+</span><span class="n">mst</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># mst라는 빈 리스트 생성
+</span><span class="k">for</span> <span class="n">weight</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span> <span class="c1"># edges 원소들의 가중치, 처음값, 마지막값 하나씩
+</span>    <span class="k">if</span> <span class="n">find</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">!=</span> <span class="n">find</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>  <span class="c1"># ↑ 사이클 안 생기면, 루트값 비교, 트리 납작하게
+</span>        <span class="n">union</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="c1"># parent 트리를 납작하게 만듦
+</span>        <span class="n">mst</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span> <span class="c1"># 사이클 없는 간선만 mst에 처음값, 마지막값, 가중치 저장
+</span>
+<span class="c1"># 6. 결과 출력
+</span><span class="k">print</span><span class="p">(</span><span class="s">"최소 신장 트리:"</span><span class="p">,</span> <span class="n">mst</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>먼저 첫번째 정렬한 것이 핵심인거 같아. 정렬을 안했으면 긴것들이 mst에 들어갈 수 있으니까</p>
+
+<h2 id="프림prim-알고리즘-기본">프림(Prim) 알고리즘 기본</h2>
+
+<p>크루스칼이 간선 중심이라면, 프림은 정점 중심으로 최소 신장 트리를 만들어 나가는 방식이야. 시작 정점 하나를 기준으로, 가장 가까운 정점을 하나씩 연결하면서 트리를 확장해 나가는 방식</p>
+
+<p>알기쉽게 시각화를 예로 들어보자</p>
+
+<h3 id="프림-알고리즘-시각화">프림 알고리즘 시각화</h3>
+
+<div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">   </span><span class="nv">A</span><span class="w"> </span><span class="o">---</span><span class="m">1</span><span class="o">---</span><span class="w"> </span><span class="nv">B</span><span class="w">
+   </span><span class="o">|</span><span class="w">         </span><span class="o">|</span><span class="w">
+   </span><span class="m">3</span><span class="w">         </span><span class="m">4</span><span class="w">
+   </span><span class="o">|</span><span class="w">         </span><span class="o">|</span><span class="w">
+   </span><span class="nb">C</span><span class="w"> </span><span class="o">---</span><span class="m">5</span><span class="o">---</span><span class="w"> </span><span class="nb">D</span><span class="w">
+</span></code></pre></div></div>
+
+<p>간선 목록 (가중치 포함) : (A-B:1), (A-C:3), (B-D:4), (C-D:5)</p>
+
+<p>🎯 프림 알고리즘 동작 (시작점: A)</p>
+
+<p>1️⃣ 초기 상태</p>
+<ul>
+  <li>
+    <p>시작 정점: A</p>
+  </li>
+  <li>
+    <p>MST에 A 추가</p>
+  </li>
+  <li>
+    <p>후보 간선: (A-B:1), (A-C:3)</p>
+  </li>
+</ul>
+
+<p>2️⃣ (A-B:1) 선택</p>
+<ul>
+  <li>
+    <p>정점 B 추가</p>
+  </li>
+  <li>
+    <p>후보 간선: (A-C:3), (B-D:4)</p>
+  </li>
+</ul>
+
+<p>3️⃣ (A-C:3) 선택</p>
+<ul>
+  <li>
+    <p>정점 C 추가</p>
+  </li>
+  <li>
+    <p>후보 간선: (B-D:4), (C-D:5)</p>
+  </li>
+</ul>
+
+<p>4️⃣ (B-D:4) 선택</p>
+<ul>
+  <li>정점 D 추가 → 끝!</li>
+</ul>
+
+<p>📌 MST 구성:</p>
+
+<ul>
+  <li>(A-B), (A-C), (B-D)</li>
+</ul>
+
+<h3 id="프림prim-알고리즘-함수">프림(Prim) 알고리즘 함수</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">heapq</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="c1"># 1. 그래프 정의 (인접 리스트 형태)
+</span><span class="n">graph</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+<span class="n">graph</span><span class="p">[</span><span class="s">'A'</span><span class="p">].</span><span class="n">extend</span><span class="p">([(</span><span class="s">'B'</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">'C'</span><span class="p">,</span> <span class="mi">3</span><span class="p">)])</span>
+<span class="n">graph</span><span class="p">[</span><span class="s">'B'</span><span class="p">].</span><span class="n">extend</span><span class="p">([(</span><span class="s">'A'</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">'D'</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
+<span class="n">graph</span><span class="p">[</span><span class="s">'C'</span><span class="p">].</span><span class="n">extend</span><span class="p">([(</span><span class="s">'A'</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="s">'D'</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])</span>
+<span class="n">graph</span><span class="p">[</span><span class="s">'D'</span><span class="p">].</span><span class="n">extend</span><span class="p">([(</span><span class="s">'B'</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="s">'C'</span><span class="p">,</span> <span class="mi">5</span><span class="p">)])</span>
+
+<span class="c1"># 2. 프림 알고리즘 함수
+</span><span class="k">def</span> <span class="nf">prim</span><span class="p">(</span><span class="n">start</span><span class="p">):</span> <span class="c1"># A가 start
+</span>    <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1"># visited라는 집합 자료형 생성
+</span>    <span class="n">mst</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># 나중에 반환할 빈 mst 생성
+</span>    <span class="n">total_weight</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># 총 가중치 0으로 시작
+</span>    <span class="n">pq</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># heapq 사용할 리스트 생성
+</span>
+    <span class="c1"># 시작 정점에서 연결된 간선을 모두 큐에 추가
+</span>    <span class="n">visited</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">start</span><span class="p">)</span> <span class="c1"># 자신의 값 visited에 추가
+</span>    <span class="k">for</span> <span class="n">neighbor</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">start</span><span class="p">]:</span> <span class="c1"># graph start의 모든 이웃과 가중치 하나씩
+</span>        <span class="n">heapq</span><span class="p">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">pq</span><span class="p">,</span> <span class="p">(</span><span class="n">weight</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">))</span> <span class="c1"># pq에 가중치, start, 이웃 추가, 처음에는 (1,'A','B'), (3,'A','C')
+</span>
+    <span class="k">while</span> <span class="n">pq</span><span class="p">:</span> <span class="c1"># pq에 원소가 있을 때
+</span>        <span class="n">weight</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">heapq</span><span class="p">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">pq</span><span class="p">)</span> <span class="c1"># pq에서 팝한거를 weight, u, v에 저장
+</span>        <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span> <span class="c1"># v가 visited에 없다면 
+</span>            <span class="n">visited</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="c1"># 추가
+</span>            <span class="n">mst</span><span class="p">.</span><span class="n">append</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span> <span class="c1"># u, v, 가중치를 mst에 저장
+</span>            <span class="n">total_weight</span> <span class="o">+=</span> <span class="n">weight</span> <span class="c1"># 총 가중치에 가중치 추가
+</span>            <span class="k">for</span> <span class="n">neighbor</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span> <span class="c1"># 이웃의 이웃들과 가중치 하나씩
+</span>                <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span> <span class="c1"># 이웃이 visited에 없으면
+</span>                    <span class="n">heapq</span><span class="p">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">pq</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">))</span> <span class="c1"># pq에 가중치, 시작, 이웃을 push 한다
+</span>
+    <span class="k">return</span> <span class="n">mst</span><span class="p">,</span> <span class="n">total_weight</span>
+
+<span class="c1"># 3. 실행
+</span><span class="n">mst_result</span><span class="p">,</span> <span class="n">cost</span> <span class="o">=</span> <span class="n">prim</span><span class="p">(</span><span class="s">'A'</span><span class="p">)</span> <span class="c1"># prim('A') 를 실행해서 mst_result와 cost를 받아온다
+</span><span class="k">print</span><span class="p">(</span><span class="s">"최소 신장 트리:"</span><span class="p">,</span> <span class="n">mst_result</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"총 비용:"</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Prim 알고리즘도 마찬가지로 heapq를 사용해서 push 되는 값들이 최솟값이다. 이것이 특징이라고 생각이 된다.</p>
+
+<h2 id="마무리">마무리</h2>
+
+<h3 id="공통점-크루스칼--프림">공통점 (크루스칼 &amp; 프림)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">💡 목표</td>
+      <td style="text-align: center">모든 정점을 최소 비용으로 연결하는 MST 찾기</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🌐 입력</td>
+      <td style="text-align: center">가중치가 있는 무방향 그래프</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🔁 동작 방식</td>
+      <td style="text-align: center">가장 작은 비용의 간선을 선택해 하나씩 추가</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🚫 사이클 방지</td>
+      <td style="text-align: center">사이클이 생기면 간선 추가 X</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">📦 결과</td>
+      <td style="text-align: center">간선 수 = 정점 수 - 1 인 트리 구조</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="차이점-크루스칼--프림">차이점 (크루스칼 &amp; 프림)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">크루스칼(Kruskal)</th>
+      <th style="text-align: center">프림(Prim)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">⚙️ 알고리즘 방식</td>
+      <td style="text-align: center">간선 중심 (Edge-based)</td>
+      <td style="text-align: center">정점 중심 (Vertex-based)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">📊 시작 방법</td>
+      <td style="text-align: center">간선 전체를 정렬한 후 하나씩 선택</td>
+      <td style="text-align: center">하나의 정점에서 시작, 주변 확장</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🔁 선택 기준</td>
+      <td style="text-align: center">가중치 작은 간선부터 차례로 선택</td>
+      <td style="text-align: center">가장 가까운 정점을 선택</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🛠 자료구조</td>
+      <td style="text-align: center">유니온-파인드 (Disjoint Set) 사용</td>
+      <td style="text-align: center">우선순위 큐 (Heap) 사용</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">🔄 간선 정렬 필요</td>
+      <td style="text-align: center">O (처음에 전체 간선 정렬)</td>
+      <td style="text-align: center">X (큐에서 최소 간선 선택)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">📈 효율</td>
+      <td style="text-align: center">간선 수가 적은 그래프에 유리</td>
+      <td style="text-align: center">간선 수가 많은 그래프에 유리</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">⛔ 사이클 확인 방법</td>
+      <td style="text-align: center">유니온-파인드로 확인</td>
+      <td style="text-align: center">방문 여부로 확인</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">💥 가중치 음수</td>
+      <td style="text-align: center">O (문제 없음)</td>
+      <td style="text-align: center">O (가능, 다익스트라와는 다름)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="비유-크루스칼--프림">비유 (크루스칼 &amp; 프림)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">알고리즘</th>
+      <th style="text-align: center">비유</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">크루스칼</td>
+      <td style="text-align: center">“전국 도로 목록을 정리해서, 가장 싸고 필요 없는 건 빼면서 도로 연결해 나가는 느낌”</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">프림</td>
+      <td style="text-align: center">“서울에서 시작해서, 점점 가까운 도시를 하나씩 연결해서 전국으로 확장해 나가는 느낌”</td>
+    </tr>
+  </tbody>
+</table>
+
+  
+</article>
+
+
+
+  <hr class="dingbat related mb6" />
+
+
+
+
+
+
+  
+     
+
+
+  <aside class="about related mt4 mb4" role="complementary">
+    
+    
+
+<div class="author mt4">
+  
+
+  
+    
+
+
+<img
+  
+    src="https://via.placeholder.com/128x128"
+    srcset="https://via.placeholder.com/128x128 1x,https://via.placeholder.com/256x256 2x"
+    
+  
+  alt="Kwansoo Kim"
+  class="avatar"
+  
+  width="120"
+  height="120"
+  loading="lazy"
+/>
+
+  
+
+  
+  
+  <h2  class="page-title hr-bottom">
+    About
+  </h2>
+
+  <p>noob in Computer Science, currently getting education in Krafton Jungle.</p>
+
+
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+
+  </aside>
+
+
+  
+
+  
+    
+
+
+  
+
+  
+    
+
+
+  <aside class="other-projects related mb0" role="complementary">  <h2>Related Posts</h2>  <div class="columns">          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/computersystem/linking/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/ComputerSystem.png"    alt="링커(Linking)"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/computersystem/linking/" class="flip-title">링커(Linking)</a>  </h3>      <p class="project-card-text fine" property="disambiguatingDescription">      링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.    </p>      <a class="fill-card no-hover" href="/blog/computersystem/linking/" tabindex="-1"><span class="sr-only">Continue reading 링커(Linking)</span></a></article>              </div>          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/algorithm/pre-order-post-order/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/Algorithm.png"    alt="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/algorithm/pre-order-post-order/" class="flip-title">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</a>  </h3>      <a class="fill-card no-hover" href="/blog/algorithm/pre-order-post-order/" tabindex="-1"><span class="sr-only">Continue reading 전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</span></a></article>              </div>      </div></aside>
+
+  
+
+  
+    
+
+
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/c/malloc-calloc-realloc/" class="flip-title"><span>동적 메모리 할당(Dynamic memory allocation)</span></a>  <time class="faded fine" datetime="2025-04-11T00:00:00+00:00">11 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/binary-tree-and-binary-search-tree/" class="flip-title"><span>이진 트리(Binary tree) 와 이진 검색 트리(Binary search tree)</span></a>  <time class="faded fine" datetime="2025-03-24T00:00:00+00:00">24 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/trie/" class="flip-title"><span>트라이(Trie)</span></a>  <time class="faded fine" datetime="2025-04-02T00:00:00+00:00">02 Apr 2025</time></li>      </ul></aside>
+
+  
+
+  
+    
+
+  
+
+
+  
+<footer class="content" role="contentinfo">
+  <hr/>
+  
+    <p><small class="copyright">© 2024. All rights reserved.
+</small></p>
+  
+  
+    <nav class="legal"><small>
+    
+      
+      <a class="heading flip-title" href="/LICENSE/">LICENSE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/NOTICE/">NOTICE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/CHANGELOG/">CHANGELOG</a>
+      
+    
+    </small></nav>
+  
+  
+  <hr class="sr-only"/>
+</footer>
+
+
+</main>
+
+  <hy-drawer
+  id="_drawer"
+  class=""
+  side="left"
+  threshold="10"
+  noscroll
+  
+>
+  <header id="_sidebar" class="sidebar" role="banner">
+    
+
+
+
+
+<div class="sidebar-bg sidebar-overlay" style="background-color:rgb(200,200,200);background-image:url(/assets/img/sidebar-bg.png)"></div>
+
+    <div class="sidebar-sticky">
+  <div class="sidebar-about">
+    
+      <a class="no-hover" href="/" tabindex="-1">
+        <img src="/assets/img/PurifiedPotion.png" class="avatar" alt="PurifiedPotion's Blog" width="120" height="120" loading="lazy" />
+      </a>
+    
+    <a class="sidebar-title" href="/"><h2 class="h1">PurifiedPotion's Blog</h2></a>
+    
+    
+      <p class="">
+        Blog for Computer Science
+
+      </p>
+    
+  </div>
+
+  <nav class="sidebar-nav heading" role="navigation">
+    <span class="sr-only">Navigation:</span>
+<ul>
+  
+    
+      
+      <li>
+        <a
+          id="_drawer--opened"
+          href="/algorithm/"
+          class="sidebar-nav-item "
+          
+        >
+          ALGORITHM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/c/"
+          class="sidebar-nav-item "
+          
+        >
+          C 언어
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/computersystem/"
+          class="sidebar-nav-item "
+          
+        >
+          COMPUTER SYSTEM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/diary/"
+          class="sidebar-nav-item "
+          
+        >
+          회고
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/projects/"
+          class="sidebar-nav-item "
+          
+        >
+          PROJECTS
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/docs/"
+          class="sidebar-nav-item "
+          
+        >
+          DOCUMENTATION
+        </a>
+      </li>
+    
+  
+</ul>
+
+  </nav>
+
+  
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+  </header>
+</hy-drawer>
+<hr class="sr-only" hidden />
+
+</hy-push-state>
+
+
+  <!--[if gt IE 10]><!---->
+  <script nomodule>(()=>{var t,n=document.createElement("script");!("noModule"in n)&&"onbeforeload"in n&&(t=!1,document.addEventListener("beforeload",function(e){if(e.target===n)t=!0;else if(!e.target.hasAttribute("nomodule")||!t)return;e.preventDefault()},!0),n.type="module",n.src=".",document.head.appendChild(n),n.remove())})();
+</script>
+  <script src="/assets/js/hydejack-9.2.1.js" type="module"></script>
+  <script src="/assets/js/LEGACY-hydejack-9.2.1.js" nomodule defer></script>
+  
+
+  
+
+  <script type="module">
+    if ('serviceWorker' in navigator) {
+      /**/
+      navigator.serviceWorker.getRegistration()
+        .then(r => r.unregister())
+        .catch(() => {});
+      /**/
+    }
+  </script>
+<!--<![endif]-->
+  
+
+
+
+<div hidden>
+  
+  <h2 class="sr-only">Templates (for web app):</h2>
+
+  <template id="_animation-template">
+  <div class="animation-main fixed-top">
+    <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+</ul></nav>
+    <div class="content">
+      <div class="page"></div>
+    </div>
+  </div>
+</template>
+
+  <template id="_loading-template">
+  <div class="loading nav-btn fr">
+    <span class="sr-only">Loading…</span>
+    <span class="icon-cog"></span>
+  </div>
+</template>
+
+  <template id="_error-template">
+  <div class="page">
+    <h1 class="page-title">Error</h1>
+    
+    
+    <p class="lead">
+      Sorry, an error occurred while loading <a class="this-link" href=""></a>.
+
+    </p>
+  </div>
+</template>
+
+  <template id="_permalink-template">
+  <a href="#" class="permalink">
+    <span class="sr-only">Permalink</span>
+    <span class="content-hash"></span>
+  </a>
+</template>
+
+  
+    <template id="_cookies-banner-template">
+  <div id="_cookies-banner" class="navbar fixed-bottom CookiesOK">
+    <div class="content">
+      <div class="nav-btn-bar">
+        <small class="faded">
+          <span>This site uses cookies. <a href="/cookies-policy/">Cookies Policy</a>.
+</span>
+          <button id="_cookies-ok" class="btn btn-primary btn-sm">Okay</button>
+        </small>
+      </div>
+    </div>
+  </div>
+</template>
+
+  
+  
+    <template id="_dark-mode-template">
+  <button id="_dark-mode" class="nav-btn no-hover" >
+    <span class="sr-only">Dark Mode</span>
+    <span class="icon-brightness-contrast"></span>
+  </button>
+</template>
+
+  
+  
+    <template id="_search-template">
+  <button id="_search" class="nav-btn no-hover">
+    <label class="sr-only" for="_search-input">Search</label>
+    <span class="icon-search"></span>
+  </button>
+  <div id="_search-box">
+    <div class="nav-btn">
+      <span class="icon-search"></span>
+    </div>
+    <input 
+      id="_search-input"
+      type="search"
+      class="form-control form-control-lg nav-btn"
+      placeholder="Build with JEKYLL_ENV=production to enable search."
+    />
+    <button type="reset" class="nav-btn no-hover">
+      <span class="sr-only">Close</span>
+      <span class="icon-cross"></span>
+    </button>
+  </div>
+  <div id="_hits"></div>
+</template>
+
+  
+</div>
+
+</body>
+</html>

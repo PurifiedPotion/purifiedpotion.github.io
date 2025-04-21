@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+
+
+
+
+
+
+<head>
+  
+
+
+
+
+
+
+  
+    
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>그래프(Graph) | PurifiedPotion’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="그래프(Graph)" />
+<meta name="author" content="Kwansoo Kim" />
+<meta property="og:locale" content="ko_KR, en_US" />
+<meta name="description" content="A blog for computer science" />
+<meta property="og:description" content="A blog for computer science" />
+<meta property="og:site_name" content="PurifiedPotion’s Blog" />
+<meta property="og:image" content="/assets/img/blog/postimage/Algorithm.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-03-28T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/assets/img/blog/postimage/Algorithm.png" />
+<meta property="twitter:title" content="그래프(Graph)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Kwansoo Kim"},"dateModified":"2025-03-28T00:00:00+00:00","datePublished":"2025-03-28T00:00:00+00:00","description":"A blog for computer science","headline":"그래프(Graph)","image":"/assets/img/blog/postimage/Algorithm.png","mainEntityOfPage":{"@type":"WebPage","@id":"/blog/algorithm/vertex-edge-node-arc/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/PurifiedPotion.png"},"name":"Kwansoo Kim"},"url":"/blog/algorithm/vertex-edge-node-arc/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  
+
+
+
+  <meta name="color-scheme" content="dark light">
+
+
+
+  <meta name="theme-color" content="rgb(200,200,200)">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PurifiedPotion's Blog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="application-name" content="PurifiedPotion's Blog">
+
+<meta name="generator" content="Hydejack v9.2.1" />
+
+
+<link rel="alternate" href="/blog/algorithm/vertex-edge-node-arc/" hreflang="ko-kr, en-us">
+
+<link type="application/atom+xml" rel="alternate" href="/feed.xml" title="PurifiedPotion&apos;s Blog" />
+
+
+<link rel="shortcut icon"    href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+
+<link rel="manifest" href="/assets/site.webmanifest">
+
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"><link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+
+
+<link rel="preload" href="/assets/img/swipe.svg" as="image" id="_hrefSwipeSVG">
+
+<link rel="dns-prefetch" href="/assets/js/search-worker-9.2.1.js" as="worker" id="_hrefSearch">
+
+
+
+
+
+<script>((r,a)=>{function d(e,t,n,o){e.addEventListener?e.addEventListener(t,n,o):e.attachEvent?e.attachEvent("on"+t,n):e["on"+t]=n}r.loadJS=function(e,t){var n=a.createElement("script"),e=(n.src=e,t&&d(n,"load",t,{once:!0}),a.scripts[0]);return e.parentNode.insertBefore(n,e),n},r._loaded=!1,r.loadJSDeferred=function(e,t){var n=a.createElement("script");function o(){r._loaded=!0,t&&d(n,"load",t,{once:!0});var e=a.scripts[0];e.parentNode.insertBefore(n,e)}return n.src=e,r._loaded?o():d(r,"load",o,{once:!0}),n},r.setRel=r.setRelStylesheet=function(e){d(a.getElementById(e),"load",function(){this.rel="stylesheet"},{once:!0})}})(window,document);
+!function(a){"use strict";var b=function(b,c,d){function e(a){return h.body?a():void setTimeout(function(){e(a)})}function f(){i.addEventListener&&i.removeEventListener("load",f),i.media=d||"all"}var g,h=a.document,i=h.createElement("link");if(c)g=c;else{var j=(h.body||h.getElementsByTagName("head")[0]).childNodes;g=j[j.length-1]}var k=h.styleSheets;i.rel="stylesheet",i.href=b,i.media="only x",e(function(){g.parentNode.insertBefore(i,c?g:g.nextSibling)});var l=function(a){for(var b=i.href,c=k.length;c--;)if(k[c].href===b)return a();setTimeout(function(){l(a)})};return i.addEventListener&&i.addEventListener("load",f),i.onloadcssdefined=l,l(f),i};"undefined"!=typeof exports?exports.loadCSS=b:a.loadCSS=b}("undefined"!=typeof global?global:this);
+!function(a){if(a.loadCSS){var b=loadCSS.relpreload={};if(b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}},b.poly=function(){for(var b=a.document.getElementsByTagName("link"),c=0;c<b.length;c++){var d=b[c];"preload"===d.rel&&"style"===d.getAttribute("as")&&(a.loadCSS(d.href,d,d.getAttribute("media")),d.rel=null)}},!b.support()){b.poly();var c=a.setInterval(b.poly,300);a.addEventListener&&a.addEventListener("load",function(){b.poly(),a.clearInterval(c)}),a.attachEvent&&a.attachEvent("onload",function(){a.clearInterval(c)})}}}(this);
+!function(w) {
+  w._baseURL = '/';
+  w._publicPath = '/assets/js/';
+  w._noPushState = false;
+  w._noDrawer = false;
+  w._noNavbar = false;
+  w._noToc = false;
+  w._noSearch = false;
+  w._advertise = false;
+  w._search = {
+    DATA_URL: '/assets/sitedata.json?no-cache',
+    STORAGE_KEY: 'mini-search/',
+    INDEX_KEY: 'index--2025-04-21T11:57:03+00:00',
+  };
+  w._clapButton = true;
+}(window);</script>
+
+
+<script async src="/assets/bower_components/MathJax/es5/tex-mml-chtml.js" id="_MathJax"></script>
+
+
+<!--[if gt IE 8]><!---->
+
+  
+
+
+
+
+<link rel="stylesheet" href="/assets/css/hydejack-9.2.1.css" id="_stylePreload">
+<link rel="stylesheet" href="/assets/icomoon/style.css" id="_iconsPreload">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700%7CNoto+Sans:400,400i,700,700i&display=swap" id="_fontsPreload">
+
+
+
+  <style id="_pageStyle">
+
+html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5);--accent-color-highlight: rgba(200,200,200,0.1);--accent-color-darkened: #b5b5b5;--theme-color: rgb(200,200,200);--dark-mode-body-bg: #2d2d2d;--dark-mode-border-color: #393939}
+
+</style>
+
+
+<!--<![endif]-->
+
+
+
+
+
+</head>
+
+<body class="no-break-layout">
+  
+<script>
+  window._sunrise = 6;
+  window._sunset =  18;
+  ((e,s)=>{var d="light-mode",a="dark-mode",o=(new Date).getHours();"matchMedia"in e&&e.matchMedia("(prefers-color-scheme)")||(e=(o=o<=e._sunrise||o>=e._sunset?a:d)==a?d:a,s.body.classList.add(o),s.body.classList.remove(e))})(window,document);
+
+</script>
+
+
+
+<hy-push-state
+  id="_pushState"
+  replace-selector="#_main"
+  link-selector="a[href]:not([href^='/assets/']):not(.external):not(.no-push-state)"
+  script-selector="script"
+  duration="500"
+  hashchange
+>
+  
+  
+  <div id="_navbar" class="navbar fixed-top">
+  <div class="content">
+    <span class="sr-only">Jump to:</span>
+    <div class="nav-btn-bar">
+      <a id="_menu" class="nav-btn no-hover" href="#_drawer--opened">
+        <span class="sr-only">Navigation</span>
+        <span class="icon-menu"></span>
+      </a>
+      <div class="nav-span"></div>
+    </div>
+  </div>
+</div>
+<hr class="sr-only" hidden />
+
+  <main
+  id="_main"
+  class="content layout-post"
+  role="main"
+>
+  <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+    <li><a href="/">home</a></li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/">blog</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/algorithm/">algorithm</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          <span>vertex-edge-node-arc</span>
+        
+      </li>
+    
+  
+</ul></nav>
+  
+
+
+
+
+
+
+
+
+
+
+<article id="post-blog-algorithm-vertex-edge-node-arc" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      
+        그래프(Graph)
+      
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time> in <span>Blog</span> / <a href="/algorithm/" class="flip-title">ALGORITHM</a> 
+      </span>
+      
+    </div>
+
+    
+    
+      
+        <div class="img-wrapper lead aspect-ratio sixteen-nine flip-project-img">
+          
+
+
+<img
+  
+    src="/assets/img/blog/postimage/Algorithm.png"
+  
+  alt="그래프(Graph)"
+  
+  
+  width="864"
+  height="486"
+  loading="lazy"
+/>
+
+        </div>
+      
+      
+    
+
+    
+
+
+
+  
+
+
+  </header>
+
+  
+    <ul class="large-only" id="markdown-toc">
+  <li><a href="#그래프graph-자료구조에-사용되는-용어" id="markdown-toc-그래프graph-자료구조에-사용되는-용어">그래프(Graph) 자료구조에 사용되는 용어</a>    <ul>
+      <li><a href="#vertex정점" id="markdown-toc-vertex정점">Vertex(정점)</a></li>
+      <li><a href="#edge간선" id="markdown-toc-edge간선">Edge(간선)</a></li>
+      <li><a href="#node노드" id="markdown-toc-node노드">Node(노드)</a></li>
+      <li><a href="#arc호" id="markdown-toc-arc호">Arc(호)</a></li>
+      <li><a href="#그래프-용어-정리-마무리" id="markdown-toc-그래프-용어-정리-마무리">그래프 용어 정리 마무리</a></li>
+    </ul>
+  </li>
+  <li><a href="#그래프-표현-방식" id="markdown-toc-그래프-표현-방식">그래프 표현 방식</a>    <ul>
+      <li><a href="#인접-리스트-adjacency-list" id="markdown-toc-인접-리스트-adjacency-list">인접 리스트 (Adjacency List)</a></li>
+      <li><a href="#인접-행렬-adjacency-matrix" id="markdown-toc-인접-행렬-adjacency-matrix">인접 행렬 (Adjacency Matrix)</a></li>
+      <li><a href="#간선-리스트-edge-list" id="markdown-toc-간선-리스트-edge-list">간선 리스트 (Edge List)</a></li>
+    </ul>
+  </li>
+  <li><a href="#방향-그래프-vs-무방향-그래프" id="markdown-toc-방향-그래프-vs-무방향-그래프">방향 그래프 vs 무방향 그래프</a>    <ul>
+      <li><a href="#가중치-그래프-weighted-graph" id="markdown-toc-가중치-그래프-weighted-graph">가중치 그래프 (Weighted Graph)</a></li>
+      <li><a href="#그래프-순회-탐색" id="markdown-toc-그래프-순회-탐색">그래프 순회 (탐색)</a></li>
+    </ul>
+  </li>
+  <li><a href="#그래프-표현-방식-마무리" id="markdown-toc-그래프-표현-방식-마무리">그래프 표현 방식 마무리</a></li>
+</ul>
+
+<h2 id="그래프graph-자료구조에-사용되는-용어">그래프(Graph) 자료구조에 사용되는 용어</h2>
+
+<p>vertex, edge, node, arc에 대해 설명하고자 해</p>
+
+<h3 id="vertex정점">Vertex(정점)</h3>
+
+<ul>
+  <li>
+    <p>그래프에서의 ‘점’, 즉 개체 하나하나를 의미함.</p>
+  </li>
+  <li>
+    <p>예: 사람, 도시, 웹페이지 등</p>
+  </li>
+  <li>
+    <p>예시 코드에서: ‘A’, ‘B’, ‘C’ 같은 것</p>
+  </li>
+  <li>
+    <p>📌 Node와 같은 뜻이야! (자세한 건 아래에서)</p>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'A'</span><span class="p">:</span> <span class="p">[</span><span class="s">'B'</span><span class="p">,</span> <span class="s">'C'</span><span class="p">],</span>
+    <span class="s">'B'</span><span class="p">:</span> <span class="p">[</span><span class="s">'A'</span><span class="p">],</span>
+    <span class="s">'C'</span><span class="p">:</span> <span class="p">[</span><span class="s">'A'</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>여기서 ‘A’, ‘B’, ‘C’는 모두 vertex 또는 node라고 할 수 있어.</p>
+
+<h3 id="edge간선">Edge(간선)</h3>
+
+<ul>
+  <li>
+    <p>두 vertex를 연결하는 선</p>
+  </li>
+  <li>
+    <p>예: 길, 친구 관계, 링크 등</p>
+  </li>
+  <li>
+    <p>양방향 혹은 단방향일 수 있음</p>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># A -- B
+#  \
+#   C
+</span>
+<span class="c1"># 간선: A-B, A-C
+</span></code></pre></div></div>
+
+<ul>
+  <li>
+    <p>위 코드에서는 (‘A’, ‘B’), (‘A’, ‘C’)가 edge야.</p>
+  </li>
+  <li>
+    <p>양방향 그래프에서는 (‘A’, ‘B’) == (‘B’, ‘A’)</p>
+  </li>
+  <li>
+    <p>단방향 그래프에서는 다름 → 이게 아래 ‘Arc’와 연결됨</p>
+  </li>
+</ul>
+
+<h3 id="node노드">Node(노드)</h3>
+
+<ul>
+  <li>
+    <p>사실상 Vertex와 같은 의미</p>
+  </li>
+  <li>
+    <p>그래프 이론에서는 보통 vertex, 트리에서는 보통 node라고 함</p>
+  </li>
+  <li>
+    <p>Node ≈ Vertex</p>
+  </li>
+</ul>
+
+<h3 id="arc호">Arc(호)</h3>
+
+<ul>
+  <li>
+    <p>단방향 간선, 방향이 있는 edge라고 생각하면 됨</p>
+  </li>
+  <li>
+    <p>예: A → B</p>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 단방향 그래프
+</span><span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'A'</span><span class="p">:</span> <span class="p">[</span><span class="s">'B'</span><span class="p">],</span>  <span class="c1"># A → B
+</span>    <span class="s">'B'</span><span class="p">:</span> <span class="p">[</span><span class="s">'C'</span><span class="p">],</span>  <span class="c1"># B → C
+</span>    <span class="s">'C'</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>여기서 (A, B)는 Arc, (B, A)는 없음.</p>
+
+<h3 id="그래프-용어-정리-마무리">그래프 용어 정리 마무리</h3>
+
+<p>그러면 각 용어에 대해 정리하면, 아래와 같아</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">용어</th>
+      <th style="text-align: center">의미</th>
+      <th style="text-align: center">비고</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Vertex</td>
+      <td style="text-align: center">그래프에서의 “정점”</td>
+      <td style="text-align: center">Node와 같은 말</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Node</td>
+      <td style="text-align: center">구조에서의 “점”</td>
+      <td style="text-align: center">Tree에서 사용하는 말</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Edge</td>
+      <td style="text-align: center">두 정점을 연결하는 선</td>
+      <td style="text-align: center">양방향/단방향 모두 가능</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Arc</td>
+      <td style="text-align: center">방향이 있는 간선</td>
+      <td style="text-align: center">단방향 edge</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>파이썬에서 그래프 구현할 때는 <strong><em>딕셔너리 / 리스트 of 튜플/ 인접 행렬</em></strong>을 보통 사용한다고 하니 참고하자</p>
+
+<h2 id="그래프-표현-방식">그래프 표현 방식</h2>
+
+<p>그래프란? 그래프는 <strong><em>노드(정점, Vertex)</em></strong>와 <strong><em>간선(Edge)</em></strong>로 구성된 자료구조야.</p>
+
+<p>그래프의 표현 방식에 대해 알아볼게</p>
+
+<h3 id="인접-리스트-adjacency-list">인접 리스트 (Adjacency List)</h3>
+
+<p>가장 많이 쓰이는 방식으로 딕셔너리와 리스트로 구성돼 있어. 공간 복잡도 O(V+E). 연결 여부 확인 느릴 수 있음</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 단방향 그래프
+</span><span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>1은 2, 3과 연결됨</p>
+  </li>
+  <li>
+    <p>2는 4와 연결됨</p>
+  </li>
+  <li>
+    <p>연결된 노드를 리스트로 관리</p>
+  </li>
+</ul>
+
+<h3 id="인접-행렬-adjacency-matrix">인접 행렬 (Adjacency Matrix)</h3>
+
+<p>이차원 배열로 표현하는 방식이야. 공간 복잡도 O(V^2)이지만 O(1)로 간선 존재 여부 확인 가능</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">graph</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># node 0
+</span>    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>  <span class="c1"># node 1
+</span>    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>  <span class="c1"># node 2
+</span>    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># node 3
+</span><span class="p">]</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>graph[0][1] == 1 인데, 이 뜻은 0과 1이 연결되었다는 의미야</p>
+  </li>
+  <li>
+    <p>연결 여부만 보면 빠르지만, 메모리 소모 많음 (노드 수가 많으면 비효율적)</p>
+  </li>
+</ul>
+
+<h3 id="간선-리스트-edge-list">간선 리스트 (Edge List)</h3>
+
+<p>간선만 따로 리스트로 관리하는 방법이야</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">edges</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>1은 2와 3과 연결되어 있다는 얘기야</p>
+  </li>
+  <li>
+    <p>보통 알고리즘 문제에서 그래프를 입력받을 때 자주 나와</p>
+  </li>
+  <li>
+    <p>이후 인접 리스트나 행렬로 변환해서 사용하는 경우 많음</p>
+  </li>
+</ul>
+
+<h2 id="방향-그래프-vs-무방향-그래프">방향 그래프 vs 무방향 그래프</h2>
+
+<p>여기서 방향 그래프(간선이 한 방향만 가능, 예 : 트위터 팔로우) 와 무방향 그래프(간선이 양방향, 예 : 친구 관계)의 차이점에 대해 다루고 갈게</p>
+
+<p><strong><em>인접 리스트를 통해 비교해보자</em></strong></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[],</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위 아래를 비교해 보았을때, 위에는 1이 2로 가지만 2는 1로 가지 않으므로 <strong><em>방향 그래프</em></strong>라고 볼 수 있고 
+아래는 1에서 2로, 2에서 1로 가서 <strong><em>무방향 그래프</em></strong>를 인접 리스트로 표현한것이지지</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="가중치-그래프-weighted-graph">가중치 그래프 (Weighted Graph)</h3>
+
+<p><strong><em>서울에서 인천가는 버스</em></strong>와 <strong><em>서울에서 부산가는 버스</em></strong>의 <strong><em>가격</em></strong>은 다르지? 그거를 표현할 수 있는게 가중치 그래프이고, <strong><em>가격외에도 거리, 시간에 대해 데이터</em></strong>를 추가할 수 있어</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">graph</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span>  <span class="c1"># (노드, 비용)
+</span>    <span class="mi">2</span><span class="p">:</span> <span class="p">[(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">[(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)],</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>다익스트라(Dijkstra) 알고리즘에서 많이 사용한대</p>
+
+<h3 id="그래프-순회-탐색">그래프 순회 (탐색)</h3>
+
+<p>BFS와 DFS를 통해 그래프 탐색도 가능한데, BFS와 DFS의 자세한 부분은 다음 블로그 포스팅을 참고하면 돼</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># DFS 예시
+</span><span class="k">def</span> <span class="nf">dfs</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">visited</span><span class="p">):</span>
+    <span class="n">visited</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">visited</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]:</span>
+            <span class="n">dfs</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">,</span> <span class="n">visited</span><span class="p">)</span>
+
+<span class="n">visited</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="bp">False</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">}</span>
+<span class="n">dfs</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">visited</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="그래프-표현-방식-마무리">그래프 표현 방식 마무리</h2>
+
+<ul>
+  <li>
+    <p>노드 번호가 0부터 시작하면 리스트로 표현</p>
+  </li>
+  <li>
+    <p>노드 번호가 1 이상이거나 알파벳이면 딕셔너리가 더 편해</p>
+  </li>
+  <li>
+    <p>파이썬에서는 아래와 같이 collections.defaultdict(list)를 쓰면 간편하게 그래프 만들 수 있어</p>
+  </li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="n">graph</span><span class="p">[</span><span class="n">u</span><span class="p">].</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>더 복잡한 그래프 연산이 필요하다면 networkx라는 라이브러리도 있으니 참고해</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>networkx
+</code></pre></div></div>
+
+<p>↑가상환경에 설치</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="n">nx</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="p">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">G</span><span class="p">.</span><span class="n">add_edges_from</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)])</span>
+<span class="n">nx</span><span class="p">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</code></pre></div></div>
+
+  
+</article>
+
+
+
+  <hr class="dingbat related mb6" />
+
+
+
+
+
+
+  
+     
+
+
+  <aside class="about related mt4 mb4" role="complementary">
+    
+    
+
+<div class="author mt4">
+  
+
+  
+    
+
+
+<img
+  
+    src="https://via.placeholder.com/128x128"
+    srcset="https://via.placeholder.com/128x128 1x,https://via.placeholder.com/256x256 2x"
+    
+  
+  alt="Kwansoo Kim"
+  class="avatar"
+  
+  width="120"
+  height="120"
+  loading="lazy"
+/>
+
+  
+
+  
+  
+  <h2  class="page-title hr-bottom">
+    About
+  </h2>
+
+  <p>noob in Computer Science, currently getting education in Krafton Jungle.</p>
+
+
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+
+  </aside>
+
+
+  
+
+  
+    
+
+
+  
+
+  
+    
+
+
+  <aside class="other-projects related mb0" role="complementary">  <h2>Related Posts</h2>  <div class="columns">          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/computersystem/linking/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/ComputerSystem.png"    alt="링커(Linking)"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/computersystem/linking/" class="flip-title">링커(Linking)</a>  </h3>      <p class="project-card-text fine" property="disambiguatingDescription">      링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.    </p>      <a class="fill-card no-hover" href="/blog/computersystem/linking/" tabindex="-1"><span class="sr-only">Continue reading 링커(Linking)</span></a></article>              </div>          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/algorithm/pre-order-post-order/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/Algorithm.png"    alt="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/algorithm/pre-order-post-order/" class="flip-title">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</a>  </h3>      <a class="fill-card no-hover" href="/blog/algorithm/pre-order-post-order/" tabindex="-1"><span class="sr-only">Continue reading 전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</span></a></article>              </div>      </div></aside>
+
+  
+
+  
+    
+
+
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/example-content-iii/" class="flip-title"><span>Example Content III</span></a>  <time class="faded fine" datetime="2018-06-01T00:00:00+00:00">01 Jun 2018</time></li>          <li class="h4">  <a href="/blog/algorithm/cycle/" class="flip-title"><span>사이클 탐지(Cycle detection)</span></a>  <time class="faded fine" datetime="2025-03-30T00:00:00+00:00">30 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/topological-sort/" class="flip-title"><span>위상 정렬(Topological sort)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>      </ul></aside>
+
+  
+
+  
+    
+
+  
+
+
+  
+<footer class="content" role="contentinfo">
+  <hr/>
+  
+    <p><small class="copyright">© 2024. All rights reserved.
+</small></p>
+  
+  
+    <nav class="legal"><small>
+    
+      
+      <a class="heading flip-title" href="/LICENSE/">LICENSE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/NOTICE/">NOTICE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/CHANGELOG/">CHANGELOG</a>
+      
+    
+    </small></nav>
+  
+  
+  <hr class="sr-only"/>
+</footer>
+
+
+</main>
+
+  <hy-drawer
+  id="_drawer"
+  class=""
+  side="left"
+  threshold="10"
+  noscroll
+  
+>
+  <header id="_sidebar" class="sidebar" role="banner">
+    
+
+
+
+
+<div class="sidebar-bg sidebar-overlay" style="background-color:rgb(200,200,200);background-image:url(/assets/img/sidebar-bg.png)"></div>
+
+    <div class="sidebar-sticky">
+  <div class="sidebar-about">
+    
+      <a class="no-hover" href="/" tabindex="-1">
+        <img src="/assets/img/PurifiedPotion.png" class="avatar" alt="PurifiedPotion's Blog" width="120" height="120" loading="lazy" />
+      </a>
+    
+    <a class="sidebar-title" href="/"><h2 class="h1">PurifiedPotion's Blog</h2></a>
+    
+    
+      <p class="">
+        Blog for Computer Science
+
+      </p>
+    
+  </div>
+
+  <nav class="sidebar-nav heading" role="navigation">
+    <span class="sr-only">Navigation:</span>
+<ul>
+  
+    
+      
+      <li>
+        <a
+          id="_drawer--opened"
+          href="/algorithm/"
+          class="sidebar-nav-item "
+          
+        >
+          ALGORITHM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/c/"
+          class="sidebar-nav-item "
+          
+        >
+          C 언어
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/computersystem/"
+          class="sidebar-nav-item "
+          
+        >
+          COMPUTER SYSTEM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/diary/"
+          class="sidebar-nav-item "
+          
+        >
+          회고
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/projects/"
+          class="sidebar-nav-item "
+          
+        >
+          PROJECTS
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/docs/"
+          class="sidebar-nav-item "
+          
+        >
+          DOCUMENTATION
+        </a>
+      </li>
+    
+  
+</ul>
+
+  </nav>
+
+  
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+  </header>
+</hy-drawer>
+<hr class="sr-only" hidden />
+
+</hy-push-state>
+
+
+  <!--[if gt IE 10]><!---->
+  <script nomodule>(()=>{var t,n=document.createElement("script");!("noModule"in n)&&"onbeforeload"in n&&(t=!1,document.addEventListener("beforeload",function(e){if(e.target===n)t=!0;else if(!e.target.hasAttribute("nomodule")||!t)return;e.preventDefault()},!0),n.type="module",n.src=".",document.head.appendChild(n),n.remove())})();
+</script>
+  <script src="/assets/js/hydejack-9.2.1.js" type="module"></script>
+  <script src="/assets/js/LEGACY-hydejack-9.2.1.js" nomodule defer></script>
+  
+
+  
+
+  <script type="module">
+    if ('serviceWorker' in navigator) {
+      /**/
+      navigator.serviceWorker.getRegistration()
+        .then(r => r.unregister())
+        .catch(() => {});
+      /**/
+    }
+  </script>
+<!--<![endif]-->
+  
+
+
+
+<div hidden>
+  
+  <h2 class="sr-only">Templates (for web app):</h2>
+
+  <template id="_animation-template">
+  <div class="animation-main fixed-top">
+    <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+</ul></nav>
+    <div class="content">
+      <div class="page"></div>
+    </div>
+  </div>
+</template>
+
+  <template id="_loading-template">
+  <div class="loading nav-btn fr">
+    <span class="sr-only">Loading…</span>
+    <span class="icon-cog"></span>
+  </div>
+</template>
+
+  <template id="_error-template">
+  <div class="page">
+    <h1 class="page-title">Error</h1>
+    
+    
+    <p class="lead">
+      Sorry, an error occurred while loading <a class="this-link" href=""></a>.
+
+    </p>
+  </div>
+</template>
+
+  <template id="_permalink-template">
+  <a href="#" class="permalink">
+    <span class="sr-only">Permalink</span>
+    <span class="content-hash"></span>
+  </a>
+</template>
+
+  
+    <template id="_cookies-banner-template">
+  <div id="_cookies-banner" class="navbar fixed-bottom CookiesOK">
+    <div class="content">
+      <div class="nav-btn-bar">
+        <small class="faded">
+          <span>This site uses cookies. <a href="/cookies-policy/">Cookies Policy</a>.
+</span>
+          <button id="_cookies-ok" class="btn btn-primary btn-sm">Okay</button>
+        </small>
+      </div>
+    </div>
+  </div>
+</template>
+
+  
+  
+    <template id="_dark-mode-template">
+  <button id="_dark-mode" class="nav-btn no-hover" >
+    <span class="sr-only">Dark Mode</span>
+    <span class="icon-brightness-contrast"></span>
+  </button>
+</template>
+
+  
+  
+    <template id="_search-template">
+  <button id="_search" class="nav-btn no-hover">
+    <label class="sr-only" for="_search-input">Search</label>
+    <span class="icon-search"></span>
+  </button>
+  <div id="_search-box">
+    <div class="nav-btn">
+      <span class="icon-search"></span>
+    </div>
+    <input 
+      id="_search-input"
+      type="search"
+      class="form-control form-control-lg nav-btn"
+      placeholder="Build with JEKYLL_ENV=production to enable search."
+    />
+    <button type="reset" class="nav-btn no-hover">
+      <span class="sr-only">Close</span>
+      <span class="icon-cross"></span>
+    </button>
+  </div>
+  <div id="_hits"></div>
+</template>
+
+  
+</div>
+
+</body>
+</html>
