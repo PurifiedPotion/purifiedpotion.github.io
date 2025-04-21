@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Thank You!
+title: PurifiedPotion' Blog
 sitemap: false
 ---
 
