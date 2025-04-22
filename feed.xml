@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-21T11:57:03+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-22T01:37:04+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">링커(Linking)</title><link href="/blog/computersystem/linking/" rel="alternate" type="text/html" title="링커(Linking)" /><published>2025-04-21T00:00:00+00:00</published><updated>2025-04-21T00:00:00+00:00</updated><id>/blog/computersystem/linking</id><content type="html" xml:base="/blog/computersystem/linking/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#링커의-역할" id="markdown-toc-링커의-역할">링커의 역할</a>    <ul>
       <li><a href="#링킹을-왜-배워야-할까" id="markdown-toc-링킹을-왜-배워야-할까">링킹을 왜 배워야 할까?</a></li>
@@ -7,6 +7,7 @@
   <li><a href="#정적-연결" id="markdown-toc-정적-연결">정적 연결</a></li>
   <li><a href="#목적파일" id="markdown-toc-목적파일">목적파일</a></li>
   <li><a href="#재배치-가능-목적파일with-elf--executable-and-linkable-format" id="markdown-toc-재배치-가능-목적파일with-elf--executable-and-linkable-format">재배치 가능 목적파일(with ELF : Executable and Linkable Format)</a></li>
+  <li><a href="#실행-가능-목적파일의-로딩" id="markdown-toc-실행-가능-목적파일의-로딩">실행 가능 목적파일의 로딩</a></li>
 </ul>
 
 <p><strong>링킹(linking)</strong>은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.</p>
@@ -94,6 +95,10 @@
 
 <h2 id="재배치-가능-목적파일with-elf--executable-and-linkable-format">재배치 가능 목적파일(with ELF : Executable and Linkable Format)</h2>
 
+<ul>
+  <li><strong>ELF</strong> : 리눅스 같은 유닉스 시스템에서 실행 파일이나 오브젝트 파일을 위한 <strong>표준 포맷</strong>이다(예 : .o 파일이나 a.out 파일)</li>
+</ul>
+
 <p>아래의 표는 ELF 재배치 가능 목적파일의 포맷을 보여준다</p>
 
 <table>
@@ -149,7 +154,7 @@
 
 <ul>
   <li>
-    <p>ELF header : 이 파일을 생성한 워드 크기와 시스템의 바이트 순서를 나타내는 16바이트 배열로 시작함</p>
+    <p>ELF header : ELF 파일의 <strong>맨 처음에 위치한 아주 중요한 정보 블록</strong>으로써, “이 파일은 ELF 파일입니다”를 알려주고 “이 파일은 ELF 파일입니다” 문구는 운영체제나 링커가 확인. 이 파일을 생성한 워드 크기와 시스템의 바이트 순서를 나타내는 16바이트 배열로 시작함</p>
 
     <ul>
       <li>
@@ -201,7 +206,44 @@
       </li>
     </ul>
   </li>
-</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</title><link href="/blog/algorithm/pre-order-post-order/" rel="alternate" type="text/html" title="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성" /><published>2025-04-16T00:00:00+00:00</published><updated>2025-04-16T00:00:00+00:00</updated><id>/blog/algorithm/pre-order-post-order</id><content type="html" xml:base="/blog/algorithm/pre-order-post-order/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li>
+    <p>rel.text : 링커가 이 목적파일을 다른 파일들과 연결할 때 수정되어야 하는 .text 섹션 내 위치들의 리스트</p>
+
+    <ul>
+      <li>일반적으로 외부 함수를 호출하거나 전역변수를 참조하는 인스트럭션들은 모두 수정 되어야 하고 이 수정을 위해서 위치들의 정보를 갖고 있는게 아닐까 싶다</li>
+    </ul>
+  </li>
+  <li>
+    <p>rel.data : 해당 모듈에 의해 정의되거나 참조되는 전역변수들에 대한 재배치 정보</p>
+
+    <ul>
+      <li>일반적으로 초기값이 전역변수 또는 외부에 정의된 함수의 주소인 초기화된 전역변수들 모두 수정되어야 한다</li>
+    </ul>
+  </li>
+  <li>
+    <p>.debug : 프로그램 내에서 정의도니 지역변수들과 typedef, 프로그램과 최초 C 소스 파일에서 정의되고 참조되는 전역변수들을 위한 엔트리를 갖는 <strong>디버깅 심볼 테이블</strong></p>
+
+    <ul>
+      <li>컴파일러 드라이버가 -g 옵션으로 불린 경우에 생성됨</li>
+    </ul>
+  </li>
+  <li>
+    <p>.line : 최초 C 소스 프로그램과 .text 섹션 내 머신 코드 인스트럭션 내 라인 번호들간의 매핑</p>
+
+    <ul>
+      <li>컴파일러 드라이버가 -g 옵션으로 불린 경우에 생성됨</li>
+    </ul>
+  </li>
+  <li>
+    <p>.strtab : .strtab과 .debug 섹션들 내에 있는 심볼 테이블과 섹션 헤더들에 있는 섹션 이름들을 위한 스트링 테이블. 스트링 테이블은 널 문자로 종료된 스트링의 배열</p>
+  </li>
+</ul>
+
+<h2 id="실행-가능-목적파일의-로딩">실행 가능 목적파일의 로딩</h2>
+
+<p>우리가 실행 가능 목적파일을 실행하기 위해 아래와 같은 명령어를 타입해</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>linux&gt; ./prog
+</code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</title><link href="/blog/algorithm/pre-order-post-order/" rel="alternate" type="text/html" title="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성" /><published>2025-04-16T00:00:00+00:00</published><updated>2025-04-16T00:00:00+00:00</updated><id>/blog/algorithm/pre-order-post-order</id><content type="html" xml:base="/blog/algorithm/pre-order-post-order/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#전위-순회와-후위-순회의-구조적인-연관성" id="markdown-toc-전위-순회와-후위-순회의-구조적인-연관성">전위 순회와 후위 순회의 구조적인 연관성</a>    <ul>
       <li><a href="#표준-전위-순회-vs-변형-전위-순회" id="markdown-toc-표준-전위-순회-vs-변형-전위-순회">표준 전위 순회 vs 변형 전위 순회</a></li>
       <li><a href="#변형-전위-순회를-뒤집으면" id="markdown-toc-변형-전위-순회를-뒤집으면">변형 전위 순회를 뒤집으면?</a></li>
