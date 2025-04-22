@@ -154,6 +154,8 @@ linux> ./prog
 
 - 뒤이어 data segment(Read/write segment)가 옴
 
+    - 실제로는 code와 data segment 사이에 공간이 존재함
+
 - Run-time heap은 data segment 다음에 따라오고 malloc 라이브러리를 호출해서 위로 성장
 
 - 이 다음에는 공유 모듈(shared libraries)들을 위해 예약된 영역이 존재
@@ -161,3 +163,15 @@ linux> ./prog
 - 사용자 스택은 가장 큰 합법적 사용자 주소(2^48-1) 아래에서 시작해서 더 작은 메모리 주소 방향인 아래로 성장
 
 - 스택 위의 영역은 운영체제의 메모리 상주 부분인 커널의 코드와 데이터를 위해 예약
+
+### 로더 실행
+
+로더가 실행되면 아래와 같은 workflow를 가진다
+
+~~~mathematica
+                               ┌ 가상 메모리 ┐    로더가 프로그램의 Entry point로 jump     _start 함수가 __libc_start_main 호출     __libc_start_main :
+로더 실행 -> 실행 파일 덩어리 ->  │data segment│ ->  ┌────────────crt1.o────────────┐  ->  ┌────────────libc.so────────────┐  ->            - 실행 환경 초기화
+                          복사 │code segment│    │        _start 함수 실행         │     │   __libc_start_main 함수 실행   │                - 사용자 수준의 main 함수호출
+                               └───────────┘     └──────────────────────────────┘       └──────────────────────────────┘                 - return값 처리
+                                                                                                                                         - 필요한 경우 제어권을 커널로 넘겨줌
+~~~
