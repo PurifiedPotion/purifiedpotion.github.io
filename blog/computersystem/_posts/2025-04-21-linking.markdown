@@ -170,8 +170,8 @@ linux> ./prog
 
 ~~~mathematica
                                ┌ 가상 메모리 ┐    로더가 프로그램의 Entry point로 jump     _start 함수가 __libc_start_main 호출     __libc_start_main :
-로더 실행 -> 실행 파일 덩어리 ->  │data segment│ ->  ┌────────────crt1.o────────────┐  ->  ┌────────────libc.so────────────┐  ->            - 실행 환경 초기화
-                          복사 │code segment│    │        _start 함수 실행         │     │   __libc_start_main 함수 실행   │                - 사용자 수준의 main 함수호출
+로더 실행 -> 실행 파일 덩어리 -> │data segment│ ->  ┌────────────crt1.o────────────┐  ->  ┌────────────libc.so────────────┐  ->           - 실행 환경 초기화
+                          복사 │code segment│    │        _start 함수 실행        │     │   __libc_start_main 함수 실행  │                - 사용자 수준의 main 함수호출
                                └───────────┘     └──────────────────────────────┘       └──────────────────────────────┘                 - return값 처리
                                                                                                                                          - 필요한 경우 제어권을 커널로 넘겨줌
 ~~~
