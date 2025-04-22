@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-22T01:37:04+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-22T04:58:03+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">링커(Linking)</title><link href="/blog/computersystem/linking/" rel="alternate" type="text/html" title="링커(Linking)" /><published>2025-04-21T00:00:00+00:00</published><updated>2025-04-21T00:00:00+00:00</updated><id>/blog/computersystem/linking</id><content type="html" xml:base="/blog/computersystem/linking/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#링커의-역할" id="markdown-toc-링커의-역할">링커의 역할</a>    <ul>
       <li><a href="#링킹을-왜-배워야-할까" id="markdown-toc-링킹을-왜-배워야-할까">링킹을 왜 배워야 할까?</a></li>
@@ -242,8 +242,54 @@
 <h2 id="실행-가능-목적파일의-로딩">실행 가능 목적파일의 로딩</h2>
 
 <p>우리가 실행 가능 목적파일을 실행하기 위해 아래와 같은 명령어를 타입해</p>
+
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>linux&gt; ./prog
-</code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</title><link href="/blog/algorithm/pre-order-post-order/" rel="alternate" type="text/html" title="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성" /><published>2025-04-16T00:00:00+00:00</published><updated>2025-04-16T00:00:00+00:00</updated><id>/blog/algorithm/pre-order-post-order</id><content type="html" xml:base="/blog/algorithm/pre-order-post-order/"><![CDATA[<ul class="large-only" id="markdown-toc">
+</code></pre></div></div>
+
+<p>그러면 이 실행 가능 목적파일이 어떻게 로딩될까?</p>
+
+<ul>
+  <li>
+    <p><strong>prog</strong>는 내장 Shell 명령어가 아니야. 그래서 Shell은 prog가 실행 가능한 목적파일이라고 생각하고 Loader 라는 메모리 상주 운영체제 코드를 호출해. 호출해서 이 프로그램을 실행해</p>
+
+    <ul>
+      <li>
+        <p>리눅스 프로그램은 <strong>execve</strong> 함수를 호출해서 Loader를 호출할 수 있어</p>
+      </li>
+      <li>
+        <p>Loader는 Disk로부터 실행 가능한 목적파일 내의 코드와 데이터를 메모리로 복사하고 이 프로그램의 첫 번째 Instruction, 즉 Entry point로 Jump해서 프로그램을 실행해</p>
+      </li>
+      <li>
+        <p><strong>위와 같이 프로그램을 메모리로 복사하고 실행하는 과정을 Loading</strong>이라함</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>모든 실행 중인 리눅스 프로그램은 아래 사진과 같은 런타임 메모리 이미지를 가진다</p>
+
+<p><img src="/assets/img/blog/computerscience/LinuxRuntimeMemory.png" alt="런타임 메모리 이미지" /></p>
+
+<ul>
+  <li>
+    <p>리눅스 시스템에서 code segment는 주소 0x400000에서 시작</p>
+  </li>
+  <li>
+    <p>뒤이어 data segment(Read/write segment)가 옴</p>
+  </li>
+  <li>
+    <p>Run-time heap은 data segment 다음에 따라오고 malloc 라이브러리를 호출해서 위로 성장</p>
+  </li>
+  <li>
+    <p>이 다음에는 공유 모듈(shared libraries)들을 위해 예약된 영역이 존재</p>
+  </li>
+  <li>
+    <p>사용자 스택은 가장 큰 합법적 사용자 주소(2^48-1) 아래에서 시작해서 더 작은 메모리 주소 방향인 아래로 성장</p>
+  </li>
+  <li>
+    <p>스택 위의 영역은 운영체제의 메모리 상주 부분인 커널의 코드와 데이터를 위해 예약</p>
+  </li>
+</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</title><link href="/blog/algorithm/pre-order-post-order/" rel="alternate" type="text/html" title="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성" /><published>2025-04-16T00:00:00+00:00</published><updated>2025-04-16T00:00:00+00:00</updated><id>/blog/algorithm/pre-order-post-order</id><content type="html" xml:base="/blog/algorithm/pre-order-post-order/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#전위-순회와-후위-순회의-구조적인-연관성" id="markdown-toc-전위-순회와-후위-순회의-구조적인-연관성">전위 순회와 후위 순회의 구조적인 연관성</a>    <ul>
       <li><a href="#표준-전위-순회-vs-변형-전위-순회" id="markdown-toc-표준-전위-순회-vs-변형-전위-순회">표준 전위 순회 vs 변형 전위 순회</a></li>
       <li><a href="#변형-전위-순회를-뒤집으면" id="markdown-toc-변형-전위-순회를-뒤집으면">변형 전위 순회를 뒤집으면?</a></li>

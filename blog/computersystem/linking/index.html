@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-04-22T01:37:04+00:00',
+    INDEX_KEY: 'index--2025-04-22T04:58:03+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -520,8 +520,54 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 <h2 id="실행-가능-목적파일의-로딩">실행 가능 목적파일의 로딩</h2>
 
 <p>우리가 실행 가능 목적파일을 실행하기 위해 아래와 같은 명령어를 타입해</p>
+
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>linux&gt; ./prog
 </code></pre></div></div>
+
+<p>그러면 이 실행 가능 목적파일이 어떻게 로딩될까?</p>
+
+<ul>
+  <li>
+    <p><strong>prog</strong>는 내장 Shell 명령어가 아니야. 그래서 Shell은 prog가 실행 가능한 목적파일이라고 생각하고 Loader 라는 메모리 상주 운영체제 코드를 호출해. 호출해서 이 프로그램을 실행해</p>
+
+    <ul>
+      <li>
+        <p>리눅스 프로그램은 <strong>execve</strong> 함수를 호출해서 Loader를 호출할 수 있어</p>
+      </li>
+      <li>
+        <p>Loader는 Disk로부터 실행 가능한 목적파일 내의 코드와 데이터를 메모리로 복사하고 이 프로그램의 첫 번째 Instruction, 즉 Entry point로 Jump해서 프로그램을 실행해</p>
+      </li>
+      <li>
+        <p><strong>위와 같이 프로그램을 메모리로 복사하고 실행하는 과정을 Loading</strong>이라함</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>모든 실행 중인 리눅스 프로그램은 아래 사진과 같은 런타임 메모리 이미지를 가진다</p>
+
+<p><img src="/assets/img/blog/computerscience/LinuxRuntimeMemory.png" alt="런타임 메모리 이미지" /></p>
+
+<ul>
+  <li>
+    <p>리눅스 시스템에서 code segment는 주소 0x400000에서 시작</p>
+  </li>
+  <li>
+    <p>뒤이어 data segment(Read/write segment)가 옴</p>
+  </li>
+  <li>
+    <p>Run-time heap은 data segment 다음에 따라오고 malloc 라이브러리를 호출해서 위로 성장</p>
+  </li>
+  <li>
+    <p>이 다음에는 공유 모듈(shared libraries)들을 위해 예약된 영역이 존재</p>
+  </li>
+  <li>
+    <p>사용자 스택은 가장 큰 합법적 사용자 주소(2^48-1) 아래에서 시작해서 더 작은 메모리 주소 방향인 아래로 성장</p>
+  </li>
+  <li>
+    <p>스택 위의 영역은 운영체제의 메모리 상주 부분인 커널의 코드와 데이터를 위해 예약</p>
+  </li>
+</ul>
 
   
 </article>
@@ -657,7 +703,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/computersystem/tour-of-computer-systems/" class="flip-title"><span>컴퓨터 시스템으로의 여행</span></a>  <time class="faded fine" datetime="2025-03-22T00:00:00+00:00">22 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/b-tree/" class="flip-title"><span>B-Tree & B+Tree</span></a>  <time class="faded fine" datetime="2025-04-02T00:00:00+00:00">02 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/bfs-dfs/" class="flip-title"><span>너비 우선 탐색(Breadth-first search)와 깊이 우선 탐색(Depth-first search)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/tree/" class="flip-title"><span>트리(tree)</span></a>  <time class="faded fine" datetime="2025-03-24T00:00:00+00:00">24 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/vertex-edge-node-arc/" class="flip-title"><span>그래프(Graph)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/linked-list/" class="flip-title"><span>연결 리스트(Linked List)</span></a>  <time class="faded fine" datetime="2025-03-26T00:00:00+00:00">26 Mar 2025</time></li>      </ul></aside>
 
   
 
