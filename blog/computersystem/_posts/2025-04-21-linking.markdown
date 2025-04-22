@@ -131,7 +131,33 @@ void func() {
 ## 실행 가능 목적파일의 로딩
 
 우리가 실행 가능 목적파일을 실행하기 위해 아래와 같은 명령어를 타입해
+
 ~~~bash
 linux> ./prog
 ~~~
 
+그러면 이 실행 가능 목적파일이 어떻게 로딩될까?
+
+- **prog**는 내장 Shell 명령어가 아니야. 그래서 Shell은 prog가 실행 가능한 목적파일이라고 생각하고 Loader 라는 메모리 상주 운영체제 코드를 호출해. 호출해서 이 프로그램을 실행해
+
+    - 리눅스 프로그램은 **execve** 함수를 호출해서 Loader를 호출할 수 있어
+
+    - Loader는 Disk로부터 실행 가능한 목적파일 내의 코드와 데이터를 메모리로 복사하고 이 프로그램의 첫 번째 Instruction, 즉 Entry point로 Jump해서 프로그램을 실행해
+
+    - **위와 같이 프로그램을 메모리로 복사하고 실행하는 과정을 Loading**이라함
+
+모든 실행 중인 리눅스 프로그램은 아래 사진과 같은 런타임 메모리 이미지를 가진다
+
+![런타임 메모리 이미지](/assets/img/blog/computerscience/LinuxRuntimeMemory.png)
+
+- 리눅스 시스템에서 code segment는 주소 0x400000에서 시작
+
+- 뒤이어 data segment(Read/write segment)가 옴
+
+- Run-time heap은 data segment 다음에 따라오고 malloc 라이브러리를 호출해서 위로 성장
+
+- 이 다음에는 공유 모듈(shared libraries)들을 위해 예약된 영역이 존재
+
+- 사용자 스택은 가장 큰 합법적 사용자 주소(2^48-1) 아래에서 시작해서 더 작은 메모리 주소 방향인 아래로 성장
+
+- 스택 위의 영역은 운영체제의 메모리 상주 부분인 커널의 코드와 데이터를 위해 예약
