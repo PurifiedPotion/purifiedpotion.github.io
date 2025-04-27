@@ -180,4 +180,4 @@ linux> ./prog
 ~~~
 
 
-[동적 메모리 할당(Dynamic memory allocation)]: blog/c/_posts/2025-04-11-malloc-calloc-realloc.md
+[동적 메모리 할당(Dynamic memory allocation)]: ./blog/c/_posts/2025-04-11-malloc-calloc-realloc.md
