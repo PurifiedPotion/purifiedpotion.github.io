@@ -179,4 +179,4 @@ linux> ./prog
                                                                                                                                          - 필요한 경우 제어권을 커널로 넘겨줌
 ~~~
 
-[동적 메모리 할당(Dynamic memory allocation)]: ../../c/_posts/2025-04-11-malloc-calloc-realloc.md
+[동적 메모리 할당(Dynamic memory allocation)]: ../../c/malloc-calloc-realloc.md
