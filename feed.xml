@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-27T10:11:16+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-27T10:25:41+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">수작업으로 Malloc 구현</title><link href="/blog/computersystem/dynamic-memory-allocation/" rel="alternate" type="text/html" title="수작업으로 Malloc 구현" /><published>2025-04-27T00:00:00+00:00</published><updated>2025-04-27T00:00:00+00:00</updated><id>/blog/computersystem/dynamic-memory-allocation</id><content type="html" xml:base="/blog/computersystem/dynamic-memory-allocation/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#링커의-역할" id="markdown-toc-링커의-역할">링커의 역할</a>    <ul>
       <li><a href="#링킹을-왜-배워야-할까" id="markdown-toc-링킹을-왜-배워야-할까">링킹을 왜 배워야 할까?</a></li>
@@ -32,7 +32,7 @@
   </tbody>
 </table>
 
-<p><strong>Malloc</strong>에 관하여서는 이전에 포스팅한 <a href="blog/c/_posts/2025-04-11-malloc-calloc-realloc.md" class="heading flip-title">동적 메모리 할당(Dynamic memory allocation)</a> 을 참조하면 된다</p>
+<p><strong>Malloc</strong>에 관하여서는 이전에 포스팅한 <a href="./blog/c/_posts/2025-04-11-malloc-calloc-realloc.md" class="heading flip-title">동적 메모리 할당(Dynamic memory allocation)</a> 을 참조하면 된다</p>
 
 <h2 id="링커의-역할">링커의 역할</h2>
 
