@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-04-29T08:20:52+00:00',
+    INDEX_KEY: 'index--2025-04-29T08:26:50+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -334,65 +334,62 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 <h2 id="기본-구성-요소">기본 구성 요소</h2>
 
 <ol>
-  <li>DMA 컨트롤러(DMAC)</li>
-</ol>
-
-<ul>
   <li>
-    <p>전용 칩(고전 ISA-DMA) 또는 주변장치 내부 DMA 엔진(PCIe, NVMe 컨트롤러)</p>
+    <p>DMA 컨트롤러(DMAC)</p>
+
+    <ul>
+      <li>
+        <p>전용 칩(고전 ISA-DMA) 또는 주변장치 내부 DMA 엔진(PCIe, NVMe 컨트롤러)</p>
+      </li>
+      <li>
+        <p>소스/목적지 물리 주소, 전송 길이, 모드, 제어 플래그 등을 저장하는 레지스터(메모리 맵 레지스터) 보유</p>
+      </li>
+      <li>
+        <p>여러 채널이 있으면 동시에 여러 장치 지원</p>
+      </li>
+    </ul>
   </li>
   <li>
-    <p>소스/목적지 물리 주소, 전송 길이, 모드, 제어 플래그 등을 저장하는 레지스터(메모리 맵 레지스터) 보유</p>
+    <p>시스템 버스</p>
+
+    <ul>
+      <li>
+        <p>CPU ↔ 메모리 ↔ DMA 컨트롤러가 공유</p>
+      </li>
+      <li>
+        <p>CPU와 DMAC가 동시에 쓰지 않도록 <strong>버스 중재(bus arbitration)</strong> 를 수행</p>
+      </li>
+    </ul>
   </li>
   <li>
-    <p>여러 채널이 있으면 동시에 여러 장치 지원</p>
-  </li>
-</ul>
+    <p>메모리 버스</p>
 
-<ol>
-  <li>시스템 버스</li>
-</ol>
-
-<ul>
-  <li>
-    <p>CPU ↔ 메모리 ↔ DMA 컨트롤러가 공유</p>
+    <ul>
+      <li>DMAC가 버스 마스터(master) 권한을 요청(Bus Request, BR) → 메모리와 직접 주고받음</li>
+    </ul>
   </li>
   <li>
-    <p>CPU와 DMAC가 동시에 쓰지 않도록 <strong>버스 중재(bus arbitration)</strong> 를 수행</p>
+    <p>주변장치(Device)</p>
+
+    <ul>
+      <li>디스크, NIC, GPU, 오디오 코드 … 데이터가 실제로 존재/필요한 곳</li>
+    </ul>
   </li>
-</ul>
+  <li>
+    <p>CPU &amp; OS</p>
 
-<ol>
-  <li>메모리 버스</li>
+    <ul>
+      <li>전송 파라미터를 DMAC 레지스터에 써 주고, 완료 인터럽트(DMA done)를 처리</li>
+    </ul>
+  </li>
+  <li>
+    <p>I/O 장치(버스 마스터 가능 장치)</p>
+
+    <ul>
+      <li>PCIe NIC, NVMe SSD, GPU 등은 자체 DMA 엔진을 내장해 버스 마스터 가 되기도 한다</li>
+    </ul>
+  </li>
 </ol>
-
-<ul>
-  <li>DMAC가 버스 마스터(master) 권한을 요청(Bus Request, BR) → 메모리와 직접 주고받음</li>
-</ul>
-
-<ol>
-  <li>주변장치(Device)</li>
-</ol>
-
-<ul>
-  <li>디스크, NIC, GPU, 오디오 코드 … 데이터가 실제로 존재/필요한 곳</li>
-</ul>
-
-<ol>
-  <li>CPU &amp; OS</li>
-</ol>
-
-<ul>
-  <li>전송 파라미터를 DMAC 레지스터에 써 주고, 완료 인터럽트(DMA done)를 처리</li>
-</ul>
-
-<ol>
-  <li>I/O 장치(버스 마스터 가능 장치)</li>
-</ol>
-
-<ul>
-  <li>PCIe NIC, NVMe SSD, GPU 등은 자체 DMA 엔진을 내장해 버스 마스터 가 되기도 한다</li>
-</ul>
 
 <h2 id="동작-흐름-x86-pc-예시">동작 흐름 (x86 PC 예시)</h2>
 
@@ -432,97 +429,101 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 <h4 id="1-단계---cpu까-준비만-하고-손을-뗀다">1 단계 - CPU까 준비만 하고 손을 뗀다</h4>
 
 <ol>
-  <li>전송 파라미터 설정</li>
-</ol>
-
-<ul>
   <li>
-    <p>SRC, DST, LEN, MODE을 레지스터에 값을 써 넣습니다</p>
+    <p>전송 파라미터 설정</p>
+
+    <ul>
+      <li>
+        <p>SRC, DST, LEN, MODE을 레지스터에 값을 써 넣습니다</p>
+      </li>
+      <li>
+        <p>마지막으로 Enable 플래그를 1로 두면 DMAC가 “이제 내가 처리할게!”하고 대기</p>
+      </li>
+    </ul>
   </li>
   <li>
-    <p>마지막으로 Enable 플래그를 1로 두면 DMAC가 “이제 내가 처리할게!”하고 대기</p>
+    <p>버스 요청(BR 신호)</p>
+
+    <ul>
+      <li>DMAC는 버스 중재기(arbiter)에게 “버스 좀 빌려주세요” 라고 손을 듦</li>
+    </ul>
   </li>
-</ul>
-
-<ol>
-  <li>버스 요청(BR 신호)</li>
 </ol>
-
-<ul>
-  <li>DMAC는 버스 중재기(arbiter)에게 “버스 좀 빌려주세요” 라고 손을 듦</li>
-</ul>
 
 <h4 id="2-단계---버스-소유권-교환">2 단계 - 버스 소유권 교환</h4>
 
 <ol>
-  <li>CPU → DMAC ‘Bus Grant(BG)’</li>
-</ol>
-
-<ul>
-  <li>CPU가 진행 중인 버스 싸이클을 마치면 주소·데이터 라인을 tristate해 두고 계산 같은 비-버스 작업에 집중함</li>
-</ul>
-
-<ol>
-  <li>DMAC가 버스 장악</li>
-</ol>
-
-<ul>
   <li>
-    <p>이 순간부터 RAM과 I/O 장치 사이를 오가는 모든 신호는 DMAC가 생성</p>
+    <p>CPU → DMAC ‘Bus Grant(BG)’</p>
+
+    <ul>
+      <li>CPU가 진행 중인 버스 싸이클을 마치면 주소·데이터 라인을 tristate해 두고 계산 같은 비-버스 작업에 집중함</li>
+    </ul>
   </li>
   <li>
-    <p>CPU는 RAM을 못 만지기 때문에 캐시 miss가 나도 대기해야 함</p>
+    <p>DMAC가 버스 장악</p>
+
+    <ul>
+      <li>
+        <p>이 순간부터 RAM과 I/O 장치 사이를 오가는 모든 신호는 DMAC가 생성</p>
+      </li>
+      <li>
+        <p>CPU는 RAM을 못 만지기 때문에 캐시 miss가 나도 대기해야 함</p>
+      </li>
+    </ul>
   </li>
-</ul>
+</ol>
 
 <h4 id="3-단계---실제-데이터-이동">3 단계 - 실제 데이터 이동</h4>
 
 <ol>
-  <li>전송 모드에 따른 사이클</li>
+  <li>
+    <p>전송 모드에 따른 사이클</p>
+
+    <ul>
+      <li>
+        <p>Burst/Block : LEN만큼 연속으로 → 최고속, 대신 CPU 길게 정지</p>
+      </li>
+      <li>
+        <p>Cycle-Stealing : 한 사이클씩 “훔치고” 바로 돌려줌 → 실시간 오디어/비디오</p>
+      </li>
+      <li>
+        <p>Scatter-Gather : 메모리 리스트 따라 다중 블록 자동 전송 → NVMe·NIC</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>주소·카운터 자동 증가</p>
+
+    <ul>
+      <li>DMAC 내부 카운터가 0이 될 때까지 SRC++, DST++, LEN–</li>
+    </ul>
+  </li>
 </ol>
-
-<ul>
-  <li>
-    <p>Burst/Block : LEN만큼 연속으로 → 최고속, 대신 CPU 길게 정지</p>
-  </li>
-  <li>
-    <p>Cycle-Stealing : 한 사이클씩 “훔치고” 바로 돌려줌 → 실시간 오디어/비디오</p>
-  </li>
-  <li>
-    <p>Scatter-Gather : 메모리 리스트 따라 다중 블록 자동 전송 → NVMe·NIC</p>
-  </li>
-</ul>
-
-<ol>
-  <li>주소·카운터 자동 증가</li>
-</ol>
-
-<ul>
-  <li>DMAC 내부 카운터가 0이 될 때까지 SRC++, DST++, LEN–</li>
-</ul>
 
 <h4 id="4-단계---전송-완료-알림">4 단계 - 전송 완료 알림</h4>
 
 <ol>
-  <li>DMA 완료 인터럽트</li>
-</ol>
-
-<ul>
   <li>
-    <p>LEN==0 → DMAC가 IRQ를 날리고 버스 요청을 내림</p>
+    <p>DMA 완료 인터럽트</p>
+
+    <ul>
+      <li>
+        <p>LEN==0 → DMAC가 IRQ를 날리고 버스 요청을 내림</p>
+      </li>
+      <li>
+        <p>CPU는 인터럽트 핸들러에서 데이터 후처리(예: 패킷 파싱, 디스크 블록 체크섬) 수행</p>
+      </li>
+    </ul>
   </li>
   <li>
-    <p>CPU는 인터럽트 핸들러에서 데이터 후처리(예: 패킷 파싱, 디스크 블록 체크섬) 수행</p>
+    <p>버스 복귀</p>
+
+    <ul>
+      <li>Arbiter가 다시 CPU에 ‘Bus Grant’ → 평상시 메모리 접근 재개</li>
+    </ul>
   </li>
-</ul>
-
-<ol>
-  <li>버스 복귀</li>
 </ol>
-
-<ul>
-  <li>Arbiter가 다시 CPU에 ‘Bus Grant’ → 평상시 메모리 접근 재개</li>
-</ul>
 
 <h2 id="전송-모드">전송 모드</h2>
 
@@ -572,50 +573,37 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
   </li>
   <li>
     <p>Zero-copy - 네트워크 스택이나 GPU ↔ CPU 사이에서 “복사 없는” 파이프라인 구축 (DPDK, RDMA, CUDA cudaMemcpyAsync 등)</p>
+
+    <ul>
+      <li>운영체제 버퍼를 추가로 “복사(copy)”하지 않고, 장치 ↔ 응용이 같은 메모리 페이지를 공유하도록 하는 기법. CPU가 불필요한 memcpy()를 안 하므로 지연과 캐시오염↓</li>
+    </ul>
   </li>
-</ol>
-
-<ul>
-  <li>운영체제 버퍼를 추가로 “복사(copy)”하지 않고, 장치 ↔ 응용이 같은 메모리 페이지를 공유하도록 하는 기법. CPU가 불필요한 memcpy()를 안 하므로 지연과 캐시오염↓</li>
-</ul>
-
-<ol>
-  <li>RDMA(Remode DMA) - NIC가 원격 호스트의 메모리에까지 DMA 쓰기/읽기를 수행. 커널 네트워크 스택을 우회하여 μs 단위 지연시간을 제공한다. 고속 HPC, 데이터베이스 복제에서 필수</li>
+  <li>
+    <p>RDMA(Remode DMA) - NIC가 원격 호스트의 메모리에까지 DMA 쓰기/읽기를 수행. 커널 네트워크 스택을 우회하여 μs 단위 지연시간을 제공한다. 고속 HPC, 데이터베이스 복제에서 필수</p>
+  </li>
 </ol>
 
 <h2 id="장점과-단점-요약">장점과 단점 요약</h2>
 
 <p><strong>장점</strong></p>
 
-<ul>
-  <li>
-    <p>CPU 사용률 감소, 전력 효율 ↑</p>
-  </li>
-  <li>
-    <p>대역폭 활용 극대화(PCIe Gen4 x4 ≈ 8 GB/s 급)</p>
-  </li>
-  <li>
-    <p>실시간 스트리밍 지원(오디오 스터터링 방지 등)</p>
-  </li>
-</ul>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- CPU 사용률 감소, 전력 효율 ↑
+
+- 대역폭 활용 극대화(PCIe Gen4 x4 ≈ 8 GB/s 급)
+
+- 실시간 스트리밍 지원(오디오 스터터링 방지 등)
+</code></pre></div></div>
 
 <p><strong>단점</strong></p>
 
-<ul>
-  <li>
-    <p>하드웨어·드라이버 복잡도 증가</p>
-  </li>
-  <li>
-    <p>버스 우선순위 조정 실패 시 CPU 지연 가능</p>
-  </li>
-  <li>
-    <p>캐시 일관성, 보안(“DMA 공격”) 이슈 처리 필요</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- 하드웨어·드라이버 복잡도 증가
 
-    <ul>
-      <li>IOMMU로 보완</li>
-    </ul>
-  </li>
-</ul>
+- 버스 우선순위 조정 실패 시 CPU 지연 가능
+
+- 캐시 일관성, 보안("DMA 공격") 이슈 처리 필요
+
+    - IOMMU로 보완
+</code></pre></div></div>
 
 <h2 id="실무-예시">실무 예시</h2>
 
@@ -798,7 +786,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/minimum-spanning-tree/" class="flip-title"><span>최소 신장 트리(MST, Minimum Spanning Tree)</span></a>  <time class="faded fine" datetime="2025-03-30T00:00:00+00:00">30 Mar 2025</time></li>          <li class="h4">  <a href="/blog/computersystem/machine-level-representation-of-programs/" class="flip-title"><span>프로그램의 기계수준 표현(Machine-Level Representation of Programs)</span></a>  <time class="faded fine" datetime="2025-04-04T00:00:00+00:00">04 Apr 2025</time></li>          <li class="h4">  <a href="/blog/c/malloc-calloc-realloc/" class="flip-title"><span>동적 메모리 할당(Dynamic memory allocation)</span></a>  <time class="faded fine" datetime="2025-04-11T00:00:00+00:00">11 Apr 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/computersystem/tour-of-computer-systems/" class="flip-title"><span>컴퓨터 시스템으로의 여행</span></a>  <time class="faded fine" datetime="2025-03-22T00:00:00+00:00">22 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/example-content-iii/" class="flip-title"><span>Example Content III</span></a>  <time class="faded fine" datetime="2018-06-01T00:00:00+00:00">01 Jun 2018</time></li>          <li class="h4">  <a href="/blog/c/malloc-calloc-realloc/" class="flip-title"><span>동적 메모리 할당(Dynamic memory allocation)</span></a>  <time class="faded fine" datetime="2025-04-11T00:00:00+00:00">11 Apr 2025</time></li>      </ul></aside>
 
   
 
