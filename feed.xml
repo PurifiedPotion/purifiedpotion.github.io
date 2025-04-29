@@ -1,6 +1,261 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-27T12:08:35+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
-</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">수작업으로 Malloc 구현</title><link href="/blog/computersystem/dynamic-memory-allocation/" rel="alternate" type="text/html" title="수작업으로 Malloc 구현" /><published>2025-04-27T00:00:00+00:00</published><updated>2025-04-27T00:00:00+00:00</updated><id>/blog/computersystem/dynamic-memory-allocation</id><content type="html" xml:base="/blog/computersystem/dynamic-memory-allocation/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#링커의-역할" id="markdown-toc-링커의-역할">링커의 역할</a>    <ul>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-29T00:30:46+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
+  <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
+  <li><a href="#언제-볼-수-있을까" id="markdown-toc-언제-볼-수-있을까">언제 볼 수 있을까?</a></li>
+  <li><a href="#요약" id="markdown-toc-요약">요약</a>    <ul>
+      <li><a href="#나만의-요약" id="markdown-toc-나만의-요약">나만의 요약</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Demand-zero memory(또는 zero-filled-on-demand page)</strong>는 운영체제가 <strong>“필요해질 때(demand)”</strong> 처음 접근되는 순간에만 물리 페이지를 연결하고, 그 페이지의 모든 바이트를 0으로 채워서(zero-fill) 사용자 프로세스에 넘겨주는 메모리 할당 기법</p>
+
+<h2 id="동작-흐름">동작 흐름</h2>
+
+<ol>
+  <li>가상 주소 공간만 잡아 두기</li>
+</ol>
+
+<ul>
+  <li>
+    <p>프로그램이 malloc, VirtualAlloc(…, MEM_RESERVE), 스택 확대, BSS(전역/정적 0-초기화 변수) 등으로 “새 메모리를” 요구하면,</p>
+  </li>
+  <li>
+    <p>커널은 대응되는 물리 페이지 없이 가상 주소 범위를 예약해 두고, PTE(Page-Table Entry)에 “아직 물리 페이지 없음, demand-zero”라는 플래그를 세워 둠</p>
+  </li>
+</ul>
+
+<ol>
+  <li>첫 접근 → 페이지 폴트(page fault)</li>
+</ol>
+
+<ul>
+  <li>CPU가 그 주소를 읽거나 쓰려고 하면 PTE에 실제 프레임이 없으므로 페이지 폴트가 발생</li>
+</ul>
+
+<ol>
+  <li>커널이 물리 페이지 할당 &amp; 0으로 초기화</li>
+</ol>
+
+<ul>
+  <li>
+    <p>커널의 Zero Page List에서 이미 0으로 클리어돼 있는 여유 페이지를 하나 꺼내오거나,</p>
+  </li>
+  <li>
+    <p>여유 페이지가 없다면 새 페이지를 확보한 뒤 memset(page, 0, PAGE_SIZE)로 0-필(fill) 한다</p>
+  </li>
+</ul>
+
+<ol>
+  <li>PTE 갱신 후 재시도</li>
+</ol>
+
+<ul>
+  <li>PTE를 “valid + 해당 물리 프레임”으로 고쳐 놓고, fault 된 명령을 재실행하면 이제 정상적으로 0값이 보임</li>
+</ul>
+
+<h2 id="왜-쓰일까">왜 쓰일까?</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">장점</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">메모리 절약</td>
+      <td style="text-align: center">큰 배열/구조체를 “0으로 초기화”해 예약만 해 놓고, 실제로 접근한 부분만 물리 메모리를 소비함</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">보안 &amp; 안정성</td>
+      <td style="text-align: center">항상 0으로 채워 주므로, 이전 프로세스의 잔류 데이터가 노출되지 않음</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">속도(평균)</td>
+      <td style="text-align: center">초기화 루프를 사용자 코드에서 돌릴 필요가 없고, 커널은 미리 0-클리어 해 둔 zero-page 풀을 재사용해 페이지 폴트 처리 시간을 최소화함</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="언제-볼-수-있을까">언제 볼 수 있을까?</h2>
+
+<ul>
+  <li>
+    <p>Windows - MEM_COMMIT 없이 VirtualAlloc으로 예약만 한 뒤 접근할 때, 또는 일반 HeapAlloc/new 내부적으로</p>
+  </li>
+  <li>
+    <p>Linux/Unix - 익명 매핑 mmap(…, MAP_ANONYMOUS)·스택·BSS·brk/sbrk 등</p>
+  </li>
+  <li>
+    <p>하이퍼바이저/가상머신 - 게스트가 처음 쓰는 시점까지 진짜 호스트 RAM을 배정하지 않는 ballooning 기법과 결합되기도 함</p>
+  </li>
+</ul>
+
+<h2 id="요약">요약</h2>
+
+<p>Demand-zero memory = “필요할 때 0으로 초기화된 물리 페이지를 뒤늦게 붙이는 가상 메모리 기술”</p>
+
+<p>→ 프로그램 입장에서는 ‘이미 0으로 초기화돼 있는 새 메모리’를 즉시 얻은 것처럼 보이지만, 실제 RAM은 첫 사용 시점까지 쓰이지 않아 메모리를 아끼고 보안을 높여 줌</p>
+
+<h3 id="나만의-요약">나만의 요약</h3>
+
+<ol>
+  <li>
+    <p>물리 메모리 같은 경우 첫 사용 전까지는 메모리 할당이 되지 않음</p>
+  </li>
+  <li>
+    <p>하지만 가상 메모리에서는 공간이 확보된 상태</p>
+  </li>
+  <li>
+    <p>실제 사용시에는 page fault 되면서 물리 메모리 할당이 이루어짐, PTE의 Not-present → Present로 갱신</p>
+  </li>
+</ol>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[Demand-zero memory(또는 zero-filled-on-demand page)는 운영체제가 “필요해질 때(demand)” 처음 접근되는 순간에만 물리 페이지를 연결하고, 그 페이지의 모든 바이트를 0으로 채워서(zero-fill) 사용자 프로세스에 넘겨주는 메모리 할당 기법이다]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Direct Memory Access</title><link href="/blog/computersystem/dma/" rel="alternate" type="text/html" title="Direct Memory Access" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/dma</id><content type="html" xml:base="/blog/computersystem/dma/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#dmadirect-memory-access란" id="markdown-toc-dmadirect-memory-access란">DMA(Direct Memory Access)란?</a></li>
+</ul>
+
+<h2 id="dmadirect-memory-access란">DMA(Direct Memory Access)란?</h2>
+
+<p>DMA는 <strong>“직접 메모리 접근”</strong>이라는 뜻으로, CPU의 개입 없이 주변장치가 메인 메모리와 직접 데이터 블록을 주고받도록 해 주는 메커니즘입니다. 대용량·고속 I/O가 필요할 때 CPU를 데이터 “우편배달부”로 쓰지 않고, “택배 기사(DMA 컨트롤러)”에게 맡겨 CPU는 다른 계산에 집중하게 하는 구조라고 생각하면 됩니다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[여태까지 컴퓨터는 직접 메모리에 대해 접근하지 않고 가상 메모리를 사용하는 것으로 배웠는데, 만약 직접 메모리 접근이 있다면?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">System Call</title><link href="/blog/computersystem/system-call/" rel="alternate" type="text/html" title="System Call" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/system-call</id><content type="html" xml:base="/blog/computersystem/system-call/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#호출-흐름리눅스-x86-64-예" id="markdown-toc-호출-흐름리눅스-x86-64-예">호출 흐름(리눅스 x86-64 예)</a></li>
+  <li><a href="#대표-범주" id="markdown-toc-대표-범주">대표 범주</a></li>
+  <li><a href="#언제-볼-수-있을까" id="markdown-toc-언제-볼-수-있을까">언제 볼 수 있을까?</a></li>
+  <li><a href="#요약" id="markdown-toc-요약">요약</a>    <ul>
+      <li><a href="#나만의-요약" id="markdown-toc-나만의-요약">나만의 요약</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>응용 프로그램(유저 레벨 코드)이 직접 하드웨어를 만지면 안 되므로, 운영체제(OS)가 대신 해준다. 프로세스가 커널에게 무언가를 “요청”하는 공식 통로가 바로 <strong>System Call</strong>이다.</p>
+
+<ul>
+  <li>
+    <p>“파일을 열어 줘(open)”, “데이터를 읽어 줘(read)”, “새 프로세스를 만들어 줘(fork)” … 같은 요구 사항을 전달한다</p>
+  </li>
+  <li>
+    <p>커널은 트랩(trap)을 통해 특권 모드(커널 모드)로 올라가 작업을 수행한 뒤, 결과(보통 레지스터 값 또는 errno)를 돌려주고 사용자 모드로 복귀한다</p>
+  </li>
+</ul>
+
+<h2 id="호출-흐름리눅스-x86-64-예">호출 흐름(리눅스 x86-64 예)</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">단계</th>
+      <th style="text-align: left">사용자 공간</th>
+      <th style="text-align: left">커널 공간</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: left">라이브러리 wrapper 함수 (read(int fd, void *buf, size_t n))</td>
+      <td style="text-align: left">-</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">2</td>
+      <td style="text-align: left">시스템 콜 번호와 인수들을 레지스터에 적재하고 syscall(또는 int 0x80) 실행</td>
+      <td style="text-align: left">트랩 발생→권한 레벨 전환, 커널 스택 진입</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">3</td>
+      <td style="text-align: left">시스템 콜 디스패처가 번호를 해석해 해당 핸들러(sys_read) 호출</td>
+      <td style="text-align: left">핸들러가 실제 I/O 수행, 파일 테이블 등 갱신</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">4</td>
+      <td style="text-align: left">반환값을 레지스터에 넣고 sysret</td>
+      <td style="text-align: left">-</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">5</td>
+      <td style="text-align: left">라이브러리 wrapper가 음수면 errno 설정 후 반환</td>
+      <td style="text-align: left">-</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>여기서 <strong>컨텍스트 스위치(레지스터·프로그램 카운터·스택 교체)</strong>는 수십 ~ 수백 나노초가 소요되므로, 시스템 콜은 함수 호출보다 느리다</p>
+
+<h2 id="대표-범주">대표 범주</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">범주</th>
+      <th style="text-align: left">대표 시스템 콜</th>
+      <th style="text-align: left">설명·용도</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">프로세스 제어</td>
+      <td style="text-align: left">fork, execve, waitpid, exit</td>
+      <td style="text-align: left">프로세스 생성·변경·종료</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">파일 I/O</td>
+      <td style="text-align: left">open/close, read/write, lseek, stat</td>
+      <td style="text-align: left">모든 디스크·파이프·소켓 I/O 통일 인터페이스(“Everything is a file”)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">장치 제어</td>
+      <td style="text-align: left">ioctl, mmap, munmap</td>
+      <td style="text-align: left">특수 장치 제어, 파일 매핑 등</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">메모리 관리</td>
+      <td style="text-align: left">brk, mmap</td>
+      <td style="text-align: left">힙 확장(malloc 내부)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">5</td>
+      <td style="text-align: left">라이브러리 wrapper가 음수면 errno 설정 후 반환</td>
+      <td style="text-align: left">-</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="언제-볼-수-있을까">언제 볼 수 있을까?</h2>
+
+<ul>
+  <li>
+    <p>Windows - MEM_COMMIT 없이 VirtualAlloc으로 예약만 한 뒤 접근할 때, 또는 일반 HeapAlloc/new 내부적으로</p>
+  </li>
+  <li>
+    <p>Linux/Unix - 익명 매핑 mmap(…, MAP_ANONYMOUS)·스택·BSS·brk/sbrk 등</p>
+  </li>
+  <li>
+    <p>하이퍼바이저/가상머신 - 게스트가 처음 쓰는 시점까지 진짜 호스트 RAM을 배정하지 않는 ballooning 기법과 결합되기도 함</p>
+  </li>
+</ul>
+
+<h2 id="요약">요약</h2>
+
+<p>Demand-zero memory = “필요할 때 0으로 초기화된 물리 페이지를 뒤늦게 붙이는 가상 메모리 기술”</p>
+
+<p>→ 프로그램 입장에서는 ‘이미 0으로 초기화돼 있는 새 메모리’를 즉시 얻은 것처럼 보이지만, 실제 RAM은 첫 사용 시점까지 쓰이지 않아 메모리를 아끼고 보안을 높여 줌</p>
+
+<h3 id="나만의-요약">나만의 요약</h3>
+
+<ol>
+  <li>
+    <p>물리 메모리 같은 경우 첫 사용 전까지는 메모리 할당이 되지 않음</p>
+  </li>
+  <li>
+    <p>하지만 가상 메모리에서는 공간이 확보된 상태</p>
+  </li>
+  <li>
+    <p>실제 사용시에는 page fault 되면서 물리 메모리 할당이 이루어짐, PTE의 Not-present → Present로 갱신</p>
+  </li>
+</ol>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[응용프로그램(User level code)이 Hardware를 조작하고 싶을때, 무엇을 할까?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">수작업으로 Malloc 구현</title><link href="/blog/computersystem/dynamic-memory-allocation/" rel="alternate" type="text/html" title="수작업으로 Malloc 구현" /><published>2025-04-27T00:00:00+00:00</published><updated>2025-04-27T00:00:00+00:00</updated><id>/blog/computersystem/dynamic-memory-allocation</id><content type="html" xml:base="/blog/computersystem/dynamic-memory-allocation/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#malloc-할당" id="markdown-toc-malloc-할당">Malloc 할당</a>    <ul>
+      <li><a href="#응용-프로그램" id="markdown-toc-응용-프로그램">응용 프로그램</a></li>
+      <li><a href="#allocator" id="markdown-toc-allocator">Allocator</a></li>
+      <li><a href="#용어-정리" id="markdown-toc-용어-정리">용어 정리</a></li>
       <li><a href="#링킹을-왜-배워야-할까" id="markdown-toc-링킹을-왜-배워야-할까">링킹을 왜 배워야 할까?</a></li>
     </ul>
   </li>
@@ -34,12 +289,92 @@
 
 <p><strong>Malloc</strong>에 관하여서는 이전에 포스팅한 <a href="../../c/malloc-calloc-realloc" class="heading flip-title">동적 메모리 할당(Dynamic memory allocation)</a> 을 참조하면 된다</p>
 
-<h2 id="링커의-역할">링커의 역할</h2>
+<p>여기서 다룰 내용은 Explicit allocator인 malloc 할당을 직접 구현할 예정이다</p>
 
-<p>링커는 독립적인 컴파일을 가능하게 한다. 이 뜻이 뭐냐하면, 큰 규모의 응용프로그램을 한 개의 소스 파일로 구성하는 대신에 컴파일할 수 있는 보다 관리할 만한 규모의 더 작은 모듈들로 나눌 수 있다. 그리고 이거를 별도로 수정할 수 있게 된다.</p>
+<h2 id="malloc-할당">Malloc 할당</h2>
+
+<p><img src="/assets/img/blog/computerscience/mallocallocation.png" alt="말록 할당" /></p>
+
+<p>위 사진의 순서 같은 경우 아래와 같다</p>
+
+<ol>
+  <li>
+    <p>p1(int사이즈X4) 할당</p>
+  </li>
+  <li>
+    <p>p2(int사이즈X5) 할당</p>
+  </li>
+  <li>
+    <p>p3(int사이즈X6) 할당</p>
+  </li>
+  <li>
+    <p>p2 free</p>
+  </li>
+  <li>
+    <p>p4(int사이즈X2) 할당</p>
+  </li>
+</ol>
+
+<h3 id="응용-프로그램">응용 프로그램</h3>
 
 <ul>
-  <li>모듈 중에 한 개를 변경할 때, 이 파일만을 간단히 재컴파일하고 다른 파일들을 재컴파일할 필요 없이 이 응용을 다시 링크한다.</li>
+  <li>
+    <p>응용프로그램 같은 경우 마음대로 malloc 할당과 free 요청이 가능하다</p>
+  </li>
+  <li>
+    <p>free 할 시에는 malloc된 block이어야 한다</p>
+  </li>
+</ul>
+
+<h3 id="allocator">Allocator</h3>
+
+<ul>
+  <li>
+    <p>할당된 블럭의 갯수와 크기에 대한 관리 권한이 없다</p>
+  </li>
+  <li>
+    <p>malloc 요청에 즉각 반응해야 함</p>
+
+    <ul>
+      <li>이 뜻은 추후 할당에 대해 대기가 불가능하다는 것이다</li>
+    </ul>
+  </li>
+  <li>
+    <p>free된 메모리에서만 할당이 가능하다</p>
+  </li>
+  <li>
+    <p>block의 크기에 대해서 정렬 요구사항에 맞추어야 한다</p>
+
+    <ul>
+      <li>
+        <p>리눅스 기준 아래와 같다</p>
+      </li>
+      <li>
+        <p>x86 : 8byte, x86-64 : 16byte</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>free블록에 관해서만 조작이 가능하다</p>
+  </li>
+  <li>
+    <p>일단 malloc할당 되었으면, 움직일 수 없다</p>
+
+    <ul>
+      <li>이 말은 압축이 불가능하다는 이야기</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="용어-정리">용어 정리</h3>
+
+<ul>
+  <li>
+    <p>Throughput : 시간당 완료된 요청의 갯수 (5000의 malloc할당과 5000의 free요청을 10초 안에 완수하면, 1000operations/second)</p>
+  </li>
+  <li>
+    <p>Payload :</p>
+  </li>
 </ul>
 
 <h3 id="링킹을-왜-배워야-할까">링킹을 왜 배워야 할까?</h3>
@@ -1544,937 +1879,4 @@ docker run <span class="nt">--rm</span> my-make-c-app
 
 <ul>
   <li>악성 코드 실험, 위험한 시스템 호출 시 Docker에서 격리된 환경에서 안전하게 테스트 가능</li>
-</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="c" /><category term="C" /><category term="가상화" /><category term="Virtualization" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/C.png" /><media:content medium="image" url="/assets/img/blog/postimage/C.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">동적 메모리 할당(Dynamic memory allocation)</title><link href="/blog/c/malloc-calloc-realloc/" rel="alternate" type="text/html" title="동적 메모리 할당(Dynamic memory allocation)" /><published>2025-04-11T00:00:00+00:00</published><updated>2025-04-11T00:00:00+00:00</updated><id>/blog/c/malloc-calloc-realloc</id><content type="html" xml:base="/blog/c/malloc-calloc-realloc/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#동적-메모리-할당을-사용할-때는-언제일까" id="markdown-toc-동적-메모리-할당을-사용할-때는-언제일까">동적 메모리 할당을 사용할 때는 언제일까?</a>    <ul>
-      <li><a href="#c언어에서의-정적-할당과-동적-할당의-예시" id="markdown-toc-c언어에서의-정적-할당과-동적-할당의-예시">C언어에서의 정적 할당과 동적 할당의 예시</a></li>
-      <li><a href="#동적-메모리-할당-vs-정적-메모리-할당-차이점" id="markdown-toc-동적-메모리-할당-vs-정적-메모리-할당-차이점">동적 메모리 할당 vs 정적 메모리 할당 차이점</a></li>
-    </ul>
-  </li>
-  <li><a href="#동적-메모리-할당malloc-calloc-realloc-free" id="markdown-toc-동적-메모리-할당malloc-calloc-realloc-free">동적 메모리 할당(malloc, calloc, realloc, free)</a>    <ul>
-      <li><a href="#용어-정리" id="markdown-toc-용어-정리">용어 정리</a></li>
-      <li><a href="#mallocmemory-allocation" id="markdown-toc-mallocmemory-allocation">malloc(Memory Allocation)</a></li>
-      <li><a href="#calloccontinguous-allocation" id="markdown-toc-calloccontinguous-allocation">calloc(Continguous Allocation)</a></li>
-      <li><a href="#reallocreallocation" id="markdown-toc-reallocreallocation">realloc(Reallocation)</a>        <ul>
-          <li><a href="#기존-블록에서-크기-조정이-가능한-경우realloc의-두-가지-시나리오" id="markdown-toc-기존-블록에서-크기-조정이-가능한-경우realloc의-두-가지-시나리오">기존 블록에서 크기 조정이 가능한 경우(realloc의 두 가지 시나리오)</a></li>
-          <li><a href="#기존-블록에서-확장-불가능한-경우realloc의-두-가지-시나리오" id="markdown-toc-기존-블록에서-확장-불가능한-경우realloc의-두-가지-시나리오">기존 블록에서 확장 불가능한 경우(realloc의 두 가지 시나리오)</a></li>
-        </ul>
-      </li>
-      <li><a href="#freeptr" id="markdown-toc-freeptr">free(ptr)</a>        <ul>
-          <li><a href="#free-사용하면-안-되는-경우" id="markdown-toc-free-사용하면-안-되는-경우">free() 사용하면 안 되는 경우</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#주의할-점" id="markdown-toc-주의할-점">주의할 점</a></li>
-  <li><a href="#마무리" id="markdown-toc-마무리">마무리</a></li>
-  <li><a href="#추가내용" id="markdown-toc-추가내용">추가내용</a></li>
-</ul>
-
-<p>C언어에서의 동적 메모리 관리를 위해 사용하는 표준 라이브러리 함수 malloc, calloc, realloc, free에 대해서 알아보자. 이 함수들은 <stdio.h>에 정의 되어 있어.</stdio.h></p>
-
-<h2 id="동적-메모리-할당을-사용할-때는-언제일까">동적 메모리 할당을 사용할 때는 언제일까?</h2>
-
-<ul>
-  <li>
-    <p>입력 크기를 미리 알 수 없을 때 (ex. 사용자 입력)</p>
-  </li>
-  <li>
-    <p>메모리를 효율적으로 쓰고 싶을 때</p>
-  </li>
-  <li>
-    <p>복잡한 자료구조를 다룰 때 (ex. 트리, 그래프, 연결 리스트)</p>
-  </li>
-</ul>
-
-<p>먼저 동적 메모리 할당(dynamic memory allocation) 설명 전에 정적 메모리 할당(static memory allocation)에 대해 간략하게 소개할게</p>
-
-<h3 id="c언어에서의-정적-할당과-동적-할당의-예시">C언어에서의 정적 할당과 동적 할당의 예시</h3>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 정적 할당</span>
-<span class="kt">int</span> <span class="n">arr</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>  <span class="c1">// 크기 10으로 고정</span>
-<span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-
-<span class="c1">// 동적 할당</span>
-<span class="kt">int</span><span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>  <span class="c1">// 실행 중 필요한 만큼 할당</span>
-</code></pre></div></div>
-
-<h3 id="동적-메모리-할당-vs-정적-메모리-할당-차이점">동적 메모리 할당 vs 정적 메모리 할당 차이점</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">구분</th>
-      <th style="text-align: center">정적 메모리 할당</th>
-      <th style="text-align: center">동적 메모리 할당</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">할당 영역</td>
-      <td style="text-align: center">스택</td>
-      <td style="text-align: center">힙</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">크기 제한</td>
-      <td style="text-align: center">작음(MB 단위)</td>
-      <td style="text-align: center">큼(GB까지도 가능)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">특징</td>
-      <td style="text-align: center">자동 관리, 빠름, 고정 크기</td>
-      <td style="text-align: center">수동 관리, 느림, 유연함</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">시점</td>
-      <td style="text-align: center">컴파일 타임(프로그램을 빌드할 때, 저장)</td>
-      <td style="text-align: center">런타임(실행 중에 운영체제로부터 메모리를 요청해서 사용)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">예시</td>
-      <td style="text-align: center">배열처럼 크기가 고정된 변수</td>
-      <td style="text-align: center">리스트처럼 크기가 유동적인 구조</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">메모리 해제</td>
-      <td style="text-align: center">자동 해제 or 함수 종료 시</td>
-      <td style="text-align: center">직접 해제 필요 (ex. free() in C)</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="동적-메모리-할당malloc-calloc-realloc-free">동적 메모리 할당(malloc, calloc, realloc, free)</h2>
-
-<h4 id="용어-정리">용어 정리</h4>
-
-<ul>
-  <li>
-    <p>void* 는 “타입이 정해지지 않은 주소값”으로</p>
-
-    <ul>
-      <li>
-        <p>메모리 주소를 가리키는 포인터인데, 어떤 타입인지 아직 모르겠다는 뜻</p>
-      </li>
-      <li>
-        <p>그래서 나중에 원하는 타입으로 형변환 (cast) 해서 써야 해</p>
-      </li>
-    </ul>
-  </li>
-</ul>
-
-<p>예시 : malloc()은 void ptr를 반환하니까, int ptr 로 형변환. 하지만 c언어에서 *은 자동 형변환됨</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span><span class="p">);</span>
-
-</code></pre></div></div>
-
-<h3 id="mallocmemory-allocation">malloc(Memory Allocation)</h3>
-
-<p>지정한 바이트만큼의 메모리를 할당</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span><span class="o">*</span> <span class="nf">malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
-</code></pre></div></div>
-<ul>
-  <li>
-    <p>초기화: ❌ 초기화되지 않음. 메모리의 내용은 쓰레기값(garbage values)일 수 있음</p>
-  </li>
-  <li>
-    <p>반환값: 성공하면 void 포인터(void*)를 반환. 실패하면 NULL 반환</p>
-  </li>
-</ul>
-
-<p>예제 : int 5개를 저장할 수 있는 메모리를 동적으로 할당함</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
-</code></pre></div></div>
-
-<h3 id="calloccontinguous-allocation">calloc(Continguous Allocation)</h3>
-
-<p>num 개의 요소 각각 size 바이트 크기로 메모리를 할당.</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span><span class="o">*</span> <span class="nf">calloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">num</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>초기화: ✅ 0으로 초기화됨(할당 대상이 배열이라면, calloc이 더 안전 - 초기화 누락 방지)</p>
-  </li>
-  <li>
-    <p>반환값: 성공하면 void* 반환. 실패하면 NULL</p>
-  </li>
-</ul>
-
-<p>예제 : int 5개 크기의 메모리를 0으로 초기화한 채 할당.</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">calloc</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
-</code></pre></div></div>
-
-<h3 id="reallocreallocation">realloc(Reallocation)</h3>
-
-<p>이미 할당된 메모리 블록의 크기를 변경 (확장 또는 축소)</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span><span class="o">*</span> <span class="nf">realloc</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">new_size</span><span class="p">);</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>ptr이 NULL이면 malloc처럼 동작</p>
-  </li>
-  <li>
-    <p>new_size가 0이면 free(ptr)처럼 동작</p>
-  </li>
-</ul>
-
-<p>예제 : int 10개 크기로 확장함</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
-<span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">realloc</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>초기화: 새로 늘어난 부분은 초기화되지 않음</p>
-  </li>
-  <li>
-    <p>새 크기의 메모리를 새로 확보하고, 기존 데이터는 유지함. 새 영역으로 이동할 수도 있음(새로운 블록이 현재 블록의 “바로 뒤”에 있으면)</p>
-  </li>
-</ul>
-
-<h4 id="기존-블록에서-크기-조정이-가능한-경우realloc의-두-가지-시나리오">기존 블록에서 크기 조정이 가능한 경우(realloc의 두 가지 시나리오)</h4>
-
-<ul>
-  <li>
-    <p>힙 영역에서 현재 블록 뒤쪽에 충분한 여유 공간이 있는 경우, 기존 위치에서 확장이 가능해</p>
-  </li>
-  <li>
-    <p>이 경우 realloc은 새 메모리를 할당하지 않고, 기존 블록의 크기만 늘리고 주소도 그대로 반환</p>
-  </li>
-  <li>
-    <p>성능적으로 가장 좋음! (복사 불필요요)</p>
-  </li>
-</ul>
-
-<h4 id="기존-블록에서-확장-불가능한-경우realloc의-두-가지-시나리오">기존 블록에서 확장 불가능한 경우(realloc의 두 가지 시나리오)</h4>
-
-<ul>
-  <li>
-    <p>기존 블록 뒤쪽에 다른 메모리 할당이 있어서 공간 확장이 불가</p>
-  </li>
-  <li>
-    <p>realloc은 내부적으로 malloc(new_size)로 새 블록을 만들고, memcpy로 기존 데이터를 복사한 다음, 기존 블록은 free()처리하고, 새 주소를 반환환</p>
-  </li>
-</ul>
-
-<h3 id="freeptr">free(ptr)</h3>
-
-<p>동적 메모리 할당 사용시 메모리 수동해제가 필수야! 아래처럼 사용이 끝났을 때 호출해야해</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">);</span>
-
-<span class="c1">// ... ptr을 사용해서 작업 수행 ...</span>
-
-<span class="n">free</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span>  <span class="c1">// 사용이 끝났으면 반드시 해제해야 함!</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>같은 포인터를 두 번 free()하면 안 돼! → “Double Free” 에러</p>
-  </li>
-  <li>
-    <p>보통 free() 한 뒤에는 NULL로 초기화하는 습관이 좋아</p>
-    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span><span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="nf">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
-<span class="c1">// ...</span>
-<span class="n">free</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>  <span class="c1">// 꼭 해제!</span>
-<span class="n">data</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">// 안전을 위해 초기화</span>
-</code></pre></div>    </div>
-  </li>
-</ul>
-
-<h4 id="free-사용하면-안-되는-경우">free() 사용하면 안 되는 경우</h4>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">잘못된 예시</th>
-      <th style="text-align: center">이유</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">free() 없이 종료</td>
-      <td style="text-align: center">메모리 누수 발생</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">스택에 할당한 변수에 free()</td>
-      <td style="text-align: center">malloc 등으로 할당한 메모리만 해제 가능</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">같은 포인터를 두 번 free()</td>
-      <td style="text-align: center">프로그램이 비정상 종료될 수 있음</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">다른 포인터로 free()</td>
-      <td style="text-align: center">정확히 할당했던 포인터로만 해제해야 함</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>예제 : 스택 메모리에 free()</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-<span class="n">free</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span>  <span class="c1">// ❌ 이렇게 하면 안 됨! (스택 메모리는 해제하지 마!)</span>
-</code></pre></div></div>
-
-<h2 id="주의할-점">주의할 점</h2>
-
-<ul>
-  <li>
-    <p>반환값이 NULL인지 반드시 체크할 것! malloc이나 calloc은 실패할 수 있음</p>
-  </li>
-  <li>
-    <p>메모리 누수 방지를 위해 사용 후 free(ptr)를 꼭 호출해야 함</p>
-  </li>
-  <li>
-    <p>malloc은 초기화를 안 해줘서 쓰기 전에 꼭 값 채워야 해</p>
-  </li>
-  <li>
-    <p>realloc은 새로운 주소로 이동될 수 있으니, 반드시 반환값을 다시 변수에 할당해야 함</p>
-  </li>
-  <li>
-    <p>free() 이후 그 포인터를 다시 쓰면 “댕글링 포인터(dangling pointer)” 문제가 생길 수 있어</p>
-  </li>
-</ul>
-
-<h2 id="마무리">마무리</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">함수</th>
-      <th style="text-align: center">역할</th>
-      <th style="text-align: center">초기화 여부</th>
-      <th style="text-align: center">사용 시기</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">malloc</td>
-      <td style="text-align: center">지정한 크기만큼 할당</td>
-      <td style="text-align: center">❌ 안 됨</td>
-      <td style="text-align: center">빠르게 할당만 하고 싶을 때</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">calloc</td>
-      <td style="text-align: center">여러 개 요소를 할당 + 초기화</td>
-      <td style="text-align: center">✅ 0으로 초기화</td>
-      <td style="text-align: center">배열 등 초기화가 필요한 경우</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">realloc</td>
-      <td style="text-align: center">기존 메모리 크기 변경</td>
-      <td style="text-align: center">❌ 안 됨</td>
-      <td style="text-align: center">크기를 동적으로 바꿔야 할 때</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="추가내용">추가내용</h2>
-
-<ul>
-  <li>realloc이 ‘이동했는지’ 알아낼 수 있을까?</li>
-</ul>
-
-<p>예제 : realloc이 반환한 포인터와 기존 포인터를 비교</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
-<span class="kt">int</span> <span class="o">*</span><span class="n">new_ptr</span> <span class="o">=</span> <span class="n">realloc</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-
-<span class="k">if</span> <span class="p">(</span><span class="n">ptr</span> <span class="o">==</span> <span class="n">new_ptr</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// 같은 위치에서 확장 성공 (이동 없음)</span>
-<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="c1">// 다른 위치로 이동해서 데이터 복사함</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li>realloc이 실패하면 NULL값 반환되는데, 이때 기존 포인터는 해제되지 않아서 안전하게 쓰는 방법은 아래와 같아</li>
-</ul>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="o">*</span><span class="n">tmp</span> <span class="o">=</span> <span class="n">realloc</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">new_size</span><span class="p">);</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">ptr</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">;</span> <span class="c1">// 성공하면 ptr을 새 주소로 갱신</span>
-<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="c1">// 실패해도 ptr은 여전히 유효한 메모리, 누수 방지 가능</span>
-<span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="c" /><category term="malloc" /><category term="calloc" /><category term="realloc" /><category term="동적" /><category term="메모리" /><category term="할당" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/C.png" /><media:content medium="image" url="/assets/img/blog/postimage/C.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">포인터(pointer), &amp;amp; 연산자와 * 연산자</title><link href="/blog/algorithm/pointer-and-star/" rel="alternate" type="text/html" title="포인터(pointer), &amp;amp; 연산자와 * 연산자" /><published>2025-04-04T00:00:00+00:00</published><updated>2025-04-04T00:00:00+00:00</updated><id>/blog/algorithm/pointer-and-star</id><content type="html" xml:base="/blog/algorithm/pointer-and-star/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#포인터pointer란" id="markdown-toc-포인터pointer란">포인터(pointer)란?</a></li>
-  <li><a href="#-연산자-주소-연산자" id="markdown-toc--연산자-주소-연산자">&amp; 연산자 (주소 연산자)</a></li>
-  <li><a href="#-연산자-역참조-연산자-또는-간접-참조-연산자" id="markdown-toc--연산자-역참조-연산자-또는-간접-참조-연산자">* 연산자 (역참조 연산자 또는 간접 참조 연산자)</a>    <ul>
-      <li><a href="#포인터-선언" id="markdown-toc-포인터-선언">포인터 선언</a></li>
-      <li><a href="#역참조dereferencing" id="markdown-toc-역참조dereferencing">역참조(Dereferencing)</a></li>
-      <li><a href="#시각화-마인드-이미지" id="markdown-toc-시각화-마인드-이미지">시각화 (마인드 이미지)</a></li>
-    </ul>
-  </li>
-  <li><a href="#마무리" id="markdown-toc-마무리">마무리</a></li>
-</ul>
-
-<h2 id="포인터pointer란">포인터(pointer)란?</h2>
-
-<p>포인터는 ‘어떤 변수의 메모리 주소’를 저장하는 변수야.</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-<span class="kt">int</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
-<span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span>
-</code></pre></div></div>
-<ul>
-  <li>
-    <p>a는 정수형 변수이고 값은 10이야</p>
-  </li>
-  <li>
-    <p>&amp;a는 a의 메모리 주소를 의미해</p>
-  </li>
-  <li>
-    <p>p는 포인터 변수로, 정수형 변수의 주소를 저장할 수 있어. 그래서 int*p;라고 선언해</p>
-  </li>
-  <li>
-    <p>p = &amp;a;는 a의 주소를 p에 저장한다는 뜻이야</p>
-  </li>
-</ul>
-
-<h2 id="-연산자-주소-연산자">&amp; 연산자 (주소 연산자)</h2>
-
-<p>&amp;는 변수의 주소를 얻는 연산자야</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-<span class="n">printf</span><span class="p">(</span><span class="s">"%p"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>  <span class="c1">// 변수 a의 주소를 출력함</span>
-</code></pre></div></div>
-
-<p>&amp;a 는 a의 메모리 주소를 반환해</p>
-
-<h2 id="-연산자-역참조-연산자-또는-간접-참조-연산자">* 연산자 (역참조 연산자 또는 간접 참조 연산자)</h2>
-
-<ul>
-  <li>는 두 가지 용도로 쓰여</li>
-</ul>
-
-<h3 id="포인터-선언">포인터 선언</h3>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
-</code></pre></div></div>
-
-<ul>
-  <li>p는 int형 값을 가리키는 포인터야</li>
-</ul>
-
-<h3 id="역참조dereferencing">역참조(Dereferencing)</h3>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-<span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span>
-
-<span class="n">printf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>  <span class="c1">// 10 출력</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>*p는 p가 가리키는 주소에 저장된 값을 의미</p>
-  </li>
-  <li>
-    <p>즉, *p는 a와 같아!</p>
-  </li>
-</ul>
-
-<h3 id="시각화-마인드-이미지">시각화 (마인드 이미지)</h3>
-
-<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">a</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
-
-   <span class="p">[</span><span class="n">a</span><span class="p">]</span>
-<span class="err">주소</span><span class="p">:</span> <span class="m">0x100</span>
-<span class="err">값</span><span class="p">:</span>   <span class="m">10</span>
-
-<span class="kt">int</span> <span class="p">*</span><span class="n">p</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">a</span><span class="p">;</span>
-
-   <span class="p">[</span><span class="n">p</span><span class="p">]</span>
-<span class="err">주소</span><span class="p">:</span> <span class="m">0x200</span>  <span class="p">(</span><span class="n">p</span><span class="err">의</span> <span class="err">주소</span><span class="p">)</span>
-<span class="err">값</span><span class="p">:</span>   <span class="m">0x100</span>  <span class="p">(</span><span class="n">a</span><span class="err">의</span> <span class="err">주소</span><span class="p">)</span>
-
-<span class="p">*</span><span class="n">p</span> <span class="p">=&gt;</span> <span class="m">10</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>p는 0x100이라는 값을 가지고 있다 (즉, a의 주소를 저장).</p>
-  </li>
-  <li>
-    <p>*p는 0x100 주소에 있는 값을 참조한다, 즉 a의 값 10</p>
-  </li>
-  <li>
-    <p>마지막으로 p 자체도 메모리에 저장되기 때문에, p의 주소도 있어</p>
-  </li>
-</ul>
-
-<p><strong><em>쉽게 정리</em></strong></p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span> <span class="c1">// a의 주소 (예: 0x100)</span>
-<span class="n">printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span>  <span class="c1">// p가 가리키는 주소 (=&amp;a) → 0x100</span>
-<span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span> <span class="c1">// p가 가리키는 주소의 값 → 10</span>
-<span class="n">printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">p</span><span class="p">);</span> <span class="c1">// p 자체의 주소 (예: 0x200)</span>
-</code></pre></div></div>
-
-<h2 id="마무리">마무리</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">연산자</th>
-      <th style="text-align: center">의미</th>
-      <th style="text-align: center">예시</th>
-      <th style="text-align: center">설명</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">&amp;</td>
-      <td style="text-align: center">주소값 반환</td>
-      <td style="text-align: center">&amp;a</td>
-      <td style="text-align: center">변수 a의 주소값</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">*</td>
-      <td style="text-align: center">역참조 / 값에 접근</td>
-      <td style="text-align: center">*p</td>
-      <td style="text-align: center">포인터 p가 가리키는 값</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">*</td>
-      <td style="text-align: center">포인터 선언 시 사용</td>
-      <td style="text-align: center">int *p</td>
-      <td style="text-align: center">정수를 가리키는 포인터 선언</td>
-    </tr>
-  </tbody>
-</table>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="algorithm" /><category term="포인터" /><category term="pointer" /><category term="연산자" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/Algorithm.png" /><media:content medium="image" url="/assets/img/blog/postimage/Algorithm.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">프로그램의 기계수준 표현(Machine-Level Representation of Programs)</title><link href="/blog/computersystem/machine-level-representation-of-programs/" rel="alternate" type="text/html" title="프로그램의 기계수준 표현(Machine-Level Representation of Programs)" /><published>2025-04-04T00:00:00+00:00</published><updated>2025-04-04T00:00:00+00:00</updated><id>/blog/computersystem/machine-level-representation-of-programs</id><content type="html" xml:base="/blog/computersystem/machine-level-representation-of-programs/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#프래그로머로써-왜-어셈블리어를-배워야-할까" id="markdown-toc-프래그로머로써-왜-어셈블리어를-배워야-할까">프래그로머로써 왜 어셈블리어를 배워야 할까?</a></li>
-  <li><a href="#기계수준-코드" id="markdown-toc-기계수준-코드">기계수준 코드</a>    <ul>
-      <li><a href="#프로그램-메모리" id="markdown-toc-프로그램-메모리">프로그램 메모리</a></li>
-    </ul>
-  </li>
-  <li><a href="#코드-예제" id="markdown-toc-코드-예제">코드 예제</a></li>
-  <li><a href="#정보-접근하기" id="markdown-toc-정보-접근하기">정보 접근하기</a>    <ul>
-      <li><a href="#오퍼랜드-식별자operand-specifier" id="markdown-toc-오퍼랜드-식별자operand-specifier">오퍼랜드 식별자(Operand specifier)</a></li>
-    </ul>
-  </li>
-  <li><a href="#데이터-이동-예제" id="markdown-toc-데이터-이동-예제">데이터 이동 예제</a>    <ul>
-      <li><a href="#자료형-변환-type-casting" id="markdown-toc-자료형-변환-type-casting">자료형 변환 (Type Casting)</a>        <ul>
-          <li><a href="#작은-타입--큰-타입-확장" id="markdown-toc-작은-타입--큰-타입-확장">작은 타입 → 큰 타입 (확장)</a></li>
-          <li><a href="#큰-타입--작은-타입-축소" id="markdown-toc-큰-타입--작은-타입-축소">큰 타입 → 작은 타입 (축소)</a></li>
-        </ul>
-      </li>
-      <li><a href="#정수형-확장" id="markdown-toc-정수형-확장">정수형 확장</a></li>
-      <li><a href="#부호성과-크기의-변환" id="markdown-toc-부호성과-크기의-변환">부호성과 크기의 변환</a>        <ul>
-          <li><a href="#그러면-부호성은-언제-사용하냐" id="markdown-toc-그러면-부호성은-언제-사용하냐">그러면 부호성은 언제 사용하냐?</a></li>
-        </ul>
-      </li>
-      <li><a href="#자료형-정수형-확장-부호성과-크기의-변환-요약" id="markdown-toc-자료형-정수형-확장-부호성과-크기의-변환-요약">자료형, 정수형 확장, 부호성과 크기의 변환 요약</a></li>
-      <li><a href="#c언어에서의-signed-vs-unsigned-기본-개념" id="markdown-toc-c언어에서의-signed-vs-unsigned-기본-개념">C언어에서의 signed vs unsigned 기본 개념</a>        <ul>
-          <li><a href="#왜-굳이-unsigned를-쓸까" id="markdown-toc-왜-굳이-unsigned를-쓸까">왜 굳이 unsigned를 쓸까?</a></li>
-          <li><a href="#그럼-signed는-왜-따로-쓸까" id="markdown-toc-그럼-signed는-왜-따로-쓸까">그럼 signed는 왜 따로 쓸까?</a></li>
-          <li><a href="#c에서-char-signed-char-unsigned-char의-차이" id="markdown-toc-c에서-char-signed-char-unsigned-char의-차이">C에서 char, signed char, unsigned char의 차이</a></li>
-          <li><a href="#정수-오버플로언더플로와-관련" id="markdown-toc-정수-오버플로언더플로와-관련">정수 오버플로/언더플로와 관련</a></li>
-          <li><a href="#unsignedsigned-정리" id="markdown-toc-unsignedsigned-정리">unsigned/signed 정리</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#rsp스택-포인터의-감소" id="markdown-toc-rsp스택-포인터의-감소">%rsp(스택 포인터)의 감소</a></li>
-</ul>
-
-<p>컴퓨터는 데이터를 처리하고, 메모리를 관리하고, 저장장치에 데이터를 읽거나 쓰고, 네트워크를 통해 통신하는 등의 하위 동작들을 인코딩한 연속된 바이트인 기계어 코드를 실행한다.</p>
-
-<h2 id="프래그로머로써-왜-어셈블리어를-배워야-할까">프래그로머로써 왜 어셈블리어를 배워야 할까?</h2>
-
-<p>최신 최적화 컴파일러가 만들어 낸 코드는 대부분 잘 훈련된 어셈블리어 프래그로머가 손으로 작성한 것과 유사한 효율성을 갖는다. 그 말은 잘 훈련된 프로그래머의 어셈블리어가 최신 최적화 컴파일러가 만들어 낸 코드만큼의 효율성을 갖는다는 얘기다. 어셈블리어 코드를 읽고 이해할 수 있으면, 컴파일러의 최적화 성능을 알 수 있으며, 코드에 내재된 비효율성을 분석할 수 있다</p>
-
-<h2 id="기계수준-코드">기계수준 코드</h2>
-
-<p>기계수준 프로그래밍에 중요한 특징 두가지가 있어</p>
-
-<ul>
-  <li>
-    <ol>
-      <li>기계수준 프로그램의 형식과 동작은 인스트럭션 집합구조(Instruction set architecture) 즉, “ISA”에 의해 정의된다</li>
-    </ol>
-  </li>
-  <li>
-    <ol>
-      <li>기계수준 프로그램이 사용하는 주소는 가상주소이며, 메모리가 매우 큰 바이트 배열인 것처럼 보이게 하는 메모리 모델 제공</li>
-    </ol>
-  </li>
-</ul>
-
-<p>그리고 프로세서 내부 구조에 대해서 설명할게</p>
-
-<ul>
-  <li>
-    <p><strong><em>프로그램 카운터</em></strong>(일반적으로 PC라고 하며, x86-64에서는 %rip라고 함)는 실행할 다음 인스트럭션의 메모리 주소를 가리킴</p>
-  </li>
-  <li>
-    <p><strong><em>정수 레지스터</em></strong> 파일은 64비트 값을 저장하기 위한 16개의 이름을 붙인 위치를 갖는다. 이들 레지스터는 주소(C언어의 포인터에 해당하는)나 정수 데이터를 저장할 수 있다. 일부 레지스터는 프로그램의 중요한 상태를 추적하는데 사용할 수 있으며, 다른 레지스터들은 함수의 리턴 값뿐만 아니라 프로시저의 지역변수와 인자 같은 임시 값을 저장하는 데 사용한다</p>
-  </li>
-  <li>
-    <p><strong><em>조건코드 레지스터</em></strong>들은 가장 최근에 실행한 산술 또는 논리 인스트럭션에 관한 상태 정보를 저장한다. 이들은 if나 while문을 구현할 때 필요한 제어나 조건에 따른 데이터 흐름의 변경을 구현하기 위해 사용된다</p>
-  </li>
-  <li>
-    <p><strong><em>벡터 레지스터</em></strong>들의 집합은 하나 이상의 정수나 부동소수점 값들을 각각 저장할 수 있다</p>
-  </li>
-</ul>
-
-<h3 id="프로그램-메모리">프로그램 메모리</h3>
-
-<p>프로그램 메모리는 프로그램의 실행 기계어 코드, 운영체제를 위한 일부 정보, 프로시저 호출과 리턴을 관리하는 런타임 스택, 사용자에 의해 할당된(예를 들어 malloc 라이브러리 함수를 사용해서) 메모리 블록들을 포함하고 있다</p>
-
-<h2 id="코드-예제">코드 예제</h2>
-
-<hr />
-
-<h2 id="정보-접근하기">정보 접근하기</h2>
-
-<p>인스트럭션들은 16개의 레지스터 하위 바이트들에 저장된 다양한 크기의 데이터에 대해 연산할 수 있다. 바이트수준 연산들은 가장 덜 중요한 바이트에 대해 연산을 할 수 있으며, 16비트 연산들은 가장 덜 중요한 2바이트에 접근하고, 32비트 연산은 덜 중요한 4바이트에, 64비트 연산은 레지스터 전체에 접근할 수 있다.</p>
-
-<h3 id="오퍼랜드-식별자operand-specifier">오퍼랜드 식별자(Operand specifier)</h3>
-
-<p>대부분의 인스트럭션은 하나 이상의 오퍼랜드를 가진다. 오퍼랜드는 연산을 수행할 소스(source)값과 그 결과를 저장할 목적지(destination)의 위치를 명시한다.</p>
-
-<h2 id="데이터-이동-예제">데이터 이동 예제</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">명령어 접미사</th>
-      <th style="text-align: center">크기</th>
-      <th style="text-align: center">예시 레지스터</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">b (byte)</td>
-      <td style="text-align: center">8 비트</td>
-      <td style="text-align: center">%al, %bl</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">w (word)</td>
-      <td style="text-align: center">16 비트</td>
-      <td style="text-align: center">%ax, %bx</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">l (long)</td>
-      <td style="text-align: center">32 비트</td>
-      <td style="text-align: center">%eax, %ebx</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">q (quad)</td>
-      <td style="text-align: center">64 비트</td>
-      <td style="text-align: center">%rax, %rbx</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="자료형-변환-type-casting">자료형 변환 (Type Casting)</h3>
-
-<h4 id="작은-타입--큰-타입-확장">작은 타입 → 큰 타입 (확장)</h4>
-
-<p>예 : char(8bit) → int(32bit)</p>
-
-<p>같은 경우 두 가지 방식으로 확장 가능 :</p>
-
-<ul>
-  <li>
-    <p>Zero extension (0으로 채움) : 부호 없는 확장</p>
-  </li>
-  <li>
-    <p>Sign extenstion (부호비트 복사) : 부호 있는 확장</p>
-  </li>
-</ul>
-
-<pre><code class="language-assembly">; 예: 8비트 AL 레지스터 → 32비트 EAX로 확장
-
-movzx eax, al     ; zero-extension: AL을 EAX로 확장
-movsx eax, al     ; sign-extension: AL을 EAX로 확장 (AL이 음수면 1로 채움)
-</code></pre>
-
-<h4 id="큰-타입--작은-타입-축소">큰 타입 → 작은 타입 (축소)</h4>
-
-<p>예 : int(32bit) → char(8bit)</p>
-
-<p>이건 단순히 상위 비트를 버림. 잘못하면 값이 잘릴 수 있음</p>
-
-<pre><code class="language-assembly">mov al, bl       ; 단순 복사 → 상위 비트 무시
-</code></pre>
-
-<h3 id="정수형-확장">정수형 확장</h3>
-
-<p>자료형 변환과 확장되는데 다사 정리하자면 :</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">종류</th>
-      <th style="text-align: center">설명</th>
-      <th style="text-align: center">어셈블리어 명령어</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">Zero Extension</td>
-      <td style="text-align: center">상위 비트를 0으로 채움</td>
-      <td style="text-align: center">MOVZX</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Sign Extension</td>
-      <td style="text-align: center">상위 비트를 부호 비트로 채움</td>
-      <td style="text-align: center">MOVSX</td>
-    </tr>
-  </tbody>
-</table>
-
-<ul>
-  <li>
-    <p>C언어에서 unsigned char → int 변환하면 zero-extension</p>
-  </li>
-  <li>
-    <p>signed char → int은 sign-extension 됨</p>
-  </li>
-</ul>
-
-<h3 id="부호성과-크기의-변환">부호성과 크기의 변환</h3>
-
-<p>부호성(sign)은 같은 비트 패턴이라도 해석 방법이 다름</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">이진수</th>
-      <th style="text-align: center">부호 있음(signed)</th>
-      <th style="text-align: center">부호 없음(unsigned)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">11111111 (8bit)</td>
-      <td style="text-align: center">-1</td>
-      <td style="text-align: center">255</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">10000000</td>
-      <td style="text-align: center">-128</td>
-      <td style="text-align: center">128</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>예시 : 이런 식으로, 같은 al = 0xFF 값을 어떻게 해석하냐에 따라 완전히 다른 결과가 나와.</p>
-<pre><code class="language-assembly">mov al, -1         ; al = 0xFF (-1)
-movzx eax, al      ; eax = 0x000000FF (255) ← zero-extension
-movsx eax, al      ; eax = 0xFFFFFFFF (-1) ← sign-extension
-</code></pre>
-
-<h4 id="그러면-부호성은-언제-사용하냐">그러면 부호성은 언제 사용하냐?</h4>
-
-<ul>
-  <li>
-    <p>함수 호출 시 작은 자료형을 큰 레지스터에 넣을 때</p>
-  </li>
-  <li>
-    <p>시스템 콜에 인자 전달할 때 정수형 확장 필수</p>
-  </li>
-  <li>
-    <p>부호 있는 비교 (cmp) vs 부호 없는 비교 (cmp + ja/jb 등)에서 차이 발생</p>
-  </li>
-  <li>
-    <p>imul, mul 등 부호 여부에 따라 다른 명령어 사용</p>
-  </li>
-</ul>
-
-<h3 id="자료형-정수형-확장-부호성과-크기의-변환-요약">자료형, 정수형 확장, 부호성과 크기의 변환 요약</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">개념</th>
-      <th style="text-align: center">설명</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">자료형 없음</td>
-      <td style="text-align: center">어셈블리는 타입보다 “크기”와 “부호 여부”에 집중</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Zero-extension</td>
-      <td style="text-align: center">unsigned 확장. 상위 비트를 0으로 채움</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Sign-extension</td>
-      <td style="text-align: center">signed 확장. 부호 비트를 상위에 복사</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">축소(Casting down)</td>
-      <td style="text-align: center">상위 비트 잘림 (주의 필요)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">부호 해석</td>
-      <td style="text-align: center">같은 비트라도 signed/unsigned로 다르게 해석됨</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">주요 명령어</td>
-      <td style="text-align: center">mov, movzx, movsx, cmp, imul, mul</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="c언어에서의-signed-vs-unsigned-기본-개념">C언어에서의 signed vs unsigned 기본 개념</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">타입</th>
-      <th style="text-align: center">표현 가능한 값</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">signed(기본)</td>
-      <td style="text-align: center">음수 ~ 양수</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">unsigned</td>
-      <td style="text-align: center">0 ~ 양수 (두 배 범위)</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>예 : char는 1바이트니까 총 256개의 값을 표현할 수 있음</p>
-
-<ul>
-  <li>
-    <p>signed char : -128 ~ 127</p>
-  </li>
-  <li>
-    <p>unsigned char : 0 ~ 255</p>
-  </li>
-</ul>
-
-<h4 id="왜-굳이-unsigned를-쓸까">왜 굳이 unsigned를 쓸까?</h4>
-
-<p><strong>음수가 절대 나올 수 없는 값에 적절함</strong></p>
-
-<p>예 : 나이, 인덱스, 배열 크기, 파일 크기, 시간 등</p>
-
-<p>→ 당연히 음수가 될 수 없으니 unsigned를 쓰면 안전하고 의미도 더 분명함</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">age</span> <span class="o">=</span> <span class="mi">23</span><span class="p">;</span>
-</code></pre></div></div>
-
-<p><strong>저장 범위를 최대한 활용하고 싶을 때</strong></p>
-
-<p>unsigned는 같은 크기에서 더 큰 수까지 표현 가능하니까, 한정된 메모리로 최대한 많은 값을 표현하고 싶을 때 유용해.</p>
-
-<p>예 : 색상값 (0~255)</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">red</span> <span class="o">=</span> <span class="mi">255</span><span class="p">;</span>  <span class="c1">// 딱 1바이트로 0~255 표현</span>
-</code></pre></div></div>
-
-<p>** 비트 연산을 명확하게 할 때</p>
-
-<p>unsigned는 부호 비트(맨 앞 비트) 를 걱정하지 않아도 돼서 비트 마스크, 쉬프트 연산 등을 더 안정적으로 할 수 있어</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">mask</span> <span class="o">=</span> <span class="mh">0xF0</span><span class="p">;</span>
-<span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="n">mask</span><span class="p">;</span>
-</code></pre></div></div>
-
-<h4 id="그럼-signed는-왜-따로-쓸까">그럼 signed는 왜 따로 쓸까?</h4>
-
-<p>사실 C에서는 int, char는 기본적으로 signed야.(char는 컴파일러마다 다름) 명시적으로 부호 있는 정수라는 걸 강조하거나, 플랫폼 독립적으로 정확한 표현 범위를 보장하고 싶을 때 signed를 명시해</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">signed</span> <span class="kt">char</span> <span class="n">temperature</span> <span class="o">=</span> <span class="o">-</span><span class="mi">20</span><span class="p">;</span>
-</code></pre></div></div>
-
-<h4 id="c에서-char-signed-char-unsigned-char의-차이">C에서 char, signed char, unsigned char의 차이</h4>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">타입</th>
-      <th style="text-align: center">범위</th>
-      <th style="text-align: center">용도</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">char</td>
-      <td style="text-align: center">컴파일러에 따라 signed/unsigned 다름</td>
-      <td style="text-align: center">문자 표현용</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">signed char</td>
-      <td style="text-align: center">-128 ~ 127</td>
-      <td style="text-align: center">음수 포함할 때</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">unsigned char</td>
-      <td style="text-align: center">0 ~ 255</td>
-      <td style="text-align: center">바이트 데이터 처리, 파일 읽기 등</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>예를 들어 이미지 파일을 바이트 단위로 읽을 때는 unsigned char가 더 적절해. 0xFF(255)가 음수로 해석되면 문제가 생기거든</p>
-
-<h4 id="정수-오버플로언더플로와-관련">정수 오버플로/언더플로와 관련</h4>
-
-<p><strong>unsigned</strong>는 overflow/underflow 시 모듈로 연산처럼 동작</p>
-
-<p><strong>signed</strong>는 overflow시 동작이 정의되지 않음(UB, undefined behavior)</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">x</span><span class="o">--</span><span class="p">;</span>  <span class="c1">// x = 4294967295 (underflow)</span>
-
-<span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">2147483647</span><span class="p">;</span>
-<span class="n">y</span><span class="o">++</span><span class="p">;</span>  <span class="c1">// UB (비정상 동작 가능성)</span>
-</code></pre></div></div>
-
-<h4 id="unsignedsigned-정리">unsigned/signed 정리</h4>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">쓰는 이유</th>
-      <th style="text-align: center">설명</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">의미 명확히 하기</td>
-      <td style="text-align: center">나이는 음수가 될 수 없으니 unsigned 사용</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">범위 확장</td>
-      <td style="text-align: center">같은 바이트로 더 큰 수 저장</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">비트 연산 안전성</td>
-      <td style="text-align: center">부호 없는 연산이 더 예측 가능함</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">성능/메모리 최적화</td>
-      <td style="text-align: center">char 1바이트 단위로 다루고 싶을 때 등</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="rsp스택-포인터의-감소">%rsp(스택 포인터)의 감소</h2>
-
-<ul>
-  <li>%rsp는 데이터를 push하거나 스택 프레임을 만들 때 감소하는데, 이때의 감소량은 저장되는 데이터의 크기를 기준으로 해</li>
-</ul>
-
-<pre><code class="language-assembly">push %rbp   ; 8바이트 감소 (64비트 시스템에서 레지스터는 8바이트)
-sub $16, %rsp  ; 스택에 16바이트 공간 확보 -&gt; %rsp는 16바이트 감소
-</code></pre>
-
-<p>예제 : 함수 진입 시 흔한 패턴:</p>
-<pre><code class="language-assembly">push %rbp         ; 이전 프레임 포인터 저장 -&gt; %rsp -= 8
-mov %rsp, %rbp    ; 현재 스택 포인터를 프레임 포인터로 복사
-sub $32, %rsp     ; 로컬 변수 32바이트 공간 확보 -&gt; %rsp -= 32
-</code></pre>
-
-<p>예제 : 반대로 함수가 끝날 때:</p>
-<pre><code class="language-assembly">leave             ; mov %rbp, %rsp + pop %rbp와 동일 (프레임 복구)
-ret               ; 스택에서 리턴 주소 pop -&gt; %rsp += 8
-</code></pre>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="c" /><category term="C" /><category term="가상화" /><category term="Virtualization" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/C.png" /><media:content medium="image" url="/assets/img/blog/postimage/C.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
