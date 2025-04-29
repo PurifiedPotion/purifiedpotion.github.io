@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-04-29T08:26:50+00:00',
+    INDEX_KEY: 'index--2025-04-29T10:32:50+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -280,7 +280,10 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     <ul class="large-only" id="markdown-toc">
   <li><a href="#dmadirect-memory-access란" id="markdown-toc-dmadirect-memory-access란">DMA(Direct Memory Access)란?</a></li>
   <li><a href="#왜-dma가-필요한가" id="markdown-toc-왜-dma가-필요한가">왜 DMA가 필요한가?</a></li>
-  <li><a href="#기본-구성-요소" id="markdown-toc-기본-구성-요소">기본 구성 요소</a></li>
+  <li><a href="#기본-구성-요소" id="markdown-toc-기본-구성-요소">기본 구성 요소</a>    <ul>
+      <li><a href="#dma-레지스터-src-dst-len" id="markdown-toc-dma-레지스터-src-dst-len">DMA 레지스터 SRC, DST, LEN</a></li>
+    </ul>
+  </li>
   <li><a href="#동작-흐름-x86-pc-예시" id="markdown-toc-동작-흐름-x86-pc-예시">동작 흐름 (x86 PC 예시)</a>    <ul>
       <li><a href="#동작-흐름-더-자세히" id="markdown-toc-동작-흐름-더-자세히">동작 흐름 더 자세히</a>        <ul>
           <li><a href="#1-단계---cpu까-준비만-하고-손을-뗀다" id="markdown-toc-1-단계---cpu까-준비만-하고-손을-뗀다">1 단계 - CPU까 준비만 하고 손을 뗀다</a></li>
@@ -391,6 +394,41 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
   </li>
 </ol>
 
+<h3 id="dma-레지스터-src-dst-len">DMA 레지스터 SRC, DST, LEN</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">레지스터</th>
+      <th style="text-align: center">역할</th>
+      <th style="text-align: center">일반적 크기</th>
+      <th style="text-align: center">세부 사항</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">SRC (Source Address)</td>
+      <td style="text-align: center">읽어 올 원본 주소. 장치 → RAM 전송이면 장치 쪽 FIFO 주소, RAM → 장치 전송이면 RAM의 시작 주소</td>
+      <td style="text-align: center">32 bit(SoC) 또는 64 bit(서버)</td>
+      <td style="text-align: center">* 버스트·비버스트 여부, 버스트 길이에 따라 자동 증가(inc) 여부 선택 플래그 존재<br />* Scatter-Gather 모드에선 “다음 표(list) 항목” 주소로 해석되기도 함</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DST (Destination Address)</td>
+      <td style="text-align: center">쓰기 대상 주소</td>
+      <td style="text-align: center">32/64 bit</td>
+      <td style="text-align: center">* 자동 증가/고정 선택 가능 (예: 오디오 DAC 같은 스트리밍 장치는 고정 주소, 메모리 버퍼는 증가)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">LEN (Length / Count)</td>
+      <td style="text-align: center">총 바이트(혹은 워드) 수</td>
+      <td style="text-align: center">16 bit(65 kB) ~ 32 bit(4 GB) 이상</td>
+      <td style="text-align: center">* 전송이 끝날 때마다 LEN–; 0 → 인터럽트 발생<br />* 어떤 컨트롤러는 LEN 대신 COUNT×DATA_WIDTH 형태 사용</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>요약</strong> : SRC·DST는 “어디서 → 어디로”를, LEN은 “얼마나”를 알려주는 좌표 + 거리 정보라고 생각하면 된다</p>
+
 <h2 id="동작-흐름-x86-pc-예시">동작 흐름 (x86 PC 예시)</h2>
 
 <table>
@@ -457,7 +495,18 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     <p>CPU → DMAC ‘Bus Grant(BG)’</p>
 
     <ul>
-      <li>CPU가 진행 중인 버스 싸이클을 마치면 주소·데이터 라인을 tristate해 두고 계산 같은 비-버스 작업에 집중함</li>
+      <li>
+        <p>CPU가 진행 중인 버스 싸이클을 마치면 주소·데이터 라인을 tristate해 두고 계산 같은 비-버스 작업에 집중함</p>
+
+        <ul>
+          <li>
+            <p>tristate란, 여러개의 마스터(CPU, DMAC, GPU…)가 하나의 전선을 공유하고, 한 쪽이 0V, 다른쪽이 동시에 Vcc를 내보내면 단락(short) 위험을 방지하고자 버스를 넘겨받은 쪽만 드라이버를 켜고 나머지는 Hi-Z로 물러나야 함</p>
+          </li>
+          <li>
+            <p>버스가 필요 없는 작업이란, 파이프라인이 레지스터와 내부 캐시 만으로 실행 가능한 명령들</p>
+          </li>
+        </ul>
+      </li>
     </ul>
   </li>
   <li>
@@ -786,7 +835,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/computersystem/tour-of-computer-systems/" class="flip-title"><span>컴퓨터 시스템으로의 여행</span></a>  <time class="faded fine" datetime="2025-03-22T00:00:00+00:00">22 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/example-content-iii/" class="flip-title"><span>Example Content III</span></a>  <time class="faded fine" datetime="2018-06-01T00:00:00+00:00">01 Jun 2018</time></li>          <li class="h4">  <a href="/blog/c/malloc-calloc-realloc/" class="flip-title"><span>동적 메모리 할당(Dynamic memory allocation)</span></a>  <time class="faded fine" datetime="2025-04-11T00:00:00+00:00">11 Apr 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/number-theory/" class="flip-title"><span>정수론(Number Theory)</span></a>  <time class="faded fine" datetime="2025-03-19T00:00:00+00:00">19 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/pre-order-post-order/" class="flip-title"><span>전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</span></a>  <time class="faded fine" datetime="2025-04-16T00:00:00+00:00">16 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/longest-common-subsequence/" class="flip-title"><span>최장 공통 부분 수열(Longest Common Subsequence)</span></a>  <time class="faded fine" datetime="2025-04-03T00:00:00+00:00">03 Apr 2025</time></li>      </ul></aside>
 
   
 
