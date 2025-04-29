@@ -3,7 +3,6 @@ layout: post
 title:  "수작업으로 Malloc 구현"
 description: >
  C언어로 직접 Malloc을 구현해보자
-image: /assets/img/blog/example-content-ii.jpg
 date:   2025-04-27
 image: /assets/img/blog/postimage/ComputerSystem.png
 hide_last_modified: true
@@ -20,12 +19,57 @@ hide_last_modified: true
 
 **Malloc**에 관하여서는 이전에 포스팅한 [동적 메모리 할당(Dynamic memory allocation)]{:.heading.flip-title} 을 참조하면 된다
 
+여기서 다룰 내용은 Explicit allocator인 malloc 할당을 직접 구현할 예정이다
 
-## 링커의 역할 
+## Malloc 할당 
 
-링커는 독립적인 컴파일을 가능하게 한다. 이 뜻이 뭐냐하면, 큰 규모의 응용프로그램을 한 개의 소스 파일로 구성하는 대신에 컴파일할 수 있는 보다 관리할 만한 규모의 더 작은 모듈들로 나눌 수 있다. 그리고 이거를 별도로 수정할 수 있게 된다.
+![말록 할당](/assets/img/blog/computerscience/mallocallocation.png)
 
-- 모듈 중에 한 개를 변경할 때, 이 파일만을 간단히 재컴파일하고 다른 파일들을 재컴파일할 필요 없이 이 응용을 다시 링크한다.
+위 사진의 순서 같은 경우 아래와 같다
+
+1. p1(int사이즈X4) 할당
+
+2. p2(int사이즈X5) 할당
+
+3. p3(int사이즈X6) 할당
+
+4. p2 free
+
+5. p4(int사이즈X2) 할당
+
+### 응용 프로그램 
+
+- 응용프로그램 같은 경우 마음대로 malloc 할당과 free 요청이 가능하다
+
+- free 할 시에는 malloc된 block이어야 한다 
+
+### Allocator
+
+- 할당된 블럭의 갯수와 크기에 대한 관리 권한이 없다
+
+- malloc 요청에 즉각 반응해야 함
+
+    - 이 뜻은 추후 할당에 대해 대기가 불가능하다는 것이다
+
+- free된 메모리에서만 할당이 가능하다
+
+- block의 크기에 대해서 정렬 요구사항에 맞추어야 한다
+
+    - 리눅스 기준 아래와 같다
+    
+    -  x86 : 8byte, x86-64 : 16byte 
+
+- free블록에 관해서만 조작이 가능하다
+
+- 일단 malloc할당 되었으면, 움직일 수 없다
+
+    - 이 말은 압축이 불가능하다는 이야기
+
+### 용어 정리
+
+- Throughput : 시간당 완료된 요청의 갯수 (5000의 malloc할당과 5000의 free요청을 10초 안에 완수하면, 1000operations/second)
+
+- Payload :
 
 ### 링킹을 왜 배워야 할까?
 

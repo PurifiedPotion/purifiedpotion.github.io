@@ -3,7 +3,6 @@ layout: post
 title:  "링커(Linking)"
 description: >
   링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.
-image: /assets/img/blog/example-content-ii.jpg
 date:   2025-04-21
 image: /assets/img/blog/postimage/ComputerSystem.png
 hide_last_modified: true
