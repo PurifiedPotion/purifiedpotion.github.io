@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-29T00:30:46+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-29T08:20:52+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
   <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
@@ -114,11 +114,390 @@
   </li>
 </ol>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[Demand-zero memory(또는 zero-filled-on-demand page)는 운영체제가 “필요해질 때(demand)” 처음 접근되는 순간에만 물리 페이지를 연결하고, 그 페이지의 모든 바이트를 0으로 채워서(zero-fill) 사용자 프로세스에 넘겨주는 메모리 할당 기법이다]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Direct Memory Access</title><link href="/blog/computersystem/dma/" rel="alternate" type="text/html" title="Direct Memory Access" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/dma</id><content type="html" xml:base="/blog/computersystem/dma/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#dmadirect-memory-access란" id="markdown-toc-dmadirect-memory-access란">DMA(Direct Memory Access)란?</a></li>
+  <li><a href="#왜-dma가-필요한가" id="markdown-toc-왜-dma가-필요한가">왜 DMA가 필요한가?</a></li>
+  <li><a href="#기본-구성-요소" id="markdown-toc-기본-구성-요소">기본 구성 요소</a></li>
+  <li><a href="#동작-흐름-x86-pc-예시" id="markdown-toc-동작-흐름-x86-pc-예시">동작 흐름 (x86 PC 예시)</a>    <ul>
+      <li><a href="#동작-흐름-더-자세히" id="markdown-toc-동작-흐름-더-자세히">동작 흐름 더 자세히</a>        <ul>
+          <li><a href="#1-단계---cpu까-준비만-하고-손을-뗀다" id="markdown-toc-1-단계---cpu까-준비만-하고-손을-뗀다">1 단계 - CPU까 준비만 하고 손을 뗀다</a></li>
+          <li><a href="#2-단계---버스-소유권-교환" id="markdown-toc-2-단계---버스-소유권-교환">2 단계 - 버스 소유권 교환</a></li>
+          <li><a href="#3-단계---실제-데이터-이동" id="markdown-toc-3-단계---실제-데이터-이동">3 단계 - 실제 데이터 이동</a></li>
+          <li><a href="#4-단계---전송-완료-알림" id="markdown-toc-4-단계---전송-완료-알림">4 단계 - 전송 완료 알림</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#전송-모드" id="markdown-toc-전송-모드">전송 모드</a></li>
+  <li><a href="#현대-시스템에서의-dma-변화" id="markdown-toc-현대-시스템에서의-dma-변화">현대 시스템에서의 DMA 변화</a></li>
+  <li><a href="#장점과-단점-요약" id="markdown-toc-장점과-단점-요약">장점과 단점 요약</a></li>
+  <li><a href="#실무-예시" id="markdown-toc-실무-예시">실무 예시</a></li>
+  <li><a href="#운영체제-관점" id="markdown-toc-운영체제-관점">운영체제 관점</a></li>
 </ul>
 
 <h2 id="dmadirect-memory-access란">DMA(Direct Memory Access)란?</h2>
 
-<p>DMA는 <strong>“직접 메모리 접근”</strong>이라는 뜻으로, CPU의 개입 없이 주변장치가 메인 메모리와 직접 데이터 블록을 주고받도록 해 주는 메커니즘입니다. 대용량·고속 I/O가 필요할 때 CPU를 데이터 “우편배달부”로 쓰지 않고, “택배 기사(DMA 컨트롤러)”에게 맡겨 CPU는 다른 계산에 집중하게 하는 구조라고 생각하면 됩니다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[여태까지 컴퓨터는 직접 메모리에 대해 접근하지 않고 가상 메모리를 사용하는 것으로 배웠는데, 만약 직접 메모리 접근이 있다면?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">System Call</title><link href="/blog/computersystem/system-call/" rel="alternate" type="text/html" title="System Call" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/system-call</id><content type="html" xml:base="/blog/computersystem/system-call/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<p>DMA는 CPU를 거치지 않고 I/O 장치가 주 메모리(RAM)에 직접 읽기·쓰기 할 수 있도록 시스템 버스를 “잠깐” 빌려서 데이터 블록을 전송하는 하드웨어 메커니즘</p>
+
+<h2 id="왜-dma가-필요한가">왜 DMA가 필요한가?</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">문제점(전통적 PIO)</th>
+      <th style="text-align: center">DMA가 주는 이점</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">CPU가 I/O 레지스터를 통해 바이트 단위로 데이터를 옮기면 레이턴시·오버헤드가 큼</td>
+      <td style="text-align: center">한 번에 수십~수천 바이트 블록을 메모리로 직행 ⇒ CPU cycles 절약</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">빠른 장치(SSD, 10 GbE NIC 등)는 CPU 속도보다 I/O 대역폭이 큼 → CPU가 “목”이 됨</td>
+      <td style="text-align: center">DMA 엔진이 버스 마스터로 동작해 메모리 버스를 직접 차단·사용</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">멀티코어 시대에 CPU는 계산에 집중하고 싶음</td>
+      <td style="text-align: center">CPU는 전송 시작/종료만 관리 → I/O wait 시간 줄고, 캐시 miss도 감소</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>덕분에 대역폭·지연시간 모두 절감, 특히 디스크 I/O, 네트워크 카드, 오디오 스트리밍처럼 폭이 넓고 반복적인 전송에 필수적이다</li>
+</ul>
+
+<h2 id="기본-구성-요소">기본 구성 요소</h2>
+
+<ol>
+  <li>DMA 컨트롤러(DMAC)</li>
+</ol>
+
+<ul>
+  <li>
+    <p>전용 칩(고전 ISA-DMA) 또는 주변장치 내부 DMA 엔진(PCIe, NVMe 컨트롤러)</p>
+  </li>
+  <li>
+    <p>소스/목적지 물리 주소, 전송 길이, 모드, 제어 플래그 등을 저장하는 레지스터(메모리 맵 레지스터) 보유</p>
+  </li>
+  <li>
+    <p>여러 채널이 있으면 동시에 여러 장치 지원</p>
+  </li>
+</ul>
+
+<ol>
+  <li>시스템 버스</li>
+</ol>
+
+<ul>
+  <li>
+    <p>CPU ↔ 메모리 ↔ DMA 컨트롤러가 공유</p>
+  </li>
+  <li>
+    <p>CPU와 DMAC가 동시에 쓰지 않도록 <strong>버스 중재(bus arbitration)</strong> 를 수행</p>
+  </li>
+</ul>
+
+<ol>
+  <li>메모리 버스</li>
+</ol>
+
+<ul>
+  <li>DMAC가 버스 마스터(master) 권한을 요청(Bus Request, BR) → 메모리와 직접 주고받음</li>
+</ul>
+
+<ol>
+  <li>주변장치(Device)</li>
+</ol>
+
+<ul>
+  <li>디스크, NIC, GPU, 오디오 코드 … 데이터가 실제로 존재/필요한 곳</li>
+</ul>
+
+<ol>
+  <li>CPU &amp; OS</li>
+</ol>
+
+<ul>
+  <li>전송 파라미터를 DMAC 레지스터에 써 주고, 완료 인터럽트(DMA done)를 처리</li>
+</ul>
+
+<ol>
+  <li>I/O 장치(버스 마스터 가능 장치)</li>
+</ol>
+
+<ul>
+  <li>PCIe NIC, NVMe SSD, GPU 등은 자체 DMA 엔진을 내장해 버스 마스터 가 되기도 한다</li>
+</ul>
+
+<h2 id="동작-흐름-x86-pc-예시">동작 흐름 (x86 PC 예시)</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">단계</th>
+      <th style="text-align: center">신호선 &amp; 동작</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">① CPU 설정</td>
+      <td style="text-align: center">DMAC 레지스터에 &lt;소스, 목적지, 길이, 모드&gt; 기록 후 Bus Request(BR) 활성화</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">② 버스 획득</td>
+      <td style="text-align: center">CPU가 <em>Bus Grant(BG)</em>로 응답 → CPU 파이프라인이 버스를 놓고 다른 연산(레지스터 계산 등) 수행</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">③ 데이터 전송</td>
+      <td style="text-align: center">DMAC가 메모리 ↔ 장치 간 버스 싸이클 생성</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">④ 완료 인터럽트</td>
+      <td style="text-align: center">전송 길이가 0이 되면 DMAC가 CPU에 DMA 완료 인터럽트. CPU는 이후 버스 재획득</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>중요</strong> : DMAC가 버스를 잡은 동안 메모리 전체 버스 주도권을 갖기 때문에 CPU는 RAM을 전혀 접근하지 못한다. 개별 “주소 권한”이 아닌 “버스 소유권”의 문제다. 이 때문에 짝수 클럭마다 한 워드만 빼앗고 바로 돌려주는 Cycle Stealing 모드가 등장했다</p>
+
+<h3 id="동작-흐름-더-자세히">동작 흐름 더 자세히</h3>
+
+<p><img src="/assets/img/blog/computerscience/dma.png" alt="DMA" /></p>
+
+<h4 id="1-단계---cpu까-준비만-하고-손을-뗀다">1 단계 - CPU까 준비만 하고 손을 뗀다</h4>
+
+<ol>
+  <li>전송 파라미터 설정</li>
+</ol>
+
+<ul>
+  <li>
+    <p>SRC, DST, LEN, MODE을 레지스터에 값을 써 넣습니다</p>
+  </li>
+  <li>
+    <p>마지막으로 Enable 플래그를 1로 두면 DMAC가 “이제 내가 처리할게!”하고 대기</p>
+  </li>
+</ul>
+
+<ol>
+  <li>버스 요청(BR 신호)</li>
+</ol>
+
+<ul>
+  <li>DMAC는 버스 중재기(arbiter)에게 “버스 좀 빌려주세요” 라고 손을 듦</li>
+</ul>
+
+<h4 id="2-단계---버스-소유권-교환">2 단계 - 버스 소유권 교환</h4>
+
+<ol>
+  <li>CPU → DMAC ‘Bus Grant(BG)’</li>
+</ol>
+
+<ul>
+  <li>CPU가 진행 중인 버스 싸이클을 마치면 주소·데이터 라인을 tristate해 두고 계산 같은 비-버스 작업에 집중함</li>
+</ul>
+
+<ol>
+  <li>DMAC가 버스 장악</li>
+</ol>
+
+<ul>
+  <li>
+    <p>이 순간부터 RAM과 I/O 장치 사이를 오가는 모든 신호는 DMAC가 생성</p>
+  </li>
+  <li>
+    <p>CPU는 RAM을 못 만지기 때문에 캐시 miss가 나도 대기해야 함</p>
+  </li>
+</ul>
+
+<h4 id="3-단계---실제-데이터-이동">3 단계 - 실제 데이터 이동</h4>
+
+<ol>
+  <li>전송 모드에 따른 사이클</li>
+</ol>
+
+<ul>
+  <li>
+    <p>Burst/Block : LEN만큼 연속으로 → 최고속, 대신 CPU 길게 정지</p>
+  </li>
+  <li>
+    <p>Cycle-Stealing : 한 사이클씩 “훔치고” 바로 돌려줌 → 실시간 오디어/비디오</p>
+  </li>
+  <li>
+    <p>Scatter-Gather : 메모리 리스트 따라 다중 블록 자동 전송 → NVMe·NIC</p>
+  </li>
+</ul>
+
+<ol>
+  <li>주소·카운터 자동 증가</li>
+</ol>
+
+<ul>
+  <li>DMAC 내부 카운터가 0이 될 때까지 SRC++, DST++, LEN–</li>
+</ul>
+
+<h4 id="4-단계---전송-완료-알림">4 단계 - 전송 완료 알림</h4>
+
+<ol>
+  <li>DMA 완료 인터럽트</li>
+</ol>
+
+<ul>
+  <li>
+    <p>LEN==0 → DMAC가 IRQ를 날리고 버스 요청을 내림</p>
+  </li>
+  <li>
+    <p>CPU는 인터럽트 핸들러에서 데이터 후처리(예: 패킷 파싱, 디스크 블록 체크섬) 수행</p>
+  </li>
+</ul>
+
+<ol>
+  <li>버스 복귀</li>
+</ol>
+
+<ul>
+  <li>Arbiter가 다시 CPU에 ‘Bus Grant’ → 평상시 메모리 접근 재개</li>
+</ul>
+
+<h2 id="전송-모드">전송 모드</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">모드</th>
+      <th style="text-align: center">특징</th>
+      <th style="text-align: center">사용 예시</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Single/Cycle-Steal</td>
+      <td style="text-align: center">메모리 1~2 바이트(또는 word)마다 버스 반납 → CPU와 공존</td>
+      <td style="text-align: center">오래된 ISA 카드, 저속 UART</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Block/Burst</td>
+      <td style="text-align: center">N 바이트 연속 전송 후 버스 반납. 캐시라인 단위 버스트가 일반적</td>
+      <td style="text-align: center">SATA, SDIO, 대부분의 PCIe 장치</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Demand/Fly-by</td>
+      <td style="text-align: center">장치 내부 FIFO가 찰 때까지만 전송, 실시간 스트림용</td>
+      <td style="text-align: center">오디오 DAC, 카메라 센서</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Scatter-Gather</td>
+      <td style="text-align: center">링크드-리스트(Descriptor)로 여러 메모리 조각을 한 번에 전송</td>
+      <td style="text-align: center">NVMe, 고속 NIC, GPU DMA 복사</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="현대-시스템에서의-dma-변화">현대 시스템에서의 DMA 변화</h2>
+
+<ol>
+  <li>
+    <p>PCIe Bus mastering - 주변장치가 메인 메모리를 완전히 “빌려” 직접 읽고/쓴다</p>
+  </li>
+  <li>
+    <p>IOMMU(DMA-Remapping) - 가상화·보안 목적. 장치가 접근 가능한 주소를 OS가 테이블로 전환 → 버퍼 오염·DMA 공격 방어</p>
+  </li>
+  <li>
+    <p>Cache coherency 문제 - CPU 캐시에 남은 더러운(line dirty) 데이터 vs DMA가 본 메모리 불일치. 해결 : dma_sync_*() - (Linux)·Cache flush, non-cacheable region, snoopint 버스.</p>
+  </li>
+  <li>
+    <p>Zero-copy - 네트워크 스택이나 GPU ↔ CPU 사이에서 “복사 없는” 파이프라인 구축 (DPDK, RDMA, CUDA cudaMemcpyAsync 등)</p>
+  </li>
+</ol>
+
+<ul>
+  <li>운영체제 버퍼를 추가로 “복사(copy)”하지 않고, 장치 ↔ 응용이 같은 메모리 페이지를 공유하도록 하는 기법. CPU가 불필요한 memcpy()를 안 하므로 지연과 캐시오염↓</li>
+</ul>
+
+<ol>
+  <li>RDMA(Remode DMA) - NIC가 원격 호스트의 메모리에까지 DMA 쓰기/읽기를 수행. 커널 네트워크 스택을 우회하여 μs 단위 지연시간을 제공한다. 고속 HPC, 데이터베이스 복제에서 필수</li>
+</ol>
+
+<h2 id="장점과-단점-요약">장점과 단점 요약</h2>
+
+<p><strong>장점</strong></p>
+
+<ul>
+  <li>
+    <p>CPU 사용률 감소, 전력 효율 ↑</p>
+  </li>
+  <li>
+    <p>대역폭 활용 극대화(PCIe Gen4 x4 ≈ 8 GB/s 급)</p>
+  </li>
+  <li>
+    <p>실시간 스트리밍 지원(오디오 스터터링 방지 등)</p>
+  </li>
+</ul>
+
+<p><strong>단점</strong></p>
+
+<ul>
+  <li>
+    <p>하드웨어·드라이버 복잡도 증가</p>
+  </li>
+  <li>
+    <p>버스 우선순위 조정 실패 시 CPU 지연 가능</p>
+  </li>
+  <li>
+    <p>캐시 일관성, 보안(“DMA 공격”) 이슈 처리 필요</p>
+
+    <ul>
+      <li>IOMMU로 보완</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="실무-예시">실무 예시</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">장치</th>
+      <th style="text-align: center">DMA 활용</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">SSD/NVMe</td>
+      <td style="text-align: center">플래시 컨트롤러가 OS 버퍼를 읽어 와 NAND로 쓰기, 반대 방향 읽기</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">10 GbE NIC</td>
+      <td style="text-align: center">패킷을 커널 버퍼나 XSP ring으로 직접 놓고, 완료 시 인터럽트</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">GPU</td>
+      <td style="text-align: center">대용량 텍스처/버퍼를 PCIe로 복사하거나, VRAM↔CPU RAM pinned transfer</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Audio Codec</td>
+      <td style="text-align: center">PCM 버퍼를 주기적으로 DMA → DAC, 실시간 재생</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">USB 컨트롤러</td>
+      <td style="text-align: center">호스트 메모리의 전송 링(Transfer Ring)을 DMA 로 순회</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="운영체제-관점">운영체제 관점</h2>
+
+<ul>
+  <li>
+    <p>Linux : dma_map_single(), dma_alloc_coherent(), struct dma_async_tx_descriptor, DMAengine 프레임워크</p>
+  </li>
+  <li>
+    <p>Windows : WdfDmaTransaction*, KeFlushIoBuffers(), Scatter/Gather 목록 지원</p>
+  </li>
+  <li>
+    <p>RTOS(FreeRTOS, Zephyr) : MCU마다 별도의 DMAMUX &amp; HAP API 제공</p>
+  </li>
+</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[여태까지 컴퓨터는 직접 메모리에 대해 접근하지 않고 가상 메모리를 사용하는 것으로 배웠는데, 만약 직접 메모리 접근이 있다면?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">System Call</title><link href="/blog/computersystem/system-call/" rel="alternate" type="text/html" title="System Call" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/system-call</id><content type="html" xml:base="/blog/computersystem/system-call/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#호출-흐름리눅스-x86-64-예" id="markdown-toc-호출-흐름리눅스-x86-64-예">호출 흐름(리눅스 x86-64 예)</a></li>
   <li><a href="#대표-범주" id="markdown-toc-대표-범주">대표 범주</a></li>
   <li><a href="#언제-볼-수-있을까" id="markdown-toc-언제-볼-수-있을까">언제 볼 수 있을까?</a></li>
