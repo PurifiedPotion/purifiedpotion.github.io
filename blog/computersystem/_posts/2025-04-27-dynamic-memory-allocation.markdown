@@ -233,9 +233,9 @@ static void add_to_free_list(void *bp) {
         SET_PREV_FREE(bp, NULL);
         free_root = bp;
     } else { // 리스트에 블록이 있을 때
-        SET_NEXT_FREE(bp, free_root);
-        SET_PREV_FREE(bp, NULL);
-        SET_PREV_FREE(free_root, bp); // 기존 루트의 PREV를 새 블록으로
+        SET_NEXT_FREE(bp, free_root);   // 현재 위치의 next를 기존 첫번째 free block
+        SET_PREV_FREE(bp, NULL);        // 현재 위치의 prev를 NULL
+        SET_PREV_FREE(free_root, bp);   // 기존 첫번째 free block의 PREV를 현재 블록으로
         free_root = bp; // 루트를 새 블록으로 업데이트
     }
 }
