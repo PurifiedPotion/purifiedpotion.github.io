@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-30T13:17:32+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-30T14:42:40+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
   <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
@@ -669,6 +669,11 @@
       <li><a href="#용어-정리" id="markdown-toc-용어-정리">용어 정리</a></li>
     </ul>
   </li>
+  <li><a href="#명시적-리스트explicit-list에서의-refactoring" id="markdown-toc-명시적-리스트explicit-list에서의-refactoring">명시적 리스트(Explicit list)에서의 refactoring</a>    <ul>
+      <li><a href="#refactoring-함수" id="markdown-toc-refactoring-함수">Refactoring 함수</a></li>
+      <li><a href="#개선된-case-4" id="markdown-toc-개선된-case-4">개선된 Case 4</a></li>
+    </ul>
+  </li>
 </ul>
 
 <p>말록 구현에 앞서, <strong>명시적 할당자(Explicit allocator)</strong>와 <strong>묵시적 할당자(Implicit allocator)</strong>에 대해 알아 보자</p>
@@ -796,14 +801,11 @@
     <p>최고 이용도(Peak utilization) : 할당기가 힙을 얼마나 효율적으로 사용하는지를 규정하는 많은 방법들 중 하나</p>
 
     <ul>
-      <li>
-        <p>Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기</p>
-      </li>
-      <li>
-        <p>수식
-\(U_k = \frac{\max_{i \le k} P_i}{H_k}\)</p>
-      </li>
+      <li>Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기</li>
     </ul>
+
+    <p>-
+\(U_k = \frac{\max_{i \le k} P_i}{H_k}\)</p>
   </li>
   <li>
     <p>내부 단편화(Internal fragmentation) : Overhead나 padding에 의해서 발생되는데, 블록 내부에서 메모리를 효율적으로 관리하지 못하는 것</p>
@@ -814,7 +816,182 @@
 
 <ul>
   <li>외부 단편화(External fragmentation) : 가용 블록의 합들은 충분하지만, 가용 블록에 할당할 적당한 크기가 없게 관리가 된것</li>
-</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[C언어로 직접 Malloc을 구현해보자]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">링커(Linking)</title><link href="/blog/computersystem/linking/" rel="alternate" type="text/html" title="링커(Linking)" /><published>2025-04-21T00:00:00+00:00</published><updated>2025-04-21T00:00:00+00:00</updated><id>/blog/computersystem/linking</id><content type="html" xml:base="/blog/computersystem/linking/"><![CDATA[<ul class="large-only" id="markdown-toc">
+</ul>
+
+<h2 id="명시적-리스트explicit-list에서의-refactoring">명시적 리스트(Explicit list)에서의 refactoring</h2>
+
+<p>명시적 리스트를 구현하기 위해서 조금 복잡하게 구현했던 내용 개선에 대해서 얘기하려고 해</p>
+
+<p>명시적 리스트를 구현하기 위해서는 가용 블록의 포인터 생성/변경 고려가 필요, 포인터 생성/변경 같은 경우 아래 사진과 같이 구현해야 함</p>
+
+<p><img src="/assets/img/blog/computerscience/case4.png" alt="Case 4" /></p>
+
+<p>Case 4 같은 경우에 포인터 8개의 생성/변경이 필요하기 때문에 아래와 같은 코드가 나옴</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">coalesce</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">prev_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
+    <span class="kt">size_t</span> <span class="n">next_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
+    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free_root</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free_root_prev</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">next_free_blk_next</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">next_free_blk_prev</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free_blk_next</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free_blk_prev</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span>               <span class="c1">// Case 1</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">prev_free_root</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_root</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>
+            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">prev_free_root</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">next_alloc</span><span class="p">)</span>         <span class="c1">// Case 2</span>
+    <span class="p">{</span>
+        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
+        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">prev_free_root</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span>
+            <span class="n">prev_free_root_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">);</span>
+            <span class="n">next_free_blk_next</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+            <span class="n">next_free_blk_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">next_free_blk_prev</span><span class="p">,</span> <span class="n">next_free_blk_next</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">next_free_blk_next</span><span class="p">,</span> <span class="n">next_free_blk_prev</span><span class="p">);</span>
+            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">prev_free_root</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_root_prev</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>
+            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span>         <span class="c1">// Case 3</span>
+    <span class="p">{</span>
+        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
+        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">prev_free_root</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span>
+            <span class="n">prev_free_root_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">);</span>
+            <span class="n">prev_free_blk_next</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+            <span class="n">prev_free_blk_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">prev_free_blk_prev</span><span class="p">,</span> <span class="n">prev_free_blk_next</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_blk_next</span><span class="p">,</span> <span class="n">prev_free_blk_prev</span><span class="p">);</span>
+            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">prev_free_root</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_root_prev</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>
+            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+    <span class="k">else</span>                                        <span class="c1">// Case 4</span>
+    <span class="p">{</span>
+        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)))</span> <span class="o">+</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
+        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
+
+        <span class="n">prev_free_root</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span>
+        <span class="n">prev_free_root_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">);</span>
+        <span class="n">prev_free_blk_next</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+        <span class="n">prev_free_blk_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+        <span class="n">next_free_blk_next</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+        <span class="n">next_free_blk_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
+        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">prev_free_blk_prev</span><span class="p">,</span> <span class="n">prev_free_blk_next</span><span class="p">);</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_blk_next</span><span class="p">,</span> <span class="n">prev_free_blk_prev</span><span class="p">);</span>
+        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">next_free_blk_prev</span><span class="p">,</span> <span class="n">next_free_blk_next</span><span class="p">);</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">next_free_blk_next</span><span class="p">,</span> <span class="n">next_free_blk_prev</span><span class="p">);</span>
+        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">prev_free_root</span><span class="p">);</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_root_prev</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>
+        <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>동료의 의견도 있었고 Google AI Studio의 의견에 따라서 함수 구현함</p>
+
+<p><img src="/assets/img/blog/computerscience/googleaistudio.png" alt="Google AI Studio" /></p>
+
+<h3 id="refactoring-함수">Refactoring 함수</h3>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// --- Helper 함수 (place, coalesce 에서 사용) ---</span>
+<span class="c1">// Free list 맨 앞에 블록 추가 (LIFO)</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">add_to_free_list</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 리스트가 비어있을 때</span>
+        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// 리스트에 블록이 있을 때</span>
+        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">free_root</span><span class="p">);</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span> <span class="c1">// 기존 루트의 PREV를 새 블록으로</span>
+        <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span> <span class="c1">// 루트를 새 블록으로 업데이트</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Free list에서 블록 제거</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">remove_from_free_list</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">next_free</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">prev_free</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// bp가 리스트의 첫 번째 블록일 때</span>
+        <span class="n">free_root</span> <span class="o">=</span> <span class="n">next_free</span><span class="p">;</span> <span class="c1">// 다음 블록을 루트로 설정</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// bp가 중간 또는 마지막 블록일 때</span>
+        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">prev_free</span><span class="p">,</span> <span class="n">next_free</span><span class="p">);</span> <span class="c1">// 이전 블록의 NEXT를 다음 블록으로</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">next_free</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// bp가 마지막 블록이 아닐 때</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">next_free</span><span class="p">,</span> <span class="n">prev_free</span><span class="p">);</span> <span class="c1">// 다음 블록의 PREV를 이전 블록으로</span>
+    <span class="p">}</span>
+    <span class="c1">// bp의 포인터는 초기화할 필요 없음 (어차피 할당되거나 병합될 것임)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="개선된-case-4">개선된 Case 4</h3>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1">// Case 4: Merge with both previous and next blocks</span>
+    <span class="k">else</span> <span class="p">{</span> <span class="c1">// (!prev_alloc &amp;&amp; !next_alloc)</span>
+        <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">);</span> <span class="c1">// Remove previous block</span>
+        <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">next_blk</span><span class="p">);</span> <span class="c1">// Remove next block</span>
+        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">))</span> <span class="o">+</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">next_blk</span><span class="p">));</span> <span class="c1">// Use HDRP for next block size</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">prev_blk</span><span class="p">;</span> <span class="c1">// Move bp to the beginning of the merged block</span>
+        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="c1">// Footer position is FTRP(next_blk)</span>
+        <span class="n">add_to_free_list</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span> <span class="c1">// Add the final merged block to the list</span>
+        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[C언어로 직접 Malloc을 구현해보자]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">링커(Linking)</title><link href="/blog/computersystem/linking/" rel="alternate" type="text/html" title="링커(Linking)" /><published>2025-04-21T00:00:00+00:00</published><updated>2025-04-21T00:00:00+00:00</updated><id>/blog/computersystem/linking</id><content type="html" xml:base="/blog/computersystem/linking/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#링커의-역할" id="markdown-toc-링커의-역할">링커의 역할</a>    <ul>
       <li><a href="#링킹을-왜-배워야-할까" id="markdown-toc-링킹을-왜-배워야-할까">링킹을 왜 배워야 할까?</a></li>
     </ul>
