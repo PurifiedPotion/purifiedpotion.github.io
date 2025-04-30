@@ -141,10 +141,9 @@ DMA는 CPU를 거치지 않고 I/O 장치가 주 메모리(RAM)에 직접 읽기
 
 | 모드 | 특징 | 사용 예시 |
 |:---:|:---:|:---:|
-| Single/Cycle-Steal | 메모리 1~2 바이트(또는 word)마다 버스 반납 → CPU와 공존 | 오래된 ISA 카드, 저속 UART |
-| Block/Burst | N 바이트 연속 전송 후 버스 반납. 캐시라인 단위 버스트가 일반적 | SATA, SDIO, 대부분의 PCIe 장치 |
-| Demand/Fly-by | 장치 내부 FIFO가 찰 때까지만 전송, 실시간 스트림용 | 오디오 DAC, 카메라 센서 |
-| Scatter-Gather | 링크드-리스트(Descriptor)로 여러 메모리 조각을 한 번에 전송 | NVMe, 고속 NIC, GPU DMA 복사 |
+| Cycle-Stealing | 버스 싸이클 1 개만 “훔친” 뒤 즉시 CPU에 반환 → CPU 지연 최소 | 실시간 오디오, 비디오 스트림 |
+| Block/Burst | 전체 블록(혹은 버스트) 한 번에 전송 → 가장 빠르지만 CPU 길게 정지 | SATA, SDIO, 대부분의 PCIe 장치 |
+| Demand/Scatter-Gather | 장치가 필요할 때마다, 혹은 메모리 리스트 기반 다중 블록 이동 | 고성능 NIC, NVMe SSD, GPU VRAM 업로드 |
 
 ## 현대 시스템에서의 DMA 변화
 
