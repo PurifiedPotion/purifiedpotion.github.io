@@ -85,7 +85,7 @@ hide_last_modified: true
 
     - Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기
 
-    - 수식
+    -
 $$
 U_k = \frac{\max_{i \le k} P_i}{H_k}
 $$
@@ -96,3 +96,180 @@ $$
 
 - 외부 단편화(External fragmentation) : 가용 블록의 합들은 충분하지만, 가용 블록에 할당할 적당한 크기가 없게 관리가 된것
 
+## 명시적 리스트(Explicit list)에서의 refactoring
+
+명시적 리스트를 구현하기 위해서 조금 복잡하게 구현했던 내용 개선에 대해서 얘기하려고 해
+
+명시적 리스트를 구현하기 위해서는 가용 블록의 포인터 생성/변경 고려가 필요, 포인터 생성/변경 같은 경우 아래 사진과 같이 구현해야 함
+
+![Case 4](/assets/img/blog/computerscience/case4.png)
+
+Case 4 같은 경우에 포인터 8개의 생성/변경이 필요하기 때문에 아래와 같은 코드가 나옴
+
+~~~c
+static void *coalesce(void *bp)
+{
+    size_t prev_alloc = GET_ALLOC(FTRP(PREV_BLKP(bp)));
+    size_t next_alloc = GET_ALLOC(HDRP(NEXT_BLKP(bp)));
+    size_t size = GET_SIZE(HDRP(bp));
+    void *prev_free_root;
+    void *prev_free_root_prev;
+    void *next_free_blk_next;
+    void *next_free_blk_prev;
+    void *prev_free_blk_next;
+    void *prev_free_blk_prev;
+
+    if (prev_alloc && next_alloc)               // Case 1
+    {
+        if (free_root == NULL)
+        {
+            free_root = bp;
+            SET_NEXT_FREE(bp, NULL);
+            SET_PREV_FREE(bp, NULL);
+        }
+        else
+        {
+            prev_free_root = free_root;
+            SET_PREV_FREE(prev_free_root, bp);
+            SET_NEXT_FREE(bp, prev_free_root);
+            SET_PREV_FREE(bp, NULL);
+            free_root = bp;
+        }
+    }
+    else if (prev_alloc && !next_alloc)         // Case 2
+    {
+        size += GET_SIZE(HDRP(NEXT_BLKP(bp)));
+        PUT(HDRP(bp), PACK(size, 0));
+        PUT(FTRP(bp), PACK(size, 0));
+
+        if (free_root == NULL)
+        {
+            free_root = bp;
+            SET_NEXT_FREE(bp, NULL);
+            SET_PREV_FREE(bp, NULL);
+        }
+        else
+        {
+            prev_free_root = free_root;
+            prev_free_root_prev = PREV_FREE(free_root);
+            next_free_blk_next = NEXT_FREE(NEXT_BLKP(bp));
+            next_free_blk_prev = PREV_FREE(NEXT_BLKP(bp));
+            SET_NEXT_FREE(next_free_blk_prev, next_free_blk_next);
+            SET_PREV_FREE(next_free_blk_next, next_free_blk_prev);
+            SET_NEXT_FREE(bp, prev_free_root);
+            SET_PREV_FREE(bp, NULL);
+            SET_PREV_FREE(prev_free_root_prev, bp);
+            free_root = bp;
+        }
+
+    }
+    else if (!prev_alloc && next_alloc)         // Case 3
+    {
+        size += GET_SIZE(HDRP(PREV_BLKP(bp)));
+        PUT(FTRP(bp), PACK(size, 0));
+        PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));
+        bp = PREV_BLKP(bp);
+
+        if (free_root == NULL)
+        {
+            free_root = bp;
+            SET_NEXT_FREE(bp, NULL);
+            SET_PREV_FREE(bp, NULL);
+        }
+        else
+        {
+            prev_free_root = free_root;
+            prev_free_root_prev = PREV_FREE(free_root);
+            prev_free_blk_next = NEXT_FREE(PREV_BLKP(bp));
+            prev_free_blk_prev = PREV_FREE(PREV_BLKP(bp));
+            SET_NEXT_FREE(prev_free_blk_prev, prev_free_blk_next);
+            SET_PREV_FREE(prev_free_blk_next, prev_free_blk_prev);
+            SET_NEXT_FREE(bp, prev_free_root);
+            SET_PREV_FREE(bp, NULL);
+            SET_PREV_FREE(prev_free_root_prev, bp);
+            free_root = bp;
+        }
+
+    }
+    else                                        // Case 4
+    {
+        size += GET_SIZE(HDRP(PREV_BLKP(bp))) + GET_SIZE(FTRP(NEXT_BLKP(bp)));
+        PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));
+        PUT(FTRP(NEXT_BLKP(bp)), PACK(size, 0));
+        bp = PREV_BLKP(bp);
+
+        prev_free_root = free_root;
+        prev_free_root_prev = PREV_FREE(free_root);
+        prev_free_blk_next = NEXT_FREE(PREV_BLKP(bp));
+        prev_free_blk_prev = PREV_FREE(PREV_BLKP(bp));
+        next_free_blk_next = NEXT_FREE(NEXT_BLKP(bp));
+        next_free_blk_prev = PREV_FREE(NEXT_BLKP(bp));
+        SET_NEXT_FREE(prev_free_blk_prev, prev_free_blk_next);
+        SET_PREV_FREE(prev_free_blk_next, prev_free_blk_prev);
+        SET_NEXT_FREE(next_free_blk_prev, next_free_blk_next);
+        SET_PREV_FREE(next_free_blk_next, next_free_blk_prev);
+        SET_NEXT_FREE(bp, prev_free_root);
+        SET_PREV_FREE(bp, NULL);
+        SET_PREV_FREE(prev_free_root_prev, bp);
+        free_root = bp;
+    }
+    free_root = bp;
+    return bp;
+}
+~~~
+
+동료의 의견도 있었고 Google AI Studio의 의견에 따라서 함수 구현함
+
+![Google AI Studio](/assets/img/blog/computerscience/googleaistudio.png)
+
+### Refactoring 함수
+
+~~~c
+// --- Helper 함수 (place, coalesce 에서 사용) ---
+// Free list 맨 앞에 블록 추가 (LIFO)
+static void add_to_free_list(void *bp) {
+    if (free_root == NULL) { // 리스트가 비어있을 때
+        SET_NEXT_FREE(bp, NULL);
+        SET_PREV_FREE(bp, NULL);
+        free_root = bp;
+    } else { // 리스트에 블록이 있을 때
+        SET_NEXT_FREE(bp, free_root);
+        SET_PREV_FREE(bp, NULL);
+        SET_PREV_FREE(free_root, bp); // 기존 루트의 PREV를 새 블록으로
+        free_root = bp; // 루트를 새 블록으로 업데이트
+    }
+}
+
+// Free list에서 블록 제거
+static void remove_from_free_list(void *bp) {
+    void *prev_free = PREV_FREE(bp);
+    void *next_free = NEXT_FREE(bp);
+
+    if (prev_free == NULL) { // bp가 리스트의 첫 번째 블록일 때
+        free_root = next_free; // 다음 블록을 루트로 설정
+    } else { // bp가 중간 또는 마지막 블록일 때
+        SET_NEXT_FREE(prev_free, next_free); // 이전 블록의 NEXT를 다음 블록으로
+    }
+
+    if (next_free != NULL) { // bp가 마지막 블록이 아닐 때
+        SET_PREV_FREE(next_free, prev_free); // 다음 블록의 PREV를 이전 블록으로
+    }
+    // bp의 포인터는 초기화할 필요 없음 (어차피 할당되거나 병합될 것임)
+}
+~~~
+
+### 개선된 Case 4
+
+~~~c
+    // Case 4: Merge with both previous and next blocks
+    else { // (!prev_alloc && !next_alloc)
+        remove_from_free_list(prev_blk); // Remove previous block
+        remove_from_free_list(next_blk); // Remove next block
+        size += GET_SIZE(HDRP(prev_blk)) + GET_SIZE(HDRP(next_blk)); // Use HDRP for next block size
+        bp = prev_blk; // Move bp to the beginning of the merged block
+        PUT(HDRP(bp), PACK(size, 0));
+        PUT(FTRP(bp), PACK(size, 0)); // Footer position is FTRP(next_blk)
+        add_to_free_list(bp); // Add the final merged block to the list
+        return bp;
+    }
+~~~
