@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-29T10:32:50+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-30T12:06:14+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
   <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
@@ -421,24 +421,19 @@
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: center">Single/Cycle-Steal</td>
-      <td style="text-align: center">메모리 1~2 바이트(또는 word)마다 버스 반납 → CPU와 공존</td>
-      <td style="text-align: center">오래된 ISA 카드, 저속 UART</td>
+      <td style="text-align: center">Cycle-Stealing</td>
+      <td style="text-align: center">버스 싸이클 1 개만 “훔친” 뒤 즉시 CPU에 반환 → CPU 지연 최소</td>
+      <td style="text-align: center">실시간 오디오, 비디오 스트림</td>
     </tr>
     <tr>
       <td style="text-align: center">Block/Burst</td>
-      <td style="text-align: center">N 바이트 연속 전송 후 버스 반납. 캐시라인 단위 버스트가 일반적</td>
+      <td style="text-align: center">전체 블록(혹은 버스트) 한 번에 전송 → 가장 빠르지만 CPU 길게 정지</td>
       <td style="text-align: center">SATA, SDIO, 대부분의 PCIe 장치</td>
     </tr>
     <tr>
-      <td style="text-align: center">Demand/Fly-by</td>
-      <td style="text-align: center">장치 내부 FIFO가 찰 때까지만 전송, 실시간 스트림용</td>
-      <td style="text-align: center">오디오 DAC, 카메라 센서</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Scatter-Gather</td>
-      <td style="text-align: center">링크드-리스트(Descriptor)로 여러 메모리 조각을 한 번에 전송</td>
-      <td style="text-align: center">NVMe, 고속 NIC, GPU DMA 복사</td>
+      <td style="text-align: center">Demand/Scatter-Gather</td>
+      <td style="text-align: center">장치가 필요할 때마다, 혹은 메모리 리스트 기반 다중 블록 이동</td>
+      <td style="text-align: center">고성능 NIC, NVMe SSD, GPU VRAM 업로드</td>
     </tr>
   </tbody>
 </table>

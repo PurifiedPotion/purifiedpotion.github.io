@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-04-29T10:32:50+00:00',
+    INDEX_KEY: 'index--2025-04-30T12:06:14+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -586,24 +586,19 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: center">Single/Cycle-Steal</td>
-      <td style="text-align: center">메모리 1~2 바이트(또는 word)마다 버스 반납 → CPU와 공존</td>
-      <td style="text-align: center">오래된 ISA 카드, 저속 UART</td>
+      <td style="text-align: center">Cycle-Stealing</td>
+      <td style="text-align: center">버스 싸이클 1 개만 “훔친” 뒤 즉시 CPU에 반환 → CPU 지연 최소</td>
+      <td style="text-align: center">실시간 오디오, 비디오 스트림</td>
     </tr>
     <tr>
       <td style="text-align: center">Block/Burst</td>
-      <td style="text-align: center">N 바이트 연속 전송 후 버스 반납. 캐시라인 단위 버스트가 일반적</td>
+      <td style="text-align: center">전체 블록(혹은 버스트) 한 번에 전송 → 가장 빠르지만 CPU 길게 정지</td>
       <td style="text-align: center">SATA, SDIO, 대부분의 PCIe 장치</td>
     </tr>
     <tr>
-      <td style="text-align: center">Demand/Fly-by</td>
-      <td style="text-align: center">장치 내부 FIFO가 찰 때까지만 전송, 실시간 스트림용</td>
-      <td style="text-align: center">오디오 DAC, 카메라 센서</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Scatter-Gather</td>
-      <td style="text-align: center">링크드-리스트(Descriptor)로 여러 메모리 조각을 한 번에 전송</td>
-      <td style="text-align: center">NVMe, 고속 NIC, GPU DMA 복사</td>
+      <td style="text-align: center">Demand/Scatter-Gather</td>
+      <td style="text-align: center">장치가 필요할 때마다, 혹은 메모리 리스트 기반 다중 블록 이동</td>
+      <td style="text-align: center">고성능 NIC, NVMe SSD, GPU VRAM 업로드</td>
     </tr>
   </tbody>
 </table>
@@ -835,7 +830,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/number-theory/" class="flip-title"><span>정수론(Number Theory)</span></a>  <time class="faded fine" datetime="2025-03-19T00:00:00+00:00">19 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/pre-order-post-order/" class="flip-title"><span>전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</span></a>  <time class="faded fine" datetime="2025-04-16T00:00:00+00:00">16 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/longest-common-subsequence/" class="flip-title"><span>최장 공통 부분 수열(Longest Common Subsequence)</span></a>  <time class="faded fine" datetime="2025-04-03T00:00:00+00:00">03 Apr 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/self-balancing-binary-search-tree/" class="flip-title"><span>자기 균형 이진 탐색 트리(Self-Balancing Binary Search Tree)</span></a>  <time class="faded fine" datetime="2025-03-30T00:00:00+00:00">30 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/example-content-ii/" class="flip-title"><span>Example Content II</span></a>  <time class="faded fine" datetime="2017-11-23T00:00:00+00:00">23 Nov 2017</time></li>          <li class="h4">  <a href="/blog/algorithm/bfs-dfs/" class="flip-title"><span>너비 우선 탐색(Breadth-first search)와 깊이 우선 탐색(Depth-first search)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>      </ul></aside>
 
   
 
