@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-30T14:42:40+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-30T14:52:32+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
   <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
@@ -953,9 +953,9 @@
         <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
         <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// 리스트에 블록이 있을 때</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">free_root</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span> <span class="c1">// 기존 루트의 PREV를 새 블록으로</span>
+        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">free_root</span><span class="p">);</span>   <span class="c1">// 현재 위치의 next를 기존 첫번째 free block</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>        <span class="c1">// 현재 위치의 prev를 NULL</span>
+        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>   <span class="c1">// 기존 첫번째 free block의 PREV를 현재 블록으로</span>
         <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span> <span class="c1">// 루트를 새 블록으로 업데이트</span>
     <span class="p">}</span>
 <span class="p">}</span>
