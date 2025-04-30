@@ -17,9 +17,11 @@ hide_last_modified: true
 |:---:|:---:|:---:|
 | 사용 예 | C언어에서 malloc 할당과 free | Java의 garbage collection, ML, and Lisp |
 
+- free 수행에 관해서 직접적인지 또는 간접적인지에 따라서 달라진다
+
 **Malloc**에 관하여서는 이전에 포스팅한 [동적 메모리 할당(Dynamic memory allocation)]{:.heading.flip-title} 을 참조하면 된다
 
-여기서 다룰 내용은 Explicit allocator인 malloc 할당을 직접 구현할 예정이다
+여기서 다룰 내용은 **Explicit allocator**인 malloc 할당을 직접 구현할 예정이다
 
 ## Malloc 할당 
 

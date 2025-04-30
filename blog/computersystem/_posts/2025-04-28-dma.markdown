@@ -196,4 +196,3 @@ DMA는 CPU를 거치지 않고 I/O 장치가 주 메모리(RAM)에 직접 읽기
 - Windows : WdfDmaTransaction*, KeFlushIoBuffers(), Scatter/Gather 목록 지원
 
 - RTOS(FreeRTOS, Zephyr) : MCU마다 별도의 DMAMUX & HAP API 제공
-
