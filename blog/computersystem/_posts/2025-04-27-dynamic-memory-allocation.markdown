@@ -85,7 +85,7 @@ hide_last_modified: true
 
     - Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기
 
-    -
+    - 수식 :
 $$
 U_k = \frac{\max_{i \le k} P_i}{H_k}
 $$
