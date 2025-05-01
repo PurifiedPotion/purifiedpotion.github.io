@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-05-01T08:06:38+00:00',
+    INDEX_KEY: 'index--2025-05-01T08:54:52+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -275,6 +275,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     <ul class="large-only" id="markdown-toc">
   <li><a href="#5주차" id="markdown-toc-5주차">5주차</a></li>
   <li><a href="#6주차" id="markdown-toc-6주차">6주차</a></li>
+  <li><a href="#7주차" id="markdown-toc-7주차">7주차</a></li>
 </ul>
 
 <p>벌써 1달이라는 시간이 지났다. 아무래도 블로그 운영이 취업 목적과도 연관이 있어서 꾸준히 배운것에 대해 포스팅은 진행했지만, 배운것 외에 내가 느낀점에 대해서는 포스팅하지 않았고 필요도 느끼지 못했다. 그런데, 결국에 배운것은 모두 GPT가 알려준 것이어서 블로그 포스팅이 의미없지 않냐는 다른 정글러분의 의견에 생각이 바뀌어서 정글 5개월 동안 1개월마다 회고록을 써보고자 한다. 먼저 시간대별로 느꼈던점을 기술하는것이 정리가 잘 될거 같아서 시간대별로 내가 느낀점을 적도록 하겠다.</p>
@@ -298,6 +299,16 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 <p>개념을 다지고 이제 C언어로 구현을 해야 하는데, 막막한 느낌이 없지 않아 있었고 알고리즘(Introduction to ALGORITHMS)책을 통해 시작할 수 있게 되었다. 해당 책을 통해 많은 도움을 받았고 직접 구현하기 보다는 이미 짜여진 코드를 이해하는게 더 중요하다고 생각이 되었다. 그 이유에 대해서는, 처음으로 트리를 구현하는 것이었기 때문에, 처음부터 RBTree를 구현하는 것은 많은 시간을 쓸거라고 생각했고, 다른 과제들 또한 있었기 때문에 타협을 본 셈이다.</p>
 
 <p>C언어로 RBTree 구현을 모두 마치고 CS:APP 책 8장과 9장을 읽어야 했다. 결론적으로 다 읽지는 못하였지만, 8장에서 예외처리를 위한 시그널과 9장에서 가상 메모리를 쓰는 이유에 대해 배울 수 있게 되었다. 팀원들과 가졌던 Core-time에서 내가 알고 있던 내용과 팀원들이 알고있던 내용에 다른점이 존재했다. 내가 알고 있던 내용이 맞았고 정정을 해주었던 점이 기억에 남는다. 앞으로도 깊게 파고드는 습관을 유지하면서 공부하고자 하는 계기를 만들었다. 그럼에도 불구하고, 과제를 모두 마치지 못한 첫 주가 되었고 많이 아쉬웠다. 완수를 못한점에 대해 만회하고자 차주부터 열심히 하고자 한다.</p>
+
+<h2 id="7주차">7주차</h2>
+
+<p>Malloc함수를 직접 구현하는 주차가 시작 되었다. 전주에 CS:APP 읽는 과제에 대해 완수를 못했던점이 나에게는 걸리는 부분이어서, 이번 주차에 만회를 하고 싶었다. 아쉽게도 만회는 못하였다.. 대신에 이번주에 필요한 CS:APP 9.9장에 대해서는 완벽하게 이해했다. 9.9장도 쉽지 않았는데, 내 공부법에 문제가 있다고 판단 후, 동료에게서 youtube영상을 보라고 하는 조언을 듣고 내 공부법을 바꾸었다. CS:APP 저자의 영상이어서 믿고 볼 수 있었고, 핵심만 얘기해줬기 때문에, 빠르게 9.9장에 대해서 이해할 수 있었다.</p>
+
+<p>아쉽게도 팀원분들이 불가피하게 초반에 참여를 못하게 되었다. 그래서 C언어로 코드 구현하는것을 조금 늦게 시작하게 되었다. 그럼에도 불구하고 명시적 list로 구현을 완수할 수 있었다. 내가 스스로 구현할려고 해보았지만, segmentation error가 떴었고 동료에 도움 요청했을 때, gdb로도 error를 찾는것이 힘들고 Google AI Studio 통해서 물어보는것이 더 좋다고 들었다. 그래서 Google AI Studio 통해서 물어보았고, 문제되는 부분들에 대해서 수정을 하였다. 명시적 list로 구현했더니 묵시적 list + next-fit 보다 1점 높아지는 결과가 나오게 되었다. 여기서 명시적 list에서는 best-fit이 제일 효율이 좋다고 들었지만, 수요일 저녁때 완성이 되어서 목요일 발표를 위해 추가 작업은 진행하지 못하였다.</p>
+
+<p>발표에 관해서는 명시적 list 코드의 refactoring에 대해서 다루었고 발표는 잘 마무리 되었다. 발표시간에 다른 조 발표를 보았는데, 저번주 보다 훨씬 도움되는 내용들이 많아서 집중도 있게 보게 되었다.</p>
+
+<p>1주가 끝난 후의 느낀점으로는, 컴퓨터에 대해서 깊이 있게 빠져 들었던것이 좋았지만, 많이 구현했던 다른 분들과 비교했을 때, 조금 뒤쳐진다는 느낌을 받아서 아쉬웠다.</p>
 
   
 </article>
@@ -433,7 +444,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/diary/first_month/" class="flip-title"><span>크래프톤 정글에서 첫달을 보낸 후</span></a>  <time class="faded fine" datetime="2025-04-14T00:00:00+00:00">14 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/pointer-and-star/" class="flip-title"><span>포인터(pointer), & 연산자와 * 연산자</span></a>  <time class="faded fine" datetime="2025-04-04T00:00:00+00:00">04 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/bfs-dfs/" class="flip-title"><span>너비 우선 탐색(Breadth-first search)와 깊이 우선 탐색(Depth-first search)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/computersystem/dynamic-memory-allocation/" class="flip-title"><span>수작업으로 Malloc 구현(9.9장)</span></a>  <time class="faded fine" datetime="2025-04-27T00:00:00+00:00">27 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/example-content/" class="flip-title"><span>Example Content</span></a>  <time class="faded fine" datetime="2012-02-07T00:00:00+00:00">07 Feb 2012</time></li>          <li class="h4">  <a href="/blog/c/virtualization/" class="flip-title"><span>가상화(Virtualization)</span></a>  <time class="faded fine" datetime="2025-04-13T00:00:00+00:00">13 Apr 2025</time></li>      </ul></aside>
 
   
 
