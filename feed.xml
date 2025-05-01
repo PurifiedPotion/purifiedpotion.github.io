@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-04-30T14:52:32+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-01T07:13:32+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
   <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
@@ -801,11 +801,14 @@
     <p>최고 이용도(Peak utilization) : 할당기가 힙을 얼마나 효율적으로 사용하는지를 규정하는 많은 방법들 중 하나</p>
 
     <ul>
-      <li>Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기</li>
-    </ul>
-
-    <p>-
+      <li>
+        <p>Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기</p>
+      </li>
+      <li>
+        <p>수식 :
 \(U_k = \frac{\max_{i \le k} P_i}{H_k}\)</p>
+      </li>
+    </ul>
   </li>
   <li>
     <p>내부 단편화(Internal fragmentation) : Overhead나 padding에 의해서 발생되는데, 블록 내부에서 메모리를 효율적으로 관리하지 못하는 것</p>
