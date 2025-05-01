@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-01T07:57:01+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-01T08:06:38+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
   <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
@@ -889,6 +889,8 @@
 
 <h3 id="footer-탄생">Footer 탄생</h3>
 
+<p>할당을 하면서 Free도 하게 될텐데, 그렇게 되면 Free블록이 연속될 수 있다.</p>
+
 <h2 id="명시적-리스트explicit-list에서의-refactoring">명시적 리스트(Explicit list)에서의 refactoring</h2>
 
 <p>명시적 리스트를 구현하기 위해서 조금 복잡하게 구현했던 내용 개선에 대해서 얘기하려고 해</p>
@@ -1538,7 +1540,7 @@
 
 <p>Python을 통해 알고리즘을 배우는 마지막 주 4주차에서는 많은 것을 얻어간것 같다. 알고리즘을 많이 배우진 않았지만, Computer System쪽에서 지식을 많이 얻게 되는 한 주였다. <strong>Computer Systems A Programmer’s Perspective</strong> 책 3장 전체를 다 보라는 과제가 있었고 아쉽게도 다 보진 못했지만, 레지스터에서 어떻게 인수를 저장하고 또 메모리에서 값을 받아오는 행위의 세부적인걸 알게 되었다.</p>
 
-<p>알고리즘으로는 동적 프로그래밍과 그리디 알고리즘을 배웠다. 이상한게 2차원 배열의 움직임을 구현하는 것은 나에게 굉장히 어려웠는데, 시간이 해결을 해준건지 시험에서 나온 DP문제를 2차원 배열과 DPS 방식으로 풀게 되었다. 물론 백준 시간 초과가 나오게 되면서 문제를 풀었다고 할 수 없긴 했지만, 그래도 꾸준히 공부를 해왔던 것에 보람을 느끼게 되었다. 앞으로 난관을 마주하게 되더라도 이런 경험에서 나왔듯이 시간이 해결해줄 것이라고 믿고 앞으로 나아갈것 같다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="diary" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%80.jpg" /><media:content medium="image" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%80.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">크래프톤 정글에서 두번째 달을 보낸 후</title><link href="/blog/diary/second-month/" rel="alternate" type="text/html" title="크래프톤 정글에서 두번째 달을 보낸 후" /><published>2025-04-14T00:00:00+00:00</published><updated>2025-04-14T00:00:00+00:00</updated><id>/blog/diary/second-month</id><content type="html" xml:base="/blog/diary/second-month/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<p>알고리즘으로는 동적 프로그래밍과 그리디 알고리즘을 배웠다. 이상한게 2차원 배열의 움직임을 구현하는 것은 나에게 굉장히 어려웠는데, 시간이 해결을 해준건지 시험에서 나온 DP문제를 2차원 배열과 DPS 방식으로 풀게 되었다. 물론 백준 시간 초과가 나오게 되면서 문제를 풀었다고 할 수 없긴 했지만, 그래도 꾸준히 공부를 해왔던 것에 보람을 느끼게 되었다. 앞으로 난관을 마주하게 되더라도 이런 경험에서 나왔듯이 시간이 해결해줄 것이라고 믿고 앞으로 나아갈것 같다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="diary" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%803.jpg" /><media:content medium="image" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%803.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">크래프톤 정글에서 두번째 달을 보낸 후</title><link href="/blog/diary/second-month/" rel="alternate" type="text/html" title="크래프톤 정글에서 두번째 달을 보낸 후" /><published>2025-04-14T00:00:00+00:00</published><updated>2025-04-14T00:00:00+00:00</updated><id>/blog/diary/second-month</id><content type="html" xml:base="/blog/diary/second-month/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#5주차" id="markdown-toc-5주차">5주차</a></li>
   <li><a href="#6주차" id="markdown-toc-6주차">6주차</a></li>
 </ul>
