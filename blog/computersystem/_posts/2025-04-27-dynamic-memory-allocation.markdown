@@ -85,7 +85,7 @@ hide_last_modified: true
 
     - Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기
 
-    - 수식 :
+    - 수식(높은것이 좋다) :
 $$
 U_k = \frac{\max_{i \le k} P_i}{H_k}
 $$
@@ -95,6 +95,48 @@ $$
 ![외부 단편화](/assets/img/blog/computerscience/externalfragmentation.png)
 
 - 외부 단편화(External fragmentation) : 가용 블록의 합들은 충분하지만, 가용 블록에 할당할 적당한 크기가 없게 관리가 된것
+
+## Malloc 할당 기초
+
+### Header 탄생
+
+우리가 포인터를 사용해서 블럭과 블럭을 건너뛰기 위해서는 어떻게 해야 할까? payload가 어디서부터 시작하지? 어디서 부터 읽어야 하지?
+
+라는 의문에서 탄생한 개념이 '**header라는 overhead를 만들어서 거기에 block의 사이즈를 넣으면 어떨까?**' 이다
+
+1. header를 사용해서 각 블럭의 처음으로 순차적으로 탐색이 가능해 졌다
+
+    - 그러면 header를 어디에 할당을 할까? 
+    
+        - 규칙이야 만들면 그만이지만, 책에서는 특정 주소를 받으면 payload 시작 주소를 받기로 했다
+
+        - payload 주소를 먼저 받게 되면, 그 앞에 overhead를 추가하기로 했다
+
+    - 그러면 태초의 주소를 받게 되면, 앞이 없기 때문에 overhead를 못 넣지 않은가?
+
+        - 그렇기 때문에 우리는 첫 주소에 항상 overhead용 padding을 해줘야 한다
+
+![헤더](/assets/img/blog/computerscience/header.png)
+
+여기서 추가적으로 우리는 가용 블록 or 비가용 블록인지 확인이 필요하다. 
+그 이유는 할당 블럭에 다른 용도로 또 할당을 하면 안되기 때문.
+
+32bit 기준으로 8byte기준, 64bit system으로는 16byte 정렬이 됨(여기서 정렬이라 하는것은 정렬만큼 최소크기로 블럭을 관리하겠다는 얘기이다)
+그렇게 되면 3bit 또는 4bit는 항상 0으로 남게 된다.
+
+2. 남게 되는 bit들을 이용해 다른 정보들을 저장하자
+
+    - overhead를 읽을 때 첫 3bit or 4bit를 제외하고 읽고 3bit or 4bit를 따로 읽는것이다. 그렇게 되면 block size와 다른 정보들이 나오게 된다.
+
+    - 책에서는 32bit system을 사용해서 3bit가 남고 가장 첫번째 bit에 가용/비가용(1/0)으로 구분하기로 했다
+
+![헤더](/assets/img/blog/computerscience/headerwithalloc.png)
+
+### Footer 탄생
+
+
+
+
 
 ## 명시적 리스트(Explicit list)에서의 refactoring
 
@@ -257,6 +299,12 @@ static void remove_from_free_list(void *bp) {
     // bp의 포인터는 초기화할 필요 없음 (어차피 할당되거나 병합될 것임)
 }
 ~~~
+
+- add_to_free_list : 아래 사진의 ①, ②, ③, ④ 포인터의 변경/생성에 관여
+
+- remove_from_free_list : 아래 사진의 ⑤, ⑥, ⑦, ⑧ 포인터의 변경/생성에 관여
+
+![Case4 함수별 포인터](/assets/img/blog/computerscience/case4pointers.png)
 
 ### 개선된 Case 4
 
