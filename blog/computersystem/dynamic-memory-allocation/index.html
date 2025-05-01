@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-05-01T07:13:32+00:00',
+    INDEX_KEY: 'index--2025-05-01T07:57:01+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -284,6 +284,11 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
       <li><a href="#용어-정리" id="markdown-toc-용어-정리">용어 정리</a></li>
     </ul>
   </li>
+  <li><a href="#malloc-할당-기초" id="markdown-toc-malloc-할당-기초">Malloc 할당 기초</a>    <ul>
+      <li><a href="#header-탄생" id="markdown-toc-header-탄생">Header 탄생</a></li>
+      <li><a href="#footer-탄생" id="markdown-toc-footer-탄생">Footer 탄생</a></li>
+    </ul>
+  </li>
   <li><a href="#명시적-리스트explicit-list에서의-refactoring" id="markdown-toc-명시적-리스트explicit-list에서의-refactoring">명시적 리스트(Explicit list)에서의 refactoring</a>    <ul>
       <li><a href="#refactoring-함수" id="markdown-toc-refactoring-함수">Refactoring 함수</a></li>
       <li><a href="#개선된-case-4" id="markdown-toc-개선된-case-4">개선된 Case 4</a></li>
@@ -420,7 +425,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
         <p>Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기</p>
       </li>
       <li>
-        <p>수식 :
+        <p>수식(높은것이 좋다) :
 \(U_k = \frac{\max_{i \le k} P_i}{H_k}\)</p>
       </li>
     </ul>
@@ -435,6 +440,69 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 <ul>
   <li>외부 단편화(External fragmentation) : 가용 블록의 합들은 충분하지만, 가용 블록에 할당할 적당한 크기가 없게 관리가 된것</li>
 </ul>
+
+<h2 id="malloc-할당-기초">Malloc 할당 기초</h2>
+
+<h3 id="header-탄생">Header 탄생</h3>
+
+<p>우리가 포인터를 사용해서 블럭과 블럭을 건너뛰기 위해서는 어떻게 해야 할까? payload가 어디서부터 시작하지? 어디서 부터 읽어야 하지?</p>
+
+<p>라는 의문에서 탄생한 개념이 ‘<strong>header라는 overhead를 만들어서 거기에 block의 사이즈를 넣으면 어떨까?</strong>’ 이다</p>
+
+<ol>
+  <li>
+    <p>header를 사용해서 각 블럭의 처음으로 순차적으로 탐색이 가능해 졌다</p>
+
+    <ul>
+      <li>
+        <p>그러면 header를 어디에 할당을 할까?</p>
+
+        <ul>
+          <li>
+            <p>규칙이야 만들면 그만이지만, 책에서는 특정 주소를 받으면 payload 시작 주소를 받기로 했다</p>
+          </li>
+          <li>
+            <p>payload 주소를 먼저 받게 되면, 그 앞에 overhead를 추가하기로 했다</p>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <p>그러면 태초의 주소를 받게 되면, 앞이 없기 때문에 overhead를 못 넣지 않은가?</p>
+
+        <ul>
+          <li>그렇기 때문에 우리는 첫 주소에 항상 overhead용 padding을 해줘야 한다</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<p><img src="/assets/img/blog/computerscience/header.png" alt="헤더" /></p>
+
+<p>여기서 추가적으로 우리는 가용 블록 or 비가용 블록인지 확인이 필요하다. 
+그 이유는 할당 블럭에 다른 용도로 또 할당을 하면 안되기 때문.</p>
+
+<p>32bit 기준으로 8byte기준, 64bit system으로는 16byte 정렬이 됨(여기서 정렬이라 하는것은 정렬만큼 최소크기로 블럭을 관리하겠다는 얘기이다)
+그렇게 되면 3bit 또는 4bit는 항상 0으로 남게 된다.</p>
+
+<ol>
+  <li>
+    <p>남게 되는 bit들을 이용해 다른 정보들을 저장하자</p>
+
+    <ul>
+      <li>
+        <p>overhead를 읽을 때 첫 3bit or 4bit를 제외하고 읽고 3bit or 4bit를 따로 읽는것이다. 그렇게 되면 block size와 다른 정보들이 나오게 된다.</p>
+      </li>
+      <li>
+        <p>책에서는 32bit system을 사용해서 3bit가 남고 가장 첫번째 bit에 가용/비가용(1/0)으로 구분하기로 했다</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<p><img src="/assets/img/blog/computerscience/headerwithalloc.png" alt="헤더" /></p>
+
+<h3 id="footer-탄생">Footer 탄생</h3>
 
 <h2 id="명시적-리스트explicit-list에서의-refactoring">명시적 리스트(Explicit list)에서의 refactoring</h2>
 
@@ -596,6 +664,17 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 <span class="p">}</span>
 </code></pre></div></div>
 
+<ul>
+  <li>
+    <p>add_to_free_list : 아래 사진의 ①, ②, ③, ④ 포인터의 변경/생성에 관여</p>
+  </li>
+  <li>
+    <p>remove_from_free_list : 아래 사진의 ⑤, ⑥, ⑦, ⑧ 포인터의 변경/생성에 관여</p>
+  </li>
+</ul>
+
+<p><img src="/assets/img/blog/computerscience/case4pointers.png" alt="Case4 함수별 포인터" /></p>
+
 <h3 id="개선된-case-4">개선된 Case 4</h3>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1">// Case 4: Merge with both previous and next blocks</span>
@@ -745,7 +824,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/minimum-spanning-tree/" class="flip-title"><span>최소 신장 트리(MST, Minimum Spanning Tree)</span></a>  <time class="faded fine" datetime="2025-03-30T00:00:00+00:00">30 Mar 2025</time></li>          <li class="h4">  <a href="/blog/diary/essay-written-in-jungle/" class="flip-title"><span>Essay written in KRAFTON JUNGLE</span></a>  <time class="faded fine" datetime="2025-03-14T00:00:00+00:00">14 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/trie/" class="flip-title"><span>트라이(Trie)</span></a>  <time class="faded fine" datetime="2025-04-02T00:00:00+00:00">02 Apr 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/example-content/" class="flip-title"><span>Example Content</span></a>  <time class="faded fine" datetime="2012-02-07T00:00:00+00:00">07 Feb 2012</time></li>          <li class="h4">  <a href="/blog/algorithm/dynamic-programming/" class="flip-title"><span>동적 계획법(Dynamic programming)</span></a>  <time class="faded fine" datetime="2025-04-03T00:00:00+00:00">03 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/trie/" class="flip-title"><span>트라이(Trie)</span></a>  <time class="faded fine" datetime="2025-04-02T00:00:00+00:00">02 Apr 2025</time></li>      </ul></aside>
 
   
 
