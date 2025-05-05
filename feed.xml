@@ -1,5 +1,207 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-01T12:20:10+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
-</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-05T14:41:46+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">OSI 7 계층(OSI7 Layer)</title><link href="/blog/computersystem/osi-7-layer/" rel="alternate" type="text/html" title="OSI 7 계층(OSI7 Layer)" /><published>2025-05-05T00:00:00+00:00</published><updated>2025-05-05T00:00:00+00:00</updated><id>/blog/computersystem/osi-7-layer</id><content type="html" xml:base="/blog/computersystem/osi-7-layer/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#한눈에-보는-osi-7계층" id="markdown-toc-한눈에-보는-osi-7계층">한눈에 보는 OSI 7계층</a></li>
+  <li><a href="#계층별-세부사항" id="markdown-toc-계층별-세부사항">계층별 세부사항</a></li>
+  <li><a href="#왜-tcpip-4계층-모델을-더-많이-쓸까" id="markdown-toc-왜-tcpip-4계층-모델을-더-많이-쓸까">왜 TCP/IP 4계층 모델을 더 많이 쓸까?</a></li>
+  <li><a href="#osi-7계층을-배우는-이유" id="markdown-toc-osi-7계층을-배우는-이유">OSI 7계층을 배우는 이유</a></li>
+</ul>
+
+<p><strong>OSI 7 계층</strong>은 <strong>물리 신호부터 user application</strong>까지 <strong>네트워크 기능을 일곱 단계로 나눈 개념적 설계도</strong>이다. 실무에선 TCP/IP 4계층으로 단순화해 쓰지만, 문제 분석과 개념 정리에 여전히 유용함</p>
+
+<h2 id="한눈에-보는-osi-7계층">한눈에 보는 OSI 7계층</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">번호</th>
+      <th style="text-align: center">계층 이름</th>
+      <th style="text-align: center">주요 기능</th>
+      <th style="text-align: center">예시</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">7</td>
+      <td style="text-align: center">응용 계층 (Application)</td>
+      <td style="text-align: center">사용자와 직접 상호작용, 네트워크 서비스 제공</td>
+      <td style="text-align: center">HTTPS/HTTPS, FTP, SMTP, DNS, SSH</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">6</td>
+      <td style="text-align: center">표현 계층 (Presentation)</td>
+      <td style="text-align: center">데이터 형식 변환, 암호화/복호화, 압축</td>
+      <td style="text-align: center">JPEG, MP3, SSL</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">5</td>
+      <td style="text-align: center">세션 계층 (Session)</td>
+      <td style="text-align: center">연결 설정/유지/종료, 세션 관리</td>
+      <td style="text-align: center">NetBIOS, RPC, PPTP</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">4</td>
+      <td style="text-align: center">전송 계층 (Transport)</td>
+      <td style="text-align: center">데이터 전송 보장(신뢰성), 오류 제어</td>
+      <td style="text-align: center">TCP, UDP, QUIC, SCTP</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">3</td>
+      <td style="text-align: center">네트워크 계층 (Network)</td>
+      <td style="text-align: center">주소 지정/경로 선택(라우팅)</td>
+      <td style="text-align: center">IP, ICMP, ARP, OSPF, BGP</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">2</td>
+      <td style="text-align: center">데이터링크 계층 (Data-Link)</td>
+      <td style="text-align: center">프레임 생성, MAC 주소 기반 전달, 에러 감지</td>
+      <td style="text-align: center">Ethernet, Wi-Fi 802.11, PPP, VLAN, 스위치</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">물리 계층 (Physical)</td>
+      <td style="text-align: center">0/1 신호를 실제 매체로 전송</td>
+      <td style="text-align: center">UTP 케이블, 광섬유, 전파, 허브, 리피터</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="계층별-세부사항">계층별 세부사항</h2>
+
+<ol>
+  <li>물리 계층</li>
+</ol>
+
+<p>“전길줄에 0과 1을 어떻게 흘려보낼까?”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- 전압 크기, 광펄스 세기, 라디오 주파수 등 **신호**의 물리적 특성을 정의함
+
+- 허브/리피터처럼 "증폭만 하고 아무 판단도 못 하는" 장비가 여기에 속함
+</code></pre></div></div>
+
+<ol>
+  <li>데이터링크 계층</li>
+</ol>
+
+<p>“같은 네트워크(브로드캐스트 도메인) 안에서 누가 누구인지 구분하려면?”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- **MAC 주소**를 붙여 프레임 단위로 전송하며, CRC로 프레임 오류를 검출함
+
+- 스위치/브리지·VLAN·ARP 캐시 같은 개념이 등장함
+</code></pre></div></div>
+
+<ol>
+  <li>네트워크 계층</li>
+</ol>
+
+<p>“지구 반대편 호스트까지 가려면 중간길(라우팅)을 어떻게 잡지?”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- **IP 주소**를 붙이고, 라우터가 최적 경로를 찾아 포워딩함
+
+- ICMP '목적지 도달 불가', OSPF/BGP 등 라우팅 프로토콜이 여기에 있음
+</code></pre></div></div>
+
+<ol>
+  <li>전송 계층</li>
+</ol>
+
+<p>“프로세스 간에 패킷이 유실돼도 재전송하고, 순서도 맞춰야지”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- TCP : 3-Way Handshake, 흐름/혼잡 제어, 세그먼트 재전송
+
+- UDP : 최소한의 헤더로 "빠르지만 책임 안 진다"
+
+- QUIC : HTTP/3가 쓰는 신흥 강자, UDP 위에 신뢰성·TLS 포함
+</code></pre></div></div>
+
+<ol>
+  <li>세션 계층</li>
+</ol>
+
+<p>“논리적인 대화방(세션)을 열고 닫는 관리를 맡자”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- 체크포인트·재동기화·다중 스트림 제어 가능
+
+- 실무에선 애매함, OSI만의 전통적인 구분이며, 실제 구현은 주로 응용/전송이 흡수
+</code></pre></div></div>
+
+<ol>
+  <li>표현 계층</li>
+</ol>
+
+<p>“바이트를 사람이 읽을 수 있게/암호화된 형태로 변환하자”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- 문자 집합 변환(UTF-8↔EUC-KR), 압축(GZIP), 암복호(TLS) 담당
+
+- 응용계층과 합쳐서 다루는 경우가 많지만, 보안·멀티미디어 코덱 설명 때 유용
+</code></pre></div></div>
+
+<ol>
+  <li>응용 계층</li>
+</ol>
+
+<p>“사용자 프로그램이 원하는 서비스 그 자체”</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- 웹브라우저-HTTP, 메일-SMTP/IMAP, 파일전송-FTP/SFTP 처럼 **실제 앱 프로토콜**이 자리함
+
+- API 호출(REST/GraphQL)·메신저 프로토콜도 여기서 논의됨
+</code></pre></div></div>
+
+<h2 id="왜-tcpip-4계층-모델을-더-많이-쓸까">왜 TCP/IP 4계층 모델을 더 많이 쓸까?</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">OSI</th>
+      <th style="text-align: center">TCP/IP(실무)</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">7-5</td>
+      <td style="text-align: center">응용 계층</td>
+      <td style="text-align: center">HTTP·TLS·RPC 등 모두 한 덩어리</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">4</td>
+      <td style="text-align: center">전송 계층</td>
+      <td style="text-align: center">TCP·UDP·QUIC</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">3</td>
+      <td style="text-align: center">인터넷 계층</td>
+      <td style="text-align: center">IP, ICMP 등</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">2-1</td>
+      <td style="text-align: center">네트워크 접근 계층</td>
+      <td style="text-align: center">Ethernet·Wi-Fi·물리 매체</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>
+    <p><strong>간소화</strong> : 실제 구현에서는 세션/표현 계층이 따로 분리돼 작동하지 않는 경우가 많아 4단계로 줄임</p>
+  </li>
+  <li>
+    <p><strong>표준화 주체</strong>도 다름. OSI는 ISO(국제표준화기구) 주도, TCP/IP는 IETF(인터넷 엔지니어링 태스크포스)가 주도함</p>
+  </li>
+</ul>
+
+<h2 id="osi-7계층을-배우는-이유">OSI 7계층을 배우는 이유</h2>
+
+<ol>
+  <li>
+    <p>문제 진단 : “이건 3계층 문제인가 4계층 문제인가?”를 구분해야 디버깅이 쉬움</p>
+  </li>
+  <li>
+    <p>역할 분리 : “ 새 프로토콜 설계 시 “이 기능은 어느 계층 책임인가?”를 결정하는 기준 세우기가 가능해짐</p>
+  </li>
+  <li>
+    <p>학습 프레임 : 물리 → 응용으로 올라가며 추상화·책임 범위를 체계적으로 이해할 수 있음</p>
+  </li>
+</ol>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[OSI 7계층(Open Systems Interconnection 7 Layers)은 네트워크 통신 과정을 7단계로 나눈 모델이며, 이 모델은 각 계층마다 맡은 역할이 정해져 있어서, 복잡한 통신 과정을 구조화하고 표준화하는 데 도움이 됩니다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
   <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
   <li><a href="#언제-볼-수-있을까" id="markdown-toc-언제-볼-수-있을까">언제 볼 수 있을까?</a></li>
@@ -2770,300 +2972,4 @@ docker run <span class="nt">--rm</span> my-make-c-app
   <li>
     <p>옵션을 자유자재로 다루면 성능 개선이나 디버깅도 더 수월해져</p>
   </li>
-</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="c" /><category term="gcc" /><category term="GNU" /><category term="Compiler" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/C.png" /><media:content medium="image" url="/assets/img/blog/postimage/C.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">가상화(Virtualization)</title><link href="/blog/c/virtualization/" rel="alternate" type="text/html" title="가상화(Virtualization)" /><published>2025-04-13T00:00:00+00:00</published><updated>2025-04-13T00:00:00+00:00</updated><id>/blog/c/virtualization</id><content type="html" xml:base="/blog/c/virtualization/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#가상화의-종류" id="markdown-toc-가상화의-종류">가상화의 종류</a>    <ul>
-      <li><a href="#전통적인-vm" id="markdown-toc-전통적인-vm">전통적인 VM</a></li>
-      <li><a href="#컨테이너docker" id="markdown-toc-컨테이너docker">컨테이너(Docker)</a></li>
-    </ul>
-  </li>
-  <li><a href="#왜-가상화가-필요한-걸까" id="markdown-toc-왜-가상화가-필요한-걸까">왜 가상화가 필요한 걸까?</a></li>
-  <li><a href="#가상화의-장점" id="markdown-toc-가상화의-장점">가상화의 장점</a></li>
-  <li><a href="#가상화의-단점" id="markdown-toc-가상화의-단점">가상화의 단점</a></li>
-  <li><a href="#c언어-할때-우리가-docker-사용하는-이유" id="markdown-toc-c언어-할때-우리가-docker-사용하는-이유">C언어 할때 우리가 Docker 사용하는 이유</a>    <ul>
-      <li><a href="#개발-환경-일관성-유지" id="markdown-toc-개발-환경-일관성-유지">개발 환경 일관성 유지</a></li>
-      <li><a href="#빌드-자동화--테스트-자동화" id="markdown-toc-빌드-자동화--테스트-자동화">빌드 자동화 &amp; 테스트 자동화</a></li>
-      <li><a href="#실행-환경과-호환-문제-해결" id="markdown-toc-실행-환경과-호환-문제-해결">실행 환경과 호환 문제 해결</a></li>
-      <li><a href="#학생--강의--과제-제출용" id="markdown-toc-학생--강의--과제-제출용">학생 / 강의 / 과제 제출용</a></li>
-      <li><a href="#보안성" id="markdown-toc-보안성">보안성</a></li>
-    </ul>
-  </li>
-</ul>
-
-<p>하드웨어 자원을 소프트웨어적으로 추상화해서, 여러 개의 독립된 시스템처럼 사용하는 기술 <strong>가상화(Virtualization)</strong>에 대해 알아볼게</p>
-
-<p>가상화를 통해 하나의 물리 컴퓨터 위에서</p>
-
-<ul>
-  <li>
-    <p>여러 운영처제(OS)</p>
-  </li>
-  <li>
-    <p>여러 어플리케이션 환경</p>
-  </li>
-</ul>
-
-<p>을 독립적이고 격리된 상태로 실행할 수 있도록 해줘</p>
-
-<h2 id="가상화의-종류">가상화의 종류</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">항목</th>
-      <th style="text-align: center">VM(Virtual Machine)</th>
-      <th style="text-align: center">Docker(Container)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">OS 포함</td>
-      <td style="text-align: center">각 VM마다 Guest OS 포함</td>
-      <td style="text-align: center">커널 공유, OS는 없음</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">부팅 속도</td>
-      <td style="text-align: center">느림(분 단위)</td>
-      <td style="text-align: center">매우 빠름(초 단위)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">성능</td>
-      <td style="text-align: center">비교적 낮음</td>
-      <td style="text-align: center">거의 네이티브 수준</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">자원 사용</td>
-      <td style="text-align: center">무거움(OS 단위로 메모리 사용)</td>
-      <td style="text-align: center">가벼움(커널 공유하기 때문)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">격리성</td>
-      <td style="text-align: center">강력함</td>
-      <td style="text-align: center">비교적 약함(같은 커널 공유)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">이미지 크기</td>
-      <td style="text-align: center">수 GB</td>
-      <td style="text-align: center">수 MB ~ GB</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">사용 사례</td>
-      <td style="text-align: center">전체 OS 시뮬레이션, 강한 격리 필요시</td>
-      <td style="text-align: center">마이크로서비스, CI/CD, 빠른 배포</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="전통적인-vm">전통적인 VM</h3>
-
-<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span> <span class="nt">물리</span> <span class="nt">하드웨어</span> <span class="o">]</span>
-       <span class="err">↓</span>
-<span class="o">[</span> <span class="nt">호스트</span> <span class="nt">OS</span> <span class="o">]</span>
-       <span class="err">↓</span>
-<span class="o">[</span> <span class="nt">하이퍼바이저</span> <span class="o">(</span><span class="nt">Hypervisor</span><span class="o">)</span> <span class="o">]</span>
-       <span class="err">↓↓↓↓↓</span>
- <span class="err">┌──────────────┐</span>  <span class="err">┌──────────────┐</span>  <span class="err">┌──────────────┐</span>
- <span class="err">│</span>   <span class="nt">VM</span> <span class="err">1</span>       <span class="err">│</span>  <span class="err">│</span>   <span class="nt">VM</span> <span class="err">2</span>       <span class="err">│</span>  <span class="err">│</span>   <span class="nt">VM</span> <span class="err">3</span>       <span class="err">│</span>
- <span class="err">│</span> <span class="nt">Guest</span> <span class="nt">OS</span>     <span class="err">│</span>  <span class="err">│</span> <span class="nt">Guest</span> <span class="nt">OS</span>     <span class="err">│</span>  <span class="err">│</span> <span class="nt">Guest</span> <span class="nt">OS</span>     <span class="err">│</span>
- <span class="err">│</span> <span class="nt">App</span> <span class="o">+</span> <span class="nt">Libs</span>   <span class="err">│</span>  <span class="err">│</span> <span class="nt">App</span> <span class="o">+</span> <span class="nt">Libs</span>   <span class="err">│</span>  <span class="err">│</span> <span class="nt">App</span> <span class="o">+</span> <span class="nt">Libs</span>   <span class="err">│</span>
- <span class="err">└──────────────┘</span>  <span class="err">└──────────────┘</span>  <span class="err">└──────────────┘</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>하드웨어 위에 Hypervisor 설치</p>
-  </li>
-  <li>
-    <p>각 VM마다 운영체제(Guest OS) 전체를 포함</p>
-  </li>
-  <li>
-    <p>리소스 무거움</p>
-  </li>
-</ul>
-
-<h3 id="컨테이너docker">컨테이너(Docker)</h3>
-
-<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span> <span class="nt">물리</span> <span class="nt">하드웨어</span> <span class="o">]</span>
-       <span class="err">↓</span>
-<span class="o">[</span> <span class="nt">호스트</span> <span class="nt">OS</span> <span class="o">(</span><span class="nt">Linux</span> <span class="nt">등</span><span class="o">)</span> <span class="o">]</span>
-       <span class="err">↓</span>
-<span class="o">[</span> <span class="nt">Docker</span> <span class="nt">Engine</span> <span class="o">]</span>
-       <span class="err">↓↓↓↓↓</span>
- <span class="err">┌──────────────┐</span>  <span class="err">┌──────────────┐</span>  <span class="err">┌──────────────┐</span>
- <span class="err">│</span> <span class="nt">Container</span> <span class="err">1</span>  <span class="err">│</span>  <span class="err">│</span> <span class="nt">Container</span> <span class="err">2</span>  <span class="err">│</span>  <span class="err">│</span> <span class="nt">Container</span> <span class="err">3</span>  <span class="err">│</span>
- <span class="err">│</span> <span class="nt">App</span> <span class="o">+</span> <span class="nt">Libs</span>   <span class="err">│</span>  <span class="err">│</span> <span class="nt">App</span> <span class="o">+</span> <span class="nt">Libs</span>   <span class="err">│</span>  <span class="err">│</span> <span class="nt">App</span> <span class="o">+</span> <span class="nt">Libs</span>   <span class="err">│</span>
- <span class="err">└──────────────┘</span>  <span class="err">└──────────────┘</span>  <span class="err">└──────────────┘</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>컨테이너들은 호스트 OS의 커널을 공유</p>
-  </li>
-  <li>
-    <p>애플리케이션 + 라이브러리만 포함된 컨테이너 단위로 실행</p>
-  </li>
-  <li>
-    <p>불필요한 OS가 없음 → 가볍고 빠름</p>
-  </li>
-  <li>
-    <p>자원 사용이 효율적</p>
-  </li>
-</ul>
-
-<h2 id="왜-가상화가-필요한-걸까">왜 가상화가 필요한 걸까?</h2>
-
-<p><strong>리소스 효율화</strong></p>
-
-<ul>
-  <li>
-    <p>서버 1대를 여러 대처럼 나눠서 사용 가능</p>
-  </li>
-  <li>
-    <p>하드웨어 낭비 줄일 수 있음</p>
-  </li>
-</ul>
-
-<p><strong>격리성(Isolation)</strong></p>
-
-<ul>
-  <li>
-    <p>서로 다른 환경을 완전히 분리</p>
-  </li>
-  <li>
-    <p>한 앱이 죽어도 다른 앱에 영향 없음</p>
-  </li>
-</ul>
-
-<p><strong>테스트/배포 자동화</strong></p>
-
-<ul>
-  <li>개발 → 테스트 → 배포까지 동일한 환경 유지 가능 (특히 Docker)</li>
-</ul>
-
-<p><strong>보안성</strong></p>
-
-<ul>
-  <li>서로 다른 사용자/프로세스를 독립적으로 운영 가능</li>
-</ul>
-
-<h2 id="가상화의-장점">가상화의 장점</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">장점</th>
-      <th style="text-align: center">설명</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">자원 효율성</td>
-      <td style="text-align: center">물리 서버 하나로 여러 작업 가능</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">유연성</td>
-      <td style="text-align: center">필요한 환경만 골라서 빠르게 만들 수 있음</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">테스트에 용이</td>
-      <td style="text-align: center">다양한 OS, 설정 실험 가능</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">격리성 보장</td>
-      <td style="text-align: center">하나가 망가져도 다른 프로세스에는 영향 X</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">배포 자동화</td>
-      <td style="text-align: center">Dockerfile로 같은 환경을 어디서든 재현 가능</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="가상화의-단점">가상화의 단점</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">단점</th>
-      <th style="text-align: center">설명</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">성능 오버헤드</td>
-      <td style="text-align: center">특히 VM은 OS 전체를 돌리므로 무거움</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">복잡도 증가</td>
-      <td style="text-align: center">관리, 설정, 보안 측면에서 신경 쓸 게 많음</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">네트워크/디스크 이슈</td>
-      <td style="text-align: center">가상화 계층이 개입되면 속도 손해 가능성</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Docker : 커널 공유</td>
-      <td style="text-align: center">호스트 커널에 의존 → 커널 레벨 취약점에 취약</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="c언어-할때-우리가-docker-사용하는-이유">C언어 할때 우리가 Docker 사용하는 이유</h2>
-
-<h3 id="개발-환경-일관성-유지">개발 환경 일관성 유지</h3>
-
-<ul>
-  <li>
-    <p>시스템마다 컴파일러 버전, 라이브러리, 경로 다름 → 내 컴퓨터에서는 되지만, 다른 컴퓨터에선느 안될 수 있음</p>
-  </li>
-  <li>
-    <p>Docker는 Dockerfile에 환경을 정의해두면 → 어디서든 똑같은 환경에서 C 코드 실행 가능</p>
-  </li>
-</ul>
-
-<div class="language-Dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">FROM</span><span class="s"> gcc:latest</span>
-<span class="k">COPY</span><span class="s"> . /app</span>
-<span class="k">WORKDIR</span><span class="s"> /app</span>
-<span class="k">RUN </span>gcc main.c <span class="nt">-o</span> main
-<span class="k">CMD</span><span class="s"> ["./main"]</span>
-</code></pre></div></div>
-
-<p>이렇게 하면, 어디서든 gcc main.c 빌드 환경이 같아짐</p>
-
-<h3 id="빌드-자동화--테스트-자동화">빌드 자동화 &amp; 테스트 자동화</h3>
-
-<ul>
-  <li>
-    <p>Makefile, Cmake 빌드 시스템을 컨테이너에 넣어서 → 코드 푸시하면 자동 빌드가 가능해짐</p>
-  </li>
-  <li>
-    <p>CI/CD (예 : Github Actions, Jenkins)와 연동 쉬움</p>
-  </li>
-</ul>
-
-<h3 id="실행-환경과-호환-문제-해결">실행 환경과 호환 문제 해결</h3>
-
-<ul>
-  <li>
-    <p>예를 들어, 코드가 리눅스에서만 돌아간다? → 맥북이나 윈도우에서도 Docker로 리눅스 환경 돌리면 끝!</p>
-  </li>
-  <li>
-    <p>특정 라이브러리나 커널 기능이 필요한 프로젝트일 때 → 해당 환경을 Docker로 재현 가능능</p>
-  </li>
-</ul>
-
-<h3 id="학생--강의--과제-제출용">학생 / 강의 / 과제 제출용</h3>
-
-<ul>
-  <li>
-    <p>실습 환경 다르면 문제 생기니까 Docker로 통일하면 편해</p>
-  </li>
-  <li>
-    <p>교수님 팀원한테 “이 Dockerfile 돌리면 됩니다”라고 주면 끝!</p>
-  </li>
-</ul>
-
-<h3 id="보안성">보안성</h3>
-
-<ul>
-  <li>악성 코드 실험, 위험한 시스템 호출 시 Docker에서 격리된 환경에서 안전하게 테스트 가능</li>
-</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="c" /><category term="C" /><category term="가상화" /><category term="Virtualization" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/C.png" /><media:content medium="image" url="/assets/img/blog/postimage/C.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="c" /><category term="gcc" /><category term="GNU" /><category term="Compiler" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/C.png" /><media:content medium="image" url="/assets/img/blog/postimage/C.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
