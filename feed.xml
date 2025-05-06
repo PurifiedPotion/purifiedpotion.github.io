@@ -1,5 +1,94 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T04:37:45+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
-</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">Datagram Socket과 Stream Socket</title><link href="/blog/computersystem/datagram-stream-socket/" rel="alternate" type="text/html" title="Datagram Socket과 Stream Socket" /><published>2025-05-06T00:00:00+00:00</published><updated>2025-05-06T00:00:00+00:00</updated><id>/blog/computersystem/datagram-stream-socket</id><content type="html" xml:base="/blog/computersystem/datagram-stream-socket/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T08:36:08+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">8주차 퀴즈</title><link href="/blog/algorithm/8th-week/" rel="alternate" type="text/html" title="8주차 퀴즈" /><published>2025-05-06T00:00:00+00:00</published><updated>2025-05-06T00:00:00+00:00</updated><id>/blog/algorithm/8th-week</id><content type="html" xml:base="/blog/algorithm/8th-week/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#8주차-퀴즈" id="markdown-toc-8주차-퀴즈">8주차 퀴즈</a>    <ul>
+      <li><a href="#1-http-get-요청과-post-요청의-가장-큰-차이점은-무엇이며-이것이-요청-헤더나-데이터-전송에-어떤-영향을-미칩니까-1점" id="markdown-toc-1-http-get-요청과-post-요청의-가장-큰-차이점은-무엇이며-이것이-요청-헤더나-데이터-전송에-어떤-영향을-미칩니까-1점">1. HTTP GET 요청과 POST 요청의 가장 큰 차이점은 무엇이며, 이것이 요청 헤더나 데이터 전송에 어떤 영향을 미칩니까? (1점)</a></li>
+      <li><a href="#2-http-응답-코드-404의-의미는-무엇입니까-그리고-서버가-요청을-처리할-수-없을-때-반환하는-http-상태-코드는-무엇입니까-1점" id="markdown-toc-2-http-응답-코드-404의-의미는-무엇입니까-그리고-서버가-요청을-처리할-수-없을-때-반환하는-http-상태-코드는-무엇입니까-1점">2. HTTP 응답 코드 404의 의미는 무엇입니까? 그리고 서버가 요청을 처리할 수 없을 때 반환하는 HTTP 상태 코드는 무엇입니까? (1점)</a></li>
+      <li><a href="#3-파일-디스크립터file-descriptor란-무엇인지-간단히-설명하고-unixlinux-시스템에서-표준-입출력에러의-파일-디스크립터-번호를-쓰세요-1점" id="markdown-toc-3-파일-디스크립터file-descriptor란-무엇인지-간단히-설명하고-unixlinux-시스템에서-표준-입출력에러의-파일-디스크립터-번호를-쓰세요-1점">3. 파일 디스크립터(File Descriptor)란 무엇인지 간단히 설명하고 UNIX/Linux 시스템에서 표준 입출력/에러의 파일 디스크립터 번호를 쓰세요. (1점)</a></li>
+      <li><a href="#4-tcp에서의-3-way-handshake-절차를-설명하세요-1점" id="markdown-toc-4-tcp에서의-3-way-handshake-절차를-설명하세요-1점">4. TCP에서의 ‘3-way handshake’ 절차를 설명하세요. (1점)</a></li>
+      <li><a href="#5-tcp와-udp에서-패킷-손실-시-대처-방법에는-어떤-차이가-있나요-1점" id="markdown-toc-5-tcp와-udp에서-패킷-손실-시-대처-방법에는-어떤-차이가-있나요-1점">5. TCP와 UDP에서 패킷 손실 시 대처 방법에는 어떤 차이가 있나요? (1점)</a>        <ul>
+          <li><a href="#tcp" id="markdown-toc-tcp">TCP</a></li>
+          <li><a href="#udp" id="markdown-toc-udp">UDP</a></li>
+        </ul>
+      </li>
+      <li><a href="#6-다음-ansi-c-프로그램에서-출력되는-내용은-무엇인가요-1점" id="markdown-toc-6-다음-ansi-c-프로그램에서-출력되는-내용은-무엇인가요-1점">6. 다음 ANSI C 프로그램에서 출력되는 내용은 무엇인가요? (1점)</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="8주차-퀴즈">8주차 퀴즈</h2>
+
+<h3 id="1-http-get-요청과-post-요청의-가장-큰-차이점은-무엇이며-이것이-요청-헤더나-데이터-전송에-어떤-영향을-미칩니까-1점">1. HTTP GET 요청과 POST 요청의 가장 큰 차이점은 무엇이며, 이것이 요청 헤더나 데이터 전송에 어떤 영향을 미칩니까? (1점)</h3>
+
+<p>GET 요청은 데이터를 URL의 일부(query string)로 전송하지만 POST 요청은 데이터를 요청 본문(body)에 포함합니다.
+이 차이 때문에</p>
+
+<p>1)  GET 요청의 URL 길이에는 브라우저나 서버에 따라 제한이 있습니다. 이로 인해 전송할 수 있는 데이터의 양이 제한됩니다.</p>
+
+<p>2)  POST 요청은 ‘Content-Length’와 ‘Content-Type’ 같은 추가적인 헤더 정보를 필요로 합니다.</p>
+
+<h3 id="2-http-응답-코드-404의-의미는-무엇입니까-그리고-서버가-요청을-처리할-수-없을-때-반환하는-http-상태-코드는-무엇입니까-1점">2. HTTP 응답 코드 404의 의미는 무엇입니까? 그리고 서버가 요청을 처리할 수 없을 때 반환하는 HTTP 상태 코드는 무엇입니까? (1점)</h3>
+
+<p>HTTP 응답 코드 404는 “Not Found”를 의미합니다. 이 코드는 서버가 요청된 리소스를 찾을 수 없을 때 반환됩니다. 
+서버가 요청을 처리할 수 없을 때 반환하는 HTTP 상태 코드는 500입니다. 이 코드는 “Internal Server Error”를 나타냅니다.</p>
+
+<h3 id="3-파일-디스크립터file-descriptor란-무엇인지-간단히-설명하고-unixlinux-시스템에서-표준-입출력에러의-파일-디스크립터-번호를-쓰세요-1점">3. 파일 디스크립터(File Descriptor)란 무엇인지 간단히 설명하고 UNIX/Linux 시스템에서 표준 입출력/에러의 파일 디스크립터 번호를 쓰세요. (1점)</h3>
+
+<p>파일 디스크립터는 운영 체제에서 파일이나 다른 입출력 리소스에 대한 접근을 추상화하는데 사용되는 정수입니다. 파일 디스크립터를 통해 운영 체제는 파일, 파이프, 소켓 등 다양한 입출력 리소스를 일관된 방식으로 관리할 수 있습니다. 예를 들어, 파일을 열면 운영 체제는 해당 파일을 가리키는 파일 디스크립터를 프로그램에 제공합니다. UNIX/Linux 시스템에서 표준 입력의 파일 디스크립터 번호는 0, 표준 출력은 1, 그리고 표준 에러는 2입니다.</p>
+
+<h3 id="4-tcp에서의-3-way-handshake-절차를-설명하세요-1점">4. TCP에서의 ‘3-way handshake’ 절차를 설명하세요. (1점)</h3>
+
+<p>TCP의 ‘3-way handshake’는 연결 설정 과정에서 사용되는 절차이다. 이 과정은 다음과 같이 세 단계로 이루어진다:</p>
+
+<p>1)  클라이언트가 서버에 SYN(Synchronize) 패킷을 보내 연결 요청을 한다.</p>
+
+<p>2)  서버는 SYN-ACK(Synchronize-Acknowledge) 패킷으로 응답하여 연결 요청을 받았음을 알리고, 자신도 연결 준비가 되었음을 나타낸다.</p>
+
+<p>3)  클라이언트는 ACK(Acknowledge) 패킷을 서버에 보내 연결을 확정한다.</p>
+
+<h3 id="5-tcp와-udp에서-패킷-손실-시-대처-방법에는-어떤-차이가-있나요-1점">5. TCP와 UDP에서 패킷 손실 시 대처 방법에는 어떤 차이가 있나요? (1점)</h3>
+
+<h4 id="tcp">TCP</h4>
+
+<ul>
+  <li>
+    <p>TCP는 패킷 손실이 발생하면 자동으로 재전송 시도</p>
+  </li>
+  <li>
+    <p>수신자는 받은 패킷에 대해 확인 응답(ACK)을 보내고,</p>
+  </li>
+  <li>
+    <p>송신자는 ACK를 받지 못한 패킷을 재전송</p>
+  </li>
+</ul>
+
+<h4 id="udp">UDP</h4>
+
+<ul>
+  <li>
+    <p>반면, UDP는 패킷 손실에 대해 자체적으로 대처하지 않음</p>
+  </li>
+  <li>
+    <p>UDP는 확인 응답이나 재전송 기능이 없어, 패킷 손실이 발생하면 이를 어플리케이션 레벨에서 처리해야 함</p>
+  </li>
+</ul>
+
+<h3 id="6-다음-ansi-c-프로그램에서-출력되는-내용은-무엇인가요-1점">6. 다음 ANSI C 프로그램에서 출력되는 내용은 무엇인가요? (1점)</h3>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="c1"> </span><span class="cp">
+</span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> 
+<span class="p">{</span> 
+   <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">};</span> 
+   <span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> 
+   <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span> 
+   <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> 
+   <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> 
+   <span class="o">*</span><span class="p">(</span><span class="o">&amp;</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+=</span> <span class="mi">3</span><span class="p">;</span> 
+   <span class="n">printf</span><span class="p">(</span><span class="s">"%d, %d, %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span> 
+   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>출력값 : 10, 10, 14</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="algorithm" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/Algorithm.png" /><media:content medium="image" url="/assets/img/blog/postimage/Algorithm.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Datagram Socket과 Stream Socket</title><link href="/blog/computersystem/datagram-stream-socket/" rel="alternate" type="text/html" title="Datagram Socket과 Stream Socket" /><published>2025-05-06T00:00:00+00:00</published><updated>2025-05-06T00:00:00+00:00</updated><id>/blog/computersystem/datagram-stream-socket</id><content type="html" xml:base="/blog/computersystem/datagram-stream-socket/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#datagram-socket-udp-기반" id="markdown-toc-datagram-socket-udp-기반">Datagram Socket (UDP 기반)</a>    <ul>
       <li><a href="#datagram-socket-udp의-내부-동작" id="markdown-toc-datagram-socket-udp의-내부-동작">Datagram Socket (UDP)의 내부 동작</a></li>
     </ul>
@@ -3043,100 +3132,4 @@
                            </span><span class="err">복사│</span><span class="nv">code</span><span class="w"> </span><span class="nv">segment</span><span class="err">│</span><span class="w">    </span><span class="err">│</span><span class="w">        </span><span class="o">_</span><span class="nv">start</span><span class="w"> </span><span class="err">함수</span><span class="w"> </span><span class="err">실행</span><span class="w">        </span><span class="err">│</span><span class="w">     </span><span class="err">│</span><span class="w">   </span><span class="o">__</span><span class="nv">libc</span><span class="o">_</span><span class="nv">start</span><span class="o">_</span><span class="nv">main</span><span class="w"> </span><span class="err">함수</span><span class="w"> </span><span class="err">실행</span><span class="w">  </span><span class="err">│</span><span class="w">                </span><span class="o">-</span><span class="w"> </span><span class="err">사용자</span><span class="w"> </span><span class="err">수준의</span><span class="w"> </span><span class="nv">main</span><span class="w"> </span><span class="err">함수호출</span><span class="w">
                                </span><span class="err">└───────────┘</span><span class="w">     </span><span class="err">└──────────────────────────────┘</span><span class="w">       </span><span class="err">└──────────────────────────────┘</span><span class="w">                 </span><span class="o">-</span><span class="w"> </span><span class="nv">return</span><span class="err">값</span><span class="w"> </span><span class="err">처리</span><span class="w">
                                                                                                                                          </span><span class="o">-</span><span class="w"> </span><span class="err">필요한</span><span class="w"> </span><span class="err">경우</span><span class="w"> </span><span class="err">제어권을</span><span class="w"> </span><span class="err">커널로</span><span class="w"> </span><span class="err">넘겨줌</span><span class="w">
-</span></code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</title><link href="/blog/algorithm/pre-order-post-order/" rel="alternate" type="text/html" title="전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성" /><published>2025-04-16T00:00:00+00:00</published><updated>2025-04-16T00:00:00+00:00</updated><id>/blog/algorithm/pre-order-post-order</id><content type="html" xml:base="/blog/algorithm/pre-order-post-order/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#전위-순회와-후위-순회의-구조적인-연관성" id="markdown-toc-전위-순회와-후위-순회의-구조적인-연관성">전위 순회와 후위 순회의 구조적인 연관성</a>    <ul>
-      <li><a href="#표준-전위-순회-vs-변형-전위-순회" id="markdown-toc-표준-전위-순회-vs-변형-전위-순회">표준 전위 순회 vs 변형 전위 순회</a></li>
-      <li><a href="#변형-전위-순회를-뒤집으면" id="markdown-toc-변형-전위-순회를-뒤집으면">변형 전위 순회를 뒤집으면?</a></li>
-      <li><a href="#표준-전위-순회--변형-전위-순회--후위-순회-예제" id="markdown-toc-표준-전위-순회--변형-전위-순회--후위-순회-예제">표준 전위 순회 / 변형 전위 순회 / 후위 순회 예제</a></li>
-      <li><a href="#c언어-예제" id="markdown-toc-c언어-예제">C언어 예제</a></li>
-    </ul>
-  </li>
-</ul>
-
-<p>C언어를 통해 재귀 없이 Stack 2개를 활용하여 후위순회를 진행하는 코드를 보고 전위순회와 후위순회의 구조적 연관성이 있겠다는 생각이 들었다. 왜냐하면, 1개의 스택은 전위순회의 구조를 바꾼 형태였고 나머지 스택 하나는 그 한개의 스택을 역순으로 출력하기 위해 존재 했었기 때문이다.</p>
-
-<h2 id="전위-순회와-후위-순회의-구조적인-연관성">전위 순회와 후위 순회의 구조적인 연관성</h2>
-
-<p>먼저 결론부터 얘기하자면, <strong>전위 순회의 구조를 살짝 바꾸고 나온 결과를 뒤집으면 후위 순회 순서와 같아짐</strong></p>
-
-<h3 id="표준-전위-순회-vs-변형-전위-순회">표준 전위 순회 vs 변형 전위 순회</h3>
-
-<ul>
-  <li>
-    <p>표준 전위 순회 : (Root) → (Left) → (Right)</p>
-  </li>
-  <li>
-    <p>변형 전위 순회 : (Root) → (Right) → (Left)</p>
-  </li>
-</ul>
-
-<h3 id="변형-전위-순회를-뒤집으면">변형 전위 순회를 뒤집으면?</h3>
-
-<ul>
-  <li>
-    <p><strong>뒤집은</strong> 변형 전위 순회 : (Left) → (Right) → (Root)</p>
-  </li>
-  <li>
-    <p>표준 후위 순회 : (Left) → (Right) → (Root)</p>
-  </li>
-</ul>
-
-<h3 id="표준-전위-순회--변형-전위-순회--후위-순회-예제">표준 전위 순회 / 변형 전위 순회 / 후위 순회 예제</h3>
-
-<div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">        </span><span class="nv">A</span><span class="w">
-       </span><span class="o">/</span><span class="w"> </span><span class="err">\</span><span class="w">
-      </span><span class="nv">B</span><span class="w">   </span><span class="nb">C</span><span class="w">
-     </span><span class="o">/</span><span class="w"> </span><span class="err">\</span><span class="w">   </span><span class="err">\</span><span class="w">
-    </span><span class="nb">D</span><span class="w">   </span><span class="nb">E</span><span class="w">   </span><span class="nv">F</span><span class="w">
-</span></code></pre></div></div>
-
-<ul>
-  <li>표준 전위 순회 (Root → Left → Right)
-    <div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">A</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">D</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">E</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">C</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">F</span><span class="w">
-</span></code></pre></div>    </div>
-  </li>
-  <li>변형 전위 순회 (Root → Right → Left)
-    <div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">A</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">C</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">F</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">E</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">D</span><span class="w">
-</span></code></pre></div>    </div>
-  </li>
-  <li>후위 순회 (Left → Right → Root)
-    <div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">D</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">E</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">B</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">F</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nb">C</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nv">A</span><span class="w">
-</span></code></pre></div>    </div>
-  </li>
-</ul>
-
-<h3 id="c언어-예제">C언어 예제</h3>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">postOrderIterativeS2</span><span class="p">(</span><span class="n">BSTNode</span> <span class="o">*</span><span class="n">root</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-		<span class="k">return</span><span class="p">;</span>
-
-	<span class="n">Stack</span> <span class="o">*</span><span class="n">stk1</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Stack</span><span class="p">));</span>
-	<span class="n">Stack</span> <span class="o">*</span><span class="n">stk2</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">Stack</span><span class="p">));</span>
-	<span class="n">stk1</span><span class="o">-&gt;</span><span class="n">top</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-	<span class="n">stk2</span><span class="o">-&gt;</span><span class="n">top</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-
-	<span class="n">push</span><span class="p">(</span><span class="n">stk1</span><span class="p">,</span> <span class="n">root</span><span class="p">);</span>
-
-	<span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">isEmpty</span><span class="p">(</span><span class="n">stk1</span><span class="p">))</span>
-	<span class="p">{</span>
-		<span class="n">BSTNode</span> <span class="o">*</span><span class="n">cur</span> <span class="o">=</span> <span class="n">pop</span><span class="p">(</span><span class="n">stk1</span><span class="p">);</span>
-		<span class="n">push</span><span class="p">(</span><span class="n">stk2</span><span class="p">,</span> <span class="n">cur</span><span class="p">);</span>
-
-		<span class="k">if</span> <span class="p">(</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">)</span>
-			<span class="n">push</span><span class="p">(</span><span class="n">stk1</span><span class="p">,</span> <span class="n">cur</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">);</span>
-		<span class="k">if</span> <span class="p">(</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">)</span>
-			<span class="n">push</span><span class="p">(</span><span class="n">stk1</span><span class="p">,</span> <span class="n">cur</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">);</span>
-	<span class="p">}</span>
-
-	<span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">isEmpty</span><span class="p">(</span><span class="n">stk2</span><span class="p">))</span>
-	<span class="p">{</span>
-		<span class="n">BSTNode</span> <span class="o">*</span><span class="n">cur</span> <span class="o">=</span> <span class="n">pop</span><span class="p">(</span><span class="n">stk2</span><span class="p">);</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">"%d, "</span><span class="p">,</span> <span class="n">cur</span><span class="o">-&gt;</span><span class="n">item</span><span class="p">);</span>
-	<span class="p">}</span>
-
-	<span class="n">free</span><span class="p">(</span><span class="n">stk1</span><span class="p">);</span>
-	<span class="n">free</span><span class="p">(</span><span class="n">stk2</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="algorithm" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/Algorithm.png" /><media:content medium="image" url="/assets/img/blog/postimage/Algorithm.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</span></code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[링킹(linking)은 여러 개의 코드와 데이터를 모아서 연결하여 메모리에 로드될 수 있고 실행될 수 있는 한 개의 파일로 만드는 작업이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
