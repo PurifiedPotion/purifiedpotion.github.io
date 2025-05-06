@@ -19,4 +19,4 @@ hide_last_modified: true
 | TCP (Transmission Control Protocol) | 신뢰성 있는 연결 지향형 데이터 전송 (패킷 손실 검사 및 재전송) | 전송 계층 |
 | UDP (User Datagram Protocol) | 빠르지만 신뢰성 없는 연결less형 데이터 전송 | 전송 계층 |
 
-TCP/ IP 게층 모델에 관하여서는 
+TCP/ IP 게층 모델에 관하여서는 [OSI 7 계층(OSI7 Layer)](./osi-7-layer){:.heading.flip-title}의 하단에 잠깐 다루니 참고하도록 하자
