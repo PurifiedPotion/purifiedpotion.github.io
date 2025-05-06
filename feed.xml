@@ -1,5 +1,228 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-05T14:41:46+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
-</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">OSI 7 계층(OSI7 Layer)</title><link href="/blog/computersystem/osi-7-layer/" rel="alternate" type="text/html" title="OSI 7 계층(OSI7 Layer)" /><published>2025-05-05T00:00:00+00:00</published><updated>2025-05-05T00:00:00+00:00</updated><id>/blog/computersystem/osi-7-layer</id><content type="html" xml:base="/blog/computersystem/osi-7-layer/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T00:48:44+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">IP Layer</title><link href="/blog/computersystem/ip-layer/" rel="alternate" type="text/html" title="IP Layer" /><published>2025-05-05T00:00:00+00:00</published><updated>2025-05-05T00:00:00+00:00</updated><id>/blog/computersystem/ip-layer</id><content type="html" xml:base="/blog/computersystem/ip-layer/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#ip-layer란" id="markdown-toc-ip-layer란">IP Layer란?</a></li>
+  <li><a href="#왜-필요한가" id="markdown-toc-왜-필요한가">왜 필요한가?</a></li>
+  <li><a href="#핵심-기능-상세" id="markdown-toc-핵심-기능-상세">핵심 기능 상세</a></li>
+  <li><a href="#ipv4-헤더-구조-한눈에-보기" id="markdown-toc-ipv4-헤더-구조-한눈에-보기">IPv4 헤더 구조 한눈에 보기</a></li>
+  <li><a href="#흐름-예시-간단-시나리오" id="markdown-toc-흐름-예시-간단-시나리오">흐름 예시 (간단 시나리오)</a></li>
+  <li><a href="#개발자-관점--유용한-cli" id="markdown-toc-개발자-관점--유용한-cli">개발자 관점 : 유용한 CLI</a></li>
+  <li><a href="#자주-헷갈리는-점-정리" id="markdown-toc-자주-헷갈리는-점-정리">자주 헷갈리는 점 정리</a></li>
+  <li><a href="#마무리" id="markdown-toc-마무리">마무리</a></li>
+</ul>
+
+<h2 id="ip-layer란">IP Layer란?</h2>
+
+<p>IP (Internet Protocol) Layer는 <strong>TCP/IP 4계층 모델</strong>에서 네트워크 계층(Network Layer)에 해당하며, OSI 7계층으로 치면 <strong>3계층</strong>임
+가장 핵심적인 역할은 “<strong>패킷을 한 네트워크에서 다른 네트워크로 최적의 경로를 따라 전달</strong>”하는 것—즉 <strong>논리적 주소(=IP 주소)</strong> 기반의 <strong>라우팅</strong></p>
+
+<h2 id="왜-필요한가">왜 필요한가?</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">문제</th>
+      <th style="text-align: center">IP Layer가 제공하는 해결책</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">물리적으로 떨어져 있는 수많은 LAN·WAN을 하나의 ‘인터넷’으로 묶어야 함</td>
+      <td style="text-align: center">전 세계적으로 유일한 주소 체계(IPv4/IPv6)와 계층적 라우팅</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">이기종 네트워크(이더넷, Wi-Fi, 5G, 광망 …)간 데이터 전달</td>
+      <td style="text-align: center">서로 다른 링크 계층을 통일된 패킷 형식(IP Datagram)으로 캡슐화</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">큰 데이터그램이 링크 MTU보다 클 때</td>
+      <td style="text-align: center">Fragmentation &amp; Reassembly(IPv4만 IPv6은 PMTU 디스커버리 사용)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">전송 중 오류·혼잡·노드 고장 감지</td>
+      <td style="text-align: center">ICMP로 오류·제어 메시지 전달</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="핵심-기능-상세">핵심 기능 상세</h2>
+
+<ol>
+  <li>
+    <p>논리적 주소 지정 (Addressing)</p>
+
+    <ul>
+      <li>
+        <p>IPv4 : 32-bit, dotted-decimal(192.0.2.4)</p>
+      </li>
+      <li>
+        <p>IPv6 : 128-bit, hexadecimal 콜론 표기(2001:db8::1)</p>
+      </li>
+      <li>
+        <p>네트워크/호스트 부분을 사용해 계층적(aggregation) 라우팅을 가능케 함</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>패킷화 (Encapsulation)</p>
+
+    <ul>
+      <li>상위 계층(TCP, UDP, ICMP 등) 세그먼트를 IP Header + Payload 형태로 감싼 뒤 하위 링크 계층(이더넷 프레임 등)에 다시 캡슐화</li>
+    </ul>
+  </li>
+  <li>
+    <p>라우팅 (Routing &amp; Forwarding)</p>
+
+    <ul>
+      <li>
+        <p>Forwarding : 라우터가 목적지 주소를 보고 다음 홉(next-hop) 인터페이스로 패킷을 넘김</p>
+      </li>
+      <li>
+        <p>Routing : 라우터들이 RIP, OSPF, BGP 같은 라우팅 프로토콜로 테이블을 동적으로 구축</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>분할 및 재조합 (Fragmentation/Reassembly)</p>
+
+    <ul>
+      <li>
+        <p>IPv4 헤더의 Identification, Flags, Fragment Offset 필드로 조각화 추적</p>
+      </li>
+      <li>
+        <p>IPv6은 기본적으로 조각화를 금지, 발신 호스트가 Path MTU Discovery로 크기를 조정</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>품질과 오류 제어</p>
+
+    <ul>
+      <li>
+        <p>IPv4 Header Checksum으로 1-hop 오류 검출(IPv6에는 없음 : 링크 계층/전송 계층에 맡김)</p>
+      </li>
+      <li>
+        <p>ICMP를 통해 “Destination Unreachable”, “Time Exceeded” 등 메시지 반환</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="ipv4-헤더-구조-한눈에-보기">IPv4 헤더 구조 한눈에 보기</h2>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+</span><span class="gi">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span class="err">|Ver|</span> IHL|DSCP|ECN|         Total Length                        |
+<span class="gi">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span class="err">|</span>        Identification         |Flags|      Fragment Offset   |
+<span class="gi">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span class="err">|</span>  TTL  | Protocol |    Header Checksum                         |
+<span class="gi">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span class="err">|</span>                       Source Address                          |
+<span class="gi">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span class="err">|</span>                    Destination Address                        |
+<span class="gi">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span><span class="err">|</span>                    Options      (0 ~ 40 bytes)                |
+<span class="gi">+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</span></code></pre></div></div>
+
+<ul>
+  <li>
+    <p>Ver/IHL : 버전(4)과 헤더 길이(32비트 word 수)</p>
+  </li>
+  <li>
+    <p>Total Length : 헤더 + 데이터 전체 길이</p>
+  </li>
+  <li>
+    <p>TTL : 홉 수 제한(루프 방지)</p>
+  </li>
+  <li>
+    <p>Protocol : 상위 프로토콜 번호(TCP = 6, UDP = 17…)</p>
+  </li>
+  <li>
+    <p>Options : Timestamp, Record Route 등 거의 사용 안함</p>
+  </li>
+</ul>
+
+<p>IPv6는 고정 40바이트 헤더에 별도 확장 헤더 체인을 사용해 단순화/고속화함</p>
+
+<h2 id="흐름-예시-간단-시나리오">흐름 예시 (간단 시나리오)</h2>
+
+<ol>
+  <li>
+    <p>192.168.1.10:5000 → 142.250.78.14:443(TCP)</p>
+  </li>
+  <li>
+    <p>TCP 세그먼트가 IP Datagram으로 캡슐화</p>
+  </li>
+  <li>
+    <p>로컬 라우터가 목적지 네트워크(AS15169)를 향한 default route 선택</p>
+  </li>
+  <li>
+    <p>중간 BGP 라우터들이 TTL을 1씩 감소시키며 패킷 포워딩</p>
+  </li>
+  <li>
+    <p>Google 프런트엔드 서버에서 TCP ACK, HTTP/2 응답 → 역방향 경로로 전송</p>
+  </li>
+</ol>
+
+<h2 id="개발자-관점--유용한-cli">개발자 관점 : 유용한 CLI</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">작업</th>
+      <th style="text-align: center">IPv4</th>
+      <th style="text-align: center">IPv6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">라우팅 테이블 확인</td>
+      <td style="text-align: center">ip route show</td>
+      <td style="text-align: center">ip -6 route show</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">패킷 흐름 추적</td>
+      <td style="text-align: center">traceroute 8.8.8.8</td>
+      <td style="text-align: center">traceroute -6 2001:4860:4860::8888</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ICMP Echo</td>
+      <td style="text-align: center">ping -c 4 host</td>
+      <td style="text-align: center">ping6 -c 4 host</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="자주-헷갈리는-점-정리">자주 헷갈리는 점 정리</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">오해</th>
+      <th style="text-align: center">실제</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">“IP = 인터넷 전체 프로토콜 스택”</td>
+      <td style="text-align: center">IP는 한 계층일 뿐, 아래(링크)/위(전송)/위의 위(애플리케이션) 계층이 따로 있다</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">“IP가 연결 지향”</td>
+      <td style="text-align: center">IP는 비연결형, 비신뢰성∙Best-Effort. 신뢰성은 TCP가 따로 보장</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">“IPv6는 단순히 주소 길이만 4배”</td>
+      <td style="text-align: center">헤더 단순화, Neighbour Discovery, 확장 헤더, IPsec 의무 지원 등 근본적 개선 포함</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="마무리">마무리</h2>
+
+<p>IP Layer는 <strong>인터넷을 ‘한 덩어리’로 보이게 해 주는 추상화</strong>입니다. 여기서 다룬 주소 지정, 라우팅, 조각화, ICMP 등의 기초가 잡혀 있으면 TCP, UDP, TLS 같은 상위 계층을 배울 때 훨씬 수월해짐</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[IP (Internet Protocol) Layer는 TCP/IP 4계층 모델에서 네트워크 계층(Network Layer)에 해당하며, OSI 7계층으로 치면 3계층입니다. 가장 핵심적인 역할은 “패킷을 한 네트워크에서 다른 네트워크로 최적의 경로를 따라 전달”하는 것—즉 논리적 주소(=IP 주소) 기반의 라우팅입니다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">OSI 7 계층(OSI7 Layer)</title><link href="/blog/computersystem/osi-7-layer/" rel="alternate" type="text/html" title="OSI 7 계층(OSI7 Layer)" /><published>2025-05-05T00:00:00+00:00</published><updated>2025-05-05T00:00:00+00:00</updated><id>/blog/computersystem/osi-7-layer</id><content type="html" xml:base="/blog/computersystem/osi-7-layer/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#한눈에-보는-osi-7계층" id="markdown-toc-한눈에-보는-osi-7계층">한눈에 보는 OSI 7계층</a></li>
   <li><a href="#계층별-세부사항" id="markdown-toc-계층별-세부사항">계층별 세부사항</a></li>
   <li><a href="#왜-tcpip-4계층-모델을-더-많이-쓸까" id="markdown-toc-왜-tcpip-4계층-모델을-더-많이-쓸까">왜 TCP/IP 4계층 모델을 더 많이 쓸까?</a></li>
@@ -2523,453 +2746,4 @@
 
 <p>발표에 관해서는 명시적 list 코드의 refactoring에 대해서 다루었고 발표는 잘 마무리 되었다. 발표시간에 다른 조 발표를 보았는데, 저번주 보다 훨씬 도움되는 내용들이 많아서 집중도 있게 보게 되었다.</p>
 
-<p>1주가 끝난 후의 느낀점으로는, 컴퓨터에 대해서 깊이 있게 빠져 들었던것이 좋았지만, 많이 구현했던 다른 분들과 비교했을 때, 조금 뒤쳐진다는 느낌을 받아서 아쉬웠다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="diary" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%80.jpg" /><media:content medium="image" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%80.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">gcc(GNU Compiler Collection)</title><link href="/blog/c/gcc/" rel="alternate" type="text/html" title="gcc(GNU Compiler Collection)" /><published>2025-04-13T00:00:00+00:00</published><updated>2025-04-13T00:00:00+00:00</updated><id>/blog/c/gcc</id><content type="html" xml:base="/blog/c/gcc/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#gcc란" id="markdown-toc-gcc란">gcc란?</a></li>
-  <li><a href="#gcc의-기본-사용법" id="markdown-toc-gcc의-기본-사용법">gcc의 기본 사용법</a>    <ul>
-      <li><a href="#가장-기본적인-사용" id="markdown-toc-가장-기본적인-사용">가장 기본적인 사용</a></li>
-      <li><a href="#실행" id="markdown-toc-실행">실행</a></li>
-    </ul>
-  </li>
-  <li><a href="#컴파일-단계의-gcc-내부-동작" id="markdown-toc-컴파일-단계의-gcc-내부-동작">컴파일 단계의 gcc 내부 동작</a></li>
-  <li><a href="#자주-쓰는-옵션들" id="markdown-toc-자주-쓰는-옵션들">자주 쓰는 옵션들</a></li>
-  <li><a href="#기타-유용한-gcc-관련-도구들" id="markdown-toc-기타-유용한-gcc-관련-도구들">기타 유용한 gcc 관련 도구들</a>    <ul>
-      <li><a href="#makefile이란" id="markdown-toc-makefile이란">Makefile이란?</a>        <ul>
-          <li><a href="#구조예제" id="markdown-toc-구조예제">구조(예제)</a></li>
-          <li><a href="#사용-방법" id="markdown-toc-사용-방법">사용 방법</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#docker에서-c-파일을-컴파일하고-실행하기" id="markdown-toc-docker에서-c-파일을-컴파일하고-실행하기">Docker에서 C 파일을 컴파일하고 실행하기</a>    <ul>
-      <li><a href="#구조간단-예제" id="markdown-toc-구조간단-예제">구조(간단 예제)</a></li>
-      <li><a href="#실행간단-예제" id="markdown-toc-실행간단-예제">실행(간단 예제)</a></li>
-      <li><a href="#구조복잡한-예제-makefile-추가-사용" id="markdown-toc-구조복잡한-예제-makefile-추가-사용">구조(복잡한 예제, Makefile 추가 사용)</a></li>
-      <li><a href="#실행복잡한-예제-makefile-추가-사용" id="markdown-toc-실행복잡한-예제-makefile-추가-사용">실행(복잡한 예제, Makefile 추가 사용)</a></li>
-    </ul>
-  </li>
-  <li><a href="#자주-쓰는-dockerfile-팁" id="markdown-toc-자주-쓰는-dockerfile-팁">자주 쓰는 Dockerfile 팁</a></li>
-  <li><a href="#정리" id="markdown-toc-정리">정리</a></li>
-</ul>
-
-<h2 id="gcc란">gcc란?</h2>
-
-<p>gcc는 GNU Compiler Collection의 약자로, 원래는 C 언어 <strong>컴파일러(GNU C Compiler)</strong>로 시작했지만 지금은 C, C++, Objective-C, Fortran, Ada, Go 등 다양한 언어를 지원하는 컴파일러 모음이야</p>
-
-<ul>
-  <li>
-    <p>C 언어 컴파일러로 가장 유명하고, 리눅스에서 표준처럼 사용돼</p>
-  </li>
-  <li>
-    <p>윈도우에서도 MinGW, WSL, 또는 MSYS2 등을 통해 사용할 수 있어</p>
-  </li>
-  <li>
-    <p>오픈소스이고 성능도 좋기 때문에 많은 시스템과 프로젝트에서 쓰이고 있어</p>
-  </li>
-</ul>
-
-<h2 id="gcc의-기본-사용법">gcc의 기본 사용법</h2>
-
-<h3 id="가장-기본적인-사용">가장 기본적인 사용</h3>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc hello.c <span class="nt">-o</span> hello
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>hello.c : 소스 파일</p>
-  </li>
-  <li>
-    <p>o hello : 출력 파일 이름을 hello로 설정</p>
-  </li>
-</ul>
-
-<h3 id="실행">실행</h3>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./hello
-</code></pre></div></div>
-
-<h2 id="컴파일-단계의-gcc-내부-동작">컴파일 단계의 gcc 내부 동작</h2>
-
-<p>C 코드를 실행 파일로 만들기 위해 gcc는 다음 네 가지 단계를 거쳐:</p>
-
-<ol>
-  <li>전처리(Preprocessing) :</li>
-</ol>
-
-<ul>
-  <li>#include, #define 등의 전처리 지시문 처리</li>
-</ul>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc <span class="nt">-E</span> hello.c <span class="nt">-o</span> hello.i
-</code></pre></div></div>
-
-<ol>
-  <li>컴파일(Compilation) :</li>
-</ol>
-
-<ul>
-  <li>C 코드를 어셈블리어로 변환</li>
-</ul>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc <span class="nt">-S</span> hello.i <span class="nt">-o</span> hello.s
-</code></pre></div></div>
-
-<ol>
-  <li>어셈블(Assembly) :</li>
-</ol>
-
-<ul>
-  <li>어셈블리어 코드를 기계어로 변환 (객체 파일 .o)</li>
-</ul>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc <span class="nt">-c</span> hello.s <span class="nt">-o</span> hello.o
-</code></pre></div></div>
-
-<ol>
-  <li>링크(Linking) :</li>
-</ol>
-
-<ul>
-  <li>라이브러리와 함께 실행 파일을 생성</li>
-</ul>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc hello.o <span class="nt">-o</span> hello
-</code></pre></div></div>
-
-<p>✅ 위 단계를 한 줄 명령어로 묶은 게 그냥 gcc hello.c -o hello 라고 보면 돼!</p>
-
-<h2 id="자주-쓰는-옵션들">자주 쓰는 옵션들</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">옵션</th>
-      <th style="text-align: center">설명</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">-o <file></file></td>
-      <td style="text-align: center">출력 파일 이름 지정</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">-wall</td>
-      <td style="text-align: center">모든 경고 출력</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">-g</td>
-      <td style="text-align: center">디버깅 정보 포함 (gdb로 디버깅할 때 필요)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">-O0, -O1, -O2, -O3</td>
-      <td style="text-align: center">최적화 수준 설정</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">-std=c99, -std=c11 등</td>
-      <td style="text-align: center">C 표준 지정</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">-c</td>
-      <td style="text-align: center">링크하지 않고 객체 파일까지만 생성</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">-I<dir></dir></td>
-      <td style="text-align: center">헤더 파일 포함 디렉토리 지정</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">-L<dir></dir></td>
-      <td style="text-align: center">라이브러리 디렉토리 지정</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">-l<lib></lib></td>
-      <td style="text-align: center">라이브러리 링크 (-lm은 수학 라이브러리 libm.so를 의미)</td>
-    </tr>
-  </tbody>
-</table>
-
-<ol>
-  <li>예제 : 디버깅용 컴파일
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc <span class="nt">-g</span> hello.c <span class="nt">-o</span> hello
-</code></pre></div>    </div>
-  </li>
-  <li>예제 : 최적화 적용
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc <span class="nt">-O2</span> hello.c <span class="nt">-o</span> hello
-</code></pre></div>    </div>
-  </li>
-  <li>예제 : 여러 파일 컴파일
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc main.c utils.c <span class="nt">-o</span> myprogram
-</code></pre></div>    </div>
-  </li>
-  <li>예제 : 객체 파일 따로 만들기
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc <span class="nt">-c</span> main.c <span class="nt">-o</span> main.o
-gcc <span class="nt">-c</span> utils.c <span class="nt">-o</span> utils.o
-gcc main.o utils.o <span class="nt">-o</span> myprogram
-↑여러 객체 파일들을 하나의 실행파일로 합치는 과정<span class="o">(</span>함수 참조 등 이 단계에서 해결됨, 예 : main.c가 utils.c의 함수 호출<span class="o">)</span>
-</code></pre></div>    </div>
-  </li>
-</ol>
-
-<ul>
-  <li>4번 예제 같은 경우, 저 3개의 코드를 실행한 후, utils.c 만 수정한다면, 아래처럼 코드 실행이 필요함</li>
-</ul>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>utils.c 수정됨
-↓
-gcc <span class="nt">-c</span> utils.c
-↓ 
-gcc main.o utils.o <span class="nt">-o</span> myprogram<span class="o">(</span>링크<span class="o">)</span>
-</code></pre></div></div>
-
-<h2 id="기타-유용한-gcc-관련-도구들">기타 유용한 gcc 관련 도구들</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">도구</th>
-      <th style="text-align: center">설명</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">make</td>
-      <td style="text-align: center">컴파일 자동화 도구(Makefile 사용)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">gdb</td>
-      <td style="text-align: center">GNU debugger</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">valgrind</td>
-      <td style="text-align: center">메모리 누수 검사</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">objdump, nm, readelf</td>
-      <td style="text-align: center">바이너리 분석 도구들</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="makefile이란">Makefile이란?</h3>
-
-<p>Makefile은 C 프로젝트 빌드 자동화 도구인 make 명령어의 설정 파일이야. 컴파일 명령을 일일이 타이핑 안 해도 <strong>make</strong>만 치면 자동으로 빌드해줘!</p>
-
-<h4 id="구조예제">구조(예제)</h4>
-
-<p>디렉토리 구조</p>
-<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">myproject</span><span class="o">/</span>
-<span class="err">├──</span> <span class="nt">main</span><span class="nc">.c</span>
-<span class="err">├──</span> <span class="nt">utils</span><span class="nc">.c</span>
-<span class="err">├──</span> <span class="nt">utils</span><span class="nc">.h</span>
-<span class="err">├──</span> <span class="nt">Makefile</span>
-</code></pre></div></div>
-
-<p>C 예시 파일(main.c)</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">"utils.h"</span><span class="cp">
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">print_hello</span><span class="p">();</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>C 예시 파일(utils.c)</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span>
-<span class="kt">void</span> <span class="nf">print_hello</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">"Hello from utils!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>C 예시 파일(utils.h)</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#ifndef UTILS_H
-#define UTILS_H
-</span>
-<span class="kt">void</span> <span class="nf">print_hello</span><span class="p">();</span>
-
-<span class="cp">#endif
-</span></code></pre></div></div>
-
-<p>Makefile 예시</p>
-<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 변수 설정
-</span><span class="nv">CC</span> <span class="o">=</span> gcc
-<span class="nv">CFLAGS</span> <span class="o">=</span> <span class="nt">-Wall</span> <span class="nt">-g</span>
-
-<span class="c"># 타겟: 의존 파일들
-# 명령 (앞에 tab 필수!)
-</span><span class="nl">all</span><span class="o">:</span> <span class="nf">main</span>
-
-<span class="nl">main</span><span class="o">:</span> <span class="nf">main.o utils.o</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-o</span> main main.o utils.o
-
-<span class="nl">main.o</span><span class="o">:</span> <span class="nf">main.c utils.h</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> main.c
-
-<span class="nl">utils.o</span><span class="o">:</span> <span class="nf">utils.c utils.h</span>
-	<span class="nv">$(CC)</span> <span class="nv">$(CFLAGS)</span> <span class="nt">-c</span> utils.c
-
-<span class="nl">clean</span><span class="o">:</span>
-	<span class="nb">rm</span> <span class="nt">-f</span> <span class="k">*</span>.o main
-</code></pre></div></div>
-
-<h4 id="사용-방법">사용 방법</h4>
-
-<ul>
-  <li>bash에서 아래 실행</li>
-</ul>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make        <span class="c"># main 실행파일 빌드</span>
-make clean  <span class="c"># 중간파일 삭제</span>
-</code></pre></div></div>
-
-<ul>
-  <li>gdb로 디버깅하기(C 프로그램을 한 줄씩 실행해보거나 변수 추적), 위에 Makefile 보면 아래와 같은 코드가 보일거야</li>
-</ul>
-
-<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CFLAGS</span> <span class="o">=</span> <span class="nt">-Wall</span> <span class="nt">-g</span>
-</code></pre></div></div>
-
-<ul>
-  <li>디버깅 실행은 bash에서</li>
-</ul>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb ./main
-</code></pre></div></div>
-
-<h2 id="docker에서-c-파일을-컴파일하고-실행하기">Docker에서 C 파일을 컴파일하고 실행하기</h2>
-
-<h3 id="구조간단-예제">구조(간단 예제)</h3>
-
-<p>C 예시 파일(hello.c)</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">"Hello, Dockerized C!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Dockerfile 예시</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp"># 1. gcc가 포함된 베이스 이미지 사용
-</span><span class="n">FROM</span> <span class="n">gcc</span><span class="o">:</span><span class="n">latest</span>
-
-<span class="cp"># 2. 작업 디렉토리 설정
-</span><span class="n">WORKDIR</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">app</span>
-
-<span class="cp"># 3. 현재 디렉토리의 파일을 컨테이너로 복사
-</span><span class="n">COPY</span> <span class="p">.</span> <span class="p">.</span>
-
-<span class="cp"># 4. hello.c 파일 컴파일
-</span><span class="n">RUN</span> <span class="n">gcc</span> <span class="o">-</span><span class="n">o</span> <span class="n">hello</span> <span class="n">hello</span><span class="p">.</span><span class="n">c</span>
-
-<span class="cp"># 5. 컨테이너 실행 시 hello 실행
-</span><span class="n">CMD</span> <span class="p">[</span><span class="s">"./hello"</span><span class="p">]</span>
-</code></pre></div></div>
-
-<h3 id="실행간단-예제">실행(간단 예제)</h3>
-
-<ol>
-  <li>도커 이미지 빌드
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker build <span class="nt">-t</span> my-c-program <span class="nb">.</span>
-</code></pre></div>    </div>
-  </li>
-  <li>컨테이너 실행
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">--rm</span> my-c-program
-</code></pre></div>    </div>
-  </li>
-</ol>
-
-<ul>
-  <li>출력 결과</li>
-</ul>
-
-<div class="language-mathematica highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">Hello</span><span class="o">,</span><span class="w"> </span><span class="nv">Dockerized</span><span class="w"> </span><span class="nb">C</span><span class="o">!</span><span class="w">
-</span></code></pre></div></div>
-
-<h3 id="구조복잡한-예제-makefile-추가-사용">구조(복잡한 예제, Makefile 추가 사용)</h3>
-
-<p>디렉토리 구조</p>
-<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">my-c-project</span><span class="o">/</span>
-<span class="err">├──</span> <span class="nt">main</span><span class="nc">.c</span>
-<span class="err">├──</span> <span class="nt">utils</span><span class="nc">.c</span>
-<span class="err">├──</span> <span class="nt">utils</span><span class="nc">.h</span>
-<span class="err">├──</span> <span class="nt">Makefile</span>
-<span class="err">├──</span> <span class="nt">Dockerfile</span>
-</code></pre></div></div>
-
-<p>Dockerfile 예시</p>
-<div class="language-Dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">FROM</span><span class="s"> gcc:latest</span>
-
-<span class="k">WORKDIR</span><span class="s"> /app</span>
-
-<span class="k">COPY</span><span class="s"> . .</span>
-
-<span class="k">RUN </span>make
-
-<span class="k">CMD</span><span class="s"> ["./app"]</span>
-</code></pre></div></div>
-
-<p>Makefile 예시</p>
-<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">all</span><span class="o">:</span> <span class="nf">app</span>
-
-<span class="nl">app</span><span class="o">:</span> <span class="nf">main.o utils.o</span>
-	gcc <span class="nt">-o</span> app main.o utils.o
-
-<span class="nl">main.o</span><span class="o">:</span> <span class="nf">main.c utils.h</span>
-	gcc <span class="nt">-c</span> main.c
-
-<span class="nl">utils.o</span><span class="o">:</span> <span class="nf">utils.c utils.h</span>
-	gcc <span class="nt">-c</span> utils.c
-
-<span class="nl">clean</span><span class="o">:</span>
-	<span class="nb">rm</span> <span class="nt">-f</span> <span class="k">*</span>.o app
-</code></pre></div></div>
-
-<h3 id="실행복잡한-예제-makefile-추가-사용">실행(복잡한 예제, Makefile 추가 사용)</h3>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker build <span class="nt">-t</span> my-make-c-app <span class="nb">.</span>
-docker run <span class="nt">--rm</span> my-make-c-app
-</code></pre></div></div>
-
-<h2 id="자주-쓰는-dockerfile-팁">자주 쓰는 Dockerfile 팁</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">용도</th>
-      <th style="text-align: center">예시</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">디버깅용 빌드</td>
-      <td style="text-align: center">RUN gcc -g -o hello hello.c</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">최적화 빌드</td>
-      <td style="text-align: center">RUN gcc -02 hello hello.c</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">빌드 캐시 활용</td>
-      <td style="text-align: center">COPY hello.c → Run gcc … 순서 중요</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">헤더/라이브러리 추가</td>
-      <td style="text-align: center">apt-get install로 필요 패키지 추가</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="정리">정리</h2>
-
-<ul>
-  <li>
-    <p>gcc는 컴파일러의 왕이자, 오픈소스 생태계의 심장</p>
-  </li>
-  <li>
-    <p>그냥 C 코드 실행파일 만드는 툴이 아니라, 시스템 프로그래밍, 임베디드, 운영체제 개발까지 두루 쓰여</p>
-  </li>
-  <li>
-    <p>옵션을 자유자재로 다루면 성능 개선이나 디버깅도 더 수월해져</p>
-  </li>
-</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="c" /><category term="gcc" /><category term="GNU" /><category term="Compiler" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/C.png" /><media:content medium="image" url="/assets/img/blog/postimage/C.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>1주가 끝난 후의 느낀점으로는, 컴퓨터에 대해서 깊이 있게 빠져 들었던것이 좋았지만, 많이 구현했던 다른 분들과 비교했을 때, 조금 뒤쳐진다는 느낌을 받아서 아쉬웠다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="diary" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%80.jpg" /><media:content medium="image" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%80.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
