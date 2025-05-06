@@ -1,6 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T01:23:37+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T01:37:31+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">HTTP, TCP, UDP</title><link href="/blog/computersystem/http-tcp-udp/" rel="alternate" type="text/html" title="HTTP, TCP, UDP" /><published>2025-05-06T00:00:00+00:00</published><updated>2025-05-06T00:00:00+00:00</updated><id>/blog/computersystem/http-tcp-udp</id><content type="html" xml:base="/blog/computersystem/http-tcp-udp/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#개념-요약" id="markdown-toc-개념-요약">개념 요약</a></li>
+  <li><a href="#각-프로토콜-상세-비교" id="markdown-toc-각-프로토콜-상세-비교">각 프로토콜 상세 비교</a>    <ul>
+      <li><a href="#1-http" id="markdown-toc-1-http">1. HTTP</a></li>
+      <li><a href="#2-tcp" id="markdown-toc-2-tcp">2. TCP</a></li>
+      <li><a href="#3-udp" id="markdown-toc-3-udp">3. UDP</a></li>
+    </ul>
+  </li>
+  <li><a href="#계층별-차이-예시로-이해하기" id="markdown-toc-계층별-차이-예시로-이해하기">계층별 차이 예시로 이해하기</a></li>
+  <li><a href="#정리-요약" id="markdown-toc-정리-요약">정리 요약</a></li>
 </ul>
 
 <h2 id="개념-요약">개념 요약</h2>
@@ -32,7 +40,154 @@
   </tbody>
 </table>
 
-<p>TCP/ IP 게층 모델에 관하여서는 <a href="./osi-7-layer" class="heading flip-title">OSI 7 계층(OSI7 Layer)</a>의 하단에 잠깐 다루니 참고하도록 하자</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[HTTP, TCP, UDP는 네트워크 통신에서 자주 등장하는 개념들이고, 이들은 OSI 7계층 모델 또는 TCP/IP 4계층 모델의 서로 다른 계층에 위치해 있어. 아래에 각 개념과 계층별 차이점을 정리해줄게]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">IP Layer</title><link href="/blog/computersystem/ip-layer/" rel="alternate" type="text/html" title="IP Layer" /><published>2025-05-05T00:00:00+00:00</published><updated>2025-05-05T00:00:00+00:00</updated><id>/blog/computersystem/ip-layer</id><content type="html" xml:base="/blog/computersystem/ip-layer/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<p>TCP/ IP 게층 모델에 관하여서는 <a href="./osi-7-layer" class="heading flip-title">OSI 7 계층(OSI7 Layer)</a>의 하단에 잠깐 다루니 참고하도록 하자</p>
+
+<h2 id="각-프로토콜-상세-비교">각 프로토콜 상세 비교</h2>
+
+<h3 id="1-http">1. HTTP</h3>
+
+<ul>
+  <li>
+    <p>계층 : application 계층</p>
+  </li>
+  <li>
+    <p>특징 :</p>
+
+    <ul>
+      <li>
+        <p>client-server 구조 (browser가 server에 요청)</p>
+      </li>
+      <li>
+        <p>요청/응답 방식(GET, POST 등)</p>
+      </li>
+      <li>
+        <p>TCP 위에서 동작함 (즉, HTTP는 TCP를 기반으로 함)</p>
+      </li>
+      <li>
+        <p>예 : 웹사이트 접속, API 호출</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="2-tcp">2. TCP</h3>
+
+<ul>
+  <li>
+    <p>계층 : 전송 계층</p>
+  </li>
+  <li>
+    <p>특징 :</p>
+
+    <ul>
+      <li>
+        <p>연결 지향 (3-way handshake로 연결 수립)</p>
+      </li>
+      <li>
+        <p>데이터 순서 보장</p>
+      </li>
+      <li>
+        <p>손실된 패킷 재전송</p>
+      </li>
+      <li>
+        <p>속도는 상대적으로 느림</p>
+      </li>
+      <li>
+        <p>예 : 웹서핑, 이메일, 파일 다운로드</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="3-udp">3. UDP</h3>
+
+<ul>
+  <li>
+    <p>계층 : 전송 계층</p>
+  </li>
+  <li>
+    <p>특징 :</p>
+
+    <ul>
+      <li>
+        <p>비연결형 (handshake 없이 즉시 전송)</p>
+      </li>
+      <li>
+        <p>데이터 순서/전송 보장 없음</p>
+      </li>
+      <li>
+        <p>빠름, 지연 최소화</p>
+      </li>
+      <li>
+        <p>예 : 실시간 스트리밍, VoIP, 게임</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="계층별-차이-예시로-이해하기">계층별 차이 예시로 이해하기</h2>
+
+<p>웹 브라우저로 웹 페이지 접속 시 흐름 :</p>
+
+<ol>
+  <li>
+    <p>HTTP 요청 생성 → (애플리케이션 계층)</p>
+  </li>
+  <li>
+    <p>TCP 연결 수립 후 데이터 전송 → (전송 계층)</p>
+  </li>
+  <li>
+    <p>IP 주소 기반으로 목적지 라우팅 → (인터넷 계층)</p>
+  </li>
+  <li>
+    <p>Ethernet/Wi-Fi를 통해 실제 전송 → (네트워크 인터페이스 계층)</p>
+  </li>
+</ol>
+
+<h2 id="정리-요약">정리 요약</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">HTTP</th>
+      <th style="text-align: center">TCP</th>
+      <th style="text-align: center">UDP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">계층</td>
+      <td style="text-align: center">application</td>
+      <td style="text-align: center">전송</td>
+      <td style="text-align: center">전송</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">연결 방식</td>
+      <td style="text-align: center">연결 필요 (TCP 기반)</td>
+      <td style="text-align: center">연결 지향</td>
+      <td style="text-align: center">비연결형</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">신뢰성</td>
+      <td style="text-align: center">TCP에 의존</td>
+      <td style="text-align: center">높음 (재전송, 순서 보장)</td>
+      <td style="text-align: center">낮음 (손실 허용)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">속도</td>
+      <td style="text-align: center">중간</td>
+      <td style="text-align: center">느림</td>
+      <td style="text-align: center">빠름</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">용도</td>
+      <td style="text-align: center">웹, API</td>
+      <td style="text-align: center">웹, 이메일</td>
+      <td style="text-align: center">스트리밍, 게임, DNS</td>
+    </tr>
+  </tbody>
+</table>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[HTTP, TCP, UDP는 네트워크 통신에서 자주 등장하는 개념들이고, 이들은 OSI 7계층 모델 또는 TCP/IP 4계층 모델의 서로 다른 계층에 위치해 있어. 아래에 각 개념과 계층별 차이점을 정리해줄게]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">IP Layer</title><link href="/blog/computersystem/ip-layer/" rel="alternate" type="text/html" title="IP Layer" /><published>2025-05-05T00:00:00+00:00</published><updated>2025-05-05T00:00:00+00:00</updated><id>/blog/computersystem/ip-layer</id><content type="html" xml:base="/blog/computersystem/ip-layer/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#ip-layer란" id="markdown-toc-ip-layer란">IP Layer란?</a></li>
   <li><a href="#왜-필요한가" id="markdown-toc-왜-필요한가">왜 필요한가?</a></li>
   <li><a href="#핵심-기능-상세" id="markdown-toc-핵심-기능-상세">핵심 기능 상세</a></li>
