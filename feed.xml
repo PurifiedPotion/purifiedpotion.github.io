@@ -1,5 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T00:48:44+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
-</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">IP Layer</title><link href="/blog/computersystem/ip-layer/" rel="alternate" type="text/html" title="IP Layer" /><published>2025-05-05T00:00:00+00:00</published><updated>2025-05-05T00:00:00+00:00</updated><id>/blog/computersystem/ip-layer</id><content type="html" xml:base="/blog/computersystem/ip-layer/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T01:19:35+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">HTTP, TCP, UDP</title><link href="/blog/computersystem/http-tcp-udp/" rel="alternate" type="text/html" title="HTTP, TCP, UDP" /><published>2025-05-06T00:00:00+00:00</published><updated>2025-05-06T00:00:00+00:00</updated><id>/blog/computersystem/http-tcp-udp</id><content type="html" xml:base="/blog/computersystem/http-tcp-udp/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#개념-요약" id="markdown-toc-개념-요약">개념 요약</a></li>
+</ul>
+
+<h2 id="개념-요약">개념 요약</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">프로토콜</th>
+      <th style="text-align: center">설명</th>
+      <th style="text-align: center">위치하는 계층 (TCP/IP 기준)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">HTTP (HyperText Transfer Protocol)</td>
+      <td style="text-align: center">웹 브라우저와 서버 간의 데이터 전송 (ex. HTML, 이미지 요청 등)</td>
+      <td style="text-align: center">애플리케이션 계층</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">TCP (Transmission Control Protocol)</td>
+      <td style="text-align: center">신뢰성 있는 연결 지향형 데이터 전송 (패킷 손실 검사 및 재전송)</td>
+      <td style="text-align: center">전송 계층</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">UDP (User Datagram Protocol)</td>
+      <td style="text-align: center">빠르지만 신뢰성 없는 연결less형 데이터 전송</td>
+      <td style="text-align: center">전송 계층</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>TCP/ IP 게층 모델에 관하여서는</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[HTTP, TCP, UDP는 네트워크 통신에서 자주 등장하는 개념들이고, 이들은 OSI 7계층 모델 또는 TCP/IP 4계층 모델의 서로 다른 계층에 위치해 있어. 아래에 각 개념과 계층별 차이점을 정리해줄게]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">IP Layer</title><link href="/blog/computersystem/ip-layer/" rel="alternate" type="text/html" title="IP Layer" /><published>2025-05-05T00:00:00+00:00</published><updated>2025-05-05T00:00:00+00:00</updated><id>/blog/computersystem/ip-layer</id><content type="html" xml:base="/blog/computersystem/ip-layer/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#ip-layer란" id="markdown-toc-ip-layer란">IP Layer란?</a></li>
   <li><a href="#왜-필요한가" id="markdown-toc-왜-필요한가">왜 필요한가?</a></li>
   <li><a href="#핵심-기능-상세" id="markdown-toc-핵심-기능-상세">핵심 기능 상세</a></li>
@@ -1130,7 +1163,7 @@
   <li>free 수행에 관해서 직접적인지 또는 간접적인지에 따라서 달라진다</li>
 </ul>
 
-<p><strong>Malloc</strong>에 관하여서는 이전에 포스팅한 [동적 메모리 할당(Dynamic memory allocation)]{:.heading.flip-title} 을 참조하면 된다</p>
+<p><strong>Malloc</strong>에 관하여서는 이전에 포스팅한 <a href="../../c/malloc-calloc-realloc" class="heading flip-title">동적 메모리 할당(Dynamic memory allocation)</a> 을 참조하면 된다</p>
 
 <p>여기서 다룰 내용은 <strong>Explicit allocator</strong>인 malloc 할당을 직접 구현할 예정이다</p>
 
@@ -2710,40 +2743,4 @@
 
 <p>Python을 통해 알고리즘을 배우는 마지막 주 4주차에서는 많은 것을 얻어간것 같다. 알고리즘을 많이 배우진 않았지만, Computer System쪽에서 지식을 많이 얻게 되는 한 주였다. <strong>Computer Systems A Programmer’s Perspective</strong> 책 3장 전체를 다 보라는 과제가 있었고 아쉽게도 다 보진 못했지만, 레지스터에서 어떻게 인수를 저장하고 또 메모리에서 값을 받아오는 행위의 세부적인걸 알게 되었다.</p>
 
-<p>알고리즘으로는 동적 프로그래밍과 그리디 알고리즘을 배웠다. 이상한게 2차원 배열의 움직임을 구현하는 것은 나에게 굉장히 어려웠는데, 시간이 해결을 해준건지 시험에서 나온 DP문제를 2차원 배열과 DPS 방식으로 풀게 되었다. 물론 백준 시간 초과가 나오게 되면서 문제를 풀었다고 할 수 없긴 했지만, 그래도 꾸준히 공부를 해왔던 것에 보람을 느끼게 되었다. 앞으로 난관을 마주하게 되더라도 이런 경험에서 나왔듯이 시간이 해결해줄 것이라고 믿고 앞으로 나아갈것 같다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="diary" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%803.jpg" /><media:content medium="image" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%803.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">크래프톤 정글에서 두번째 달을 보낸 후</title><link href="/blog/diary/second-month/" rel="alternate" type="text/html" title="크래프톤 정글에서 두번째 달을 보낸 후" /><published>2025-04-14T00:00:00+00:00</published><updated>2025-04-14T00:00:00+00:00</updated><id>/blog/diary/second-month</id><content type="html" xml:base="/blog/diary/second-month/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#5주차" id="markdown-toc-5주차">5주차</a></li>
-  <li><a href="#6주차" id="markdown-toc-6주차">6주차</a></li>
-  <li><a href="#7주차" id="markdown-toc-7주차">7주차</a></li>
-</ul>
-
-<p>벌써 1달이라는 시간이 지났다. 아무래도 블로그 운영이 취업 목적과도 연관이 있어서 꾸준히 배운것에 대해 포스팅은 진행했지만, 배운것 외에 내가 느낀점에 대해서는 포스팅하지 않았고 필요도 느끼지 못했다. 그런데, 결국에 배운것은 모두 GPT가 알려준 것이어서 블로그 포스팅이 의미없지 않냐는 다른 정글러분의 의견에 생각이 바뀌어서 정글 5개월 동안 1개월마다 회고록을 써보고자 한다. 먼저 시간대별로 느꼈던점을 기술하는것이 정리가 잘 될거 같아서 시간대별로 내가 느낀점을 적도록 하겠다.</p>
-
-<h2 id="5주차">5주차</h2>
-
-<p>파이썬으로 알고리즘을 배우는 첫 달이 끝나고, 이제는 C언어로 컴퓨터에게 깊이 빠져드는 첫 주가 되었다. 과제로 주어진 것은 Linked List/Stack and Queue/Binary Tree/Binary Search Tree 알고리즘 기반으로 문제를 푸는 것이었다.</p>
-
-<p>C언어를 잘 몰랐기에, 먼저 Youtube의 6시간짜리 C 언어 기초 동영상으로 시작을 했다. 졸려가는걸 버티면서 3~4시간쯤 보았을 때, 다른 정들러분들이 문제를 시작한걸 보고 남들보다 진도가 조금 뒤쳐진다는걸 깨달았다. 그래서 우선 기초는 여기까지 마무리하고 문제로 넘어갔다.</p>
-
-<p>문제로 넘어간 뒤에 2시간 동안 코드해석 하는 데에만 쏟았는데, 이 2시간이 의미가 있었다. 언어 해석하는데에 수월해지는 시간이었고 문제를 바로 풀 수 있었다. 5주차를 마무리 하면서 쓰는 결론으로는 Binary Tree 빼고 모든 문제는 다 풀 수 있었다. 당연히 문제를 본인 스스로 다 풀지는 못하였지만, 내 스스로 50%정도는 스스로 풀 수 있었다.</p>
-
-<p>팀원분들과 첫 Core-time을 가졌을때, 많은 것을 얻을 수 있었다. 두분 모두 열심히 준비를 해주셔서 한 주를 잘 시작할 수 있었다. 다만, 아쉽게도 불가피한 사정으로 인해서 두 분 모두 시간을 온전히 투자할 수 있는 상황이 아니었어서 중간에 흐지부지 했었던점이 조금 아쉬웠다. 그럼에도 불구하고 5주차 때 열심히 했어서 많이 도움이 되었다.</p>
-
-<h2 id="6주차">6주차</h2>
-
-<p>6주차에서는 C언어로 Red-Black Tree를 구현하는 과제가 주어졌다. 여태까지 미리 미리 보아두라고 했었지만, 그러지 않았기 때문에, 나에게는 불똥이 떨어진 셈이다. 그나마 다행이었던 것은 모두 Red-Black Tree에 대해서 많이 알지 못했던 것이다. 그래서 같이 시작하면 됐다.</p>
-
-<p>불똥이 떨어졌기 때문에, 트리에 대한 이해를 빠르게 해야만 했다. 첫날에 Red-Black Tree에 대해서 개념을 먼저 다지자고 팀원들과 얘기했고, 빠르게 공부를 시작했다. 아쉽게도 첫날에는 삽입에 대해서만 개념을 다루었고 그 다음날에 삭제까지 개념을 다지면서 마무리가 되었다.</p>
-
-<p>개념을 다지고 이제 C언어로 구현을 해야 하는데, 막막한 느낌이 없지 않아 있었고 알고리즘(Introduction to ALGORITHMS)책을 통해 시작할 수 있게 되었다. 해당 책을 통해 많은 도움을 받았고 직접 구현하기 보다는 이미 짜여진 코드를 이해하는게 더 중요하다고 생각이 되었다. 그 이유에 대해서는, 처음으로 트리를 구현하는 것이었기 때문에, 처음부터 RBTree를 구현하는 것은 많은 시간을 쓸거라고 생각했고, 다른 과제들 또한 있었기 때문에 타협을 본 셈이다.</p>
-
-<p>C언어로 RBTree 구현을 모두 마치고 CS:APP 책 8장과 9장을 읽어야 했다. 결론적으로 다 읽지는 못하였지만, 8장에서 예외처리를 위한 시그널과 9장에서 가상 메모리를 쓰는 이유에 대해 배울 수 있게 되었다. 팀원들과 가졌던 Core-time에서 내가 알고 있던 내용과 팀원들이 알고있던 내용에 다른점이 존재했다. 내가 알고 있던 내용이 맞았고 정정을 해주었던 점이 기억에 남는다. 앞으로도 깊게 파고드는 습관을 유지하면서 공부하고자 하는 계기를 만들었다. 그럼에도 불구하고, 과제를 모두 마치지 못한 첫 주가 되었고 많이 아쉬웠다. 완수를 못한점에 대해 만회하고자 차주부터 열심히 하고자 한다.</p>
-
-<h2 id="7주차">7주차</h2>
-
-<p>Malloc함수를 직접 구현하는 주차가 시작 되었다. 전주에 CS:APP 읽는 과제에 대해 완수를 못했던점이 나에게는 걸리는 부분이어서, 이번 주차에 만회를 하고 싶었다. 아쉽게도 만회는 못하였다.. 대신에 이번주에 필요한 CS:APP 9.9장에 대해서는 완벽하게 이해했다. 9.9장도 쉽지 않았는데, 내 공부법에 문제가 있다고 판단 후, 동료에게서 youtube영상을 보라고 하는 조언을 듣고 내 공부법을 바꾸었다. CS:APP 저자의 영상이어서 믿고 볼 수 있었고, 핵심만 얘기해줬기 때문에, 빠르게 9.9장에 대해서 이해할 수 있었다.</p>
-
-<p>아쉽게도 팀원분들이 불가피하게 초반에 참여를 못하게 되었다. 그래서 C언어로 코드 구현하는것을 조금 늦게 시작하게 되었다. 그럼에도 불구하고 명시적 list로 구현을 완수할 수 있었다. 내가 스스로 구현할려고 해보았지만, segmentation error가 떴었고 동료에 도움 요청했을 때, gdb로도 error를 찾는것이 힘들고 Google AI Studio 통해서 물어보는것이 더 좋다고 들었다. 그래서 Google AI Studio 통해서 물어보았고, 문제되는 부분들에 대해서 수정을 하였다. 명시적 list로 구현했더니 묵시적 list + next-fit 보다 1점 높아지는 결과가 나오게 되었다. 여기서 명시적 list에서는 best-fit이 제일 효율이 좋다고 들었지만, 수요일 저녁때 완성이 되어서 목요일 발표를 위해 추가 작업은 진행하지 못하였다.</p>
-
-<p>발표에 관해서는 명시적 list 코드의 refactoring에 대해서 다루었고 발표는 잘 마무리 되었다. 발표시간에 다른 조 발표를 보았는데, 저번주 보다 훨씬 도움되는 내용들이 많아서 집중도 있게 보게 되었다.</p>
-
-<p>1주가 끝난 후의 느낀점으로는, 컴퓨터에 대해서 깊이 있게 빠져 들었던것이 좋았지만, 많이 구현했던 다른 분들과 비교했을 때, 조금 뒤쳐진다는 느낌을 받아서 아쉬웠다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="diary" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%80.jpg" /><media:content medium="image" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%80.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>알고리즘으로는 동적 프로그래밍과 그리디 알고리즘을 배웠다. 이상한게 2차원 배열의 움직임을 구현하는 것은 나에게 굉장히 어려웠는데, 시간이 해결을 해준건지 시험에서 나온 DP문제를 2차원 배열과 DPS 방식으로 풀게 되었다. 물론 백준 시간 초과가 나오게 되면서 문제를 풀었다고 할 수 없긴 했지만, 그래도 꾸준히 공부를 해왔던 것에 보람을 느끼게 되었다. 앞으로 난관을 마주하게 되더라도 이런 경험에서 나왔듯이 시간이 해결해줄 것이라고 믿고 앞으로 나아갈것 같다.</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="diary" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%803.jpg" /><media:content medium="image" url="/assets/img/blog/postimage/%ED%81%AC%EB%9E%98%ED%94%84%ED%86%A4%EC%A0%95%EA%B8%803.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
