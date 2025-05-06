@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T01:37:31+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-06T01:41:32+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">HTTP, TCP, UDP</title><link href="/blog/computersystem/http-tcp-udp/" rel="alternate" type="text/html" title="HTTP, TCP, UDP" /><published>2025-05-06T00:00:00+00:00</published><updated>2025-05-06T00:00:00+00:00</updated><id>/blog/computersystem/http-tcp-udp</id><content type="html" xml:base="/blog/computersystem/http-tcp-udp/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#개념-요약" id="markdown-toc-개념-요약">개념 요약</a></li>
   <li><a href="#각-프로토콜-상세-비교" id="markdown-toc-각-프로토콜-상세-비교">각 프로토콜 상세 비교</a>    <ul>
@@ -40,7 +40,7 @@
   </tbody>
 </table>
 
-<p>TCP/ IP 게층 모델에 관하여서는 <a href="./osi-7-layer" class="heading flip-title">OSI 7 계층(OSI7 Layer)</a>의 하단에 잠깐 다루니 참고하도록 하자</p>
+<p>TCP/ IP 게층 모델에 관하여서는 <a href="../../computersystem/osi-7-layer" class="heading flip-title">OSI 7 계층(OSI7 Layer)</a>의 하단에 잠깐 다루니 참고하도록 하자</p>
 
 <h2 id="각-프로토콜-상세-비교">각 프로토콜 상세 비교</h2>
 
