@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-05-11T09:42:19+00:00',
+    INDEX_KEY: 'index--2025-05-11T13:39:07+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -301,8 +301,36 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
   </li>
   <li><a href="#소켓-인터페이스" id="markdown-toc-소켓-인터페이스">소켓 인터페이스</a>    <ul>
       <li><a href="#소켓-주소-구조체" id="markdown-toc-소켓-주소-구조체">소켓 주소 구조체</a></li>
+      <li><a href="#socket-함수" id="markdown-toc-socket-함수">socket 함수</a></li>
+      <li><a href="#connect-함수" id="markdown-toc-connect-함수">connect 함수</a></li>
+      <li><a href="#bind-함수" id="markdown-toc-bind-함수">bind 함수</a></li>
+      <li><a href="#listen-함수" id="markdown-toc-listen-함수">listen 함수</a></li>
+      <li><a href="#accept-함수" id="markdown-toc-accept-함수">accept 함수</a>        <ul>
+          <li><a href="#듣기-식별자와-연결-식별자" id="markdown-toc-듣기-식별자와-연결-식별자">듣기 식별자와 연결 식별자</a></li>
+        </ul>
+      </li>
+      <li><a href="#호스트와-서비스-변환getaddrinfo--getnameinfo" id="markdown-toc-호스트와-서비스-변환getaddrinfo--getnameinfo">호스트와 서비스 변환(getaddrinfo &amp; getnameinfo)</a>        <ul>
+          <li><a href="#getaddrinfo-함수" id="markdown-toc-getaddrinfo-함수">getaddrinfo 함수</a></li>
+          <li><a href="#getnameinfo-함수" id="markdown-toc-getnameinfo-함수">getnameinfo 함수</a></li>
+        </ul>
+      </li>
+      <li><a href="#open_clientfd함수" id="markdown-toc-open_clientfd함수">open_clientfd함수</a></li>
+      <li><a href="#open_listenfd함수" id="markdown-toc-open_listenfd함수">open_listenfd함수</a></li>
     </ul>
   </li>
+  <li><a href="#echo-client와-server" id="markdown-toc-echo-client와-server">Echo client와 server</a></li>
+  <li><a href="#웹-기초" id="markdown-toc-웹-기초">웹 기초</a>    <ul>
+      <li><a href="#웹-컨텐츠" id="markdown-toc-웹-컨텐츠">웹 컨텐츠</a></li>
+      <li><a href="#동적-컨텐츠의-처리" id="markdown-toc-동적-컨텐츠의-처리">동적 컨텐츠의 처리</a></li>
+    </ul>
+  </li>
+  <li><a href="#소형-웹-서버tiny-web-server" id="markdown-toc-소형-웹-서버tiny-web-server">소형 웹 서버(Tiny web server)</a></li>
+  <li><a href="#소형-웹-서버tiny-web-server--프록시-서버" id="markdown-toc-소형-웹-서버tiny-web-server--프록시-서버">소형 웹 서버(Tiny web server) + 프록시 서버</a>    <ul>
+      <li><a href="#웹-프록시란" id="markdown-toc-웹-프록시란">웹 프록시란?</a></li>
+    </ul>
+  </li>
+  <li><a href="#프록시-서버" id="markdown-toc-프록시-서버">프록시 서버</a></li>
+  <li><a href="#프록시-서버-쓰레딩과-캐싱-기능-추가" id="markdown-toc-프록시-서버-쓰레딩과-캐싱-기능-추가">프록시 서버 쓰레딩과 캐싱 기능 추가</a></li>
 </ul>
 
 <p>흥미로운 것은 모든 네트워크 응용들은 동일한 기본적인 프로그래밍 모델에 기초하고 있으며, 이들은 비슷한 전체 논리 구조를 가지며, 동일한 프로그래밍 인터페이스를 사용한다는 점이다. 개념들을 설명하고 난 후 개념들을 모두 연결해서 아주 작지만 실제로 동작하는 웹 서버를 개발할 것이다.</p>
@@ -525,7 +553,9 @@ linux&gt; nslookup ics.cs.cmu.edu
 
 <h2 id="소켓-인터페이스">소켓 인터페이스</h2>
 
-<p>소켓 인터페이스는 네트워크 응용을 만들기 위한 Unix I/O 함수들과 함께 사용되는 함수들의 집합이다.</p>
+<p>소켓 인터페이스는 네트워크 응용을 만들기 위한 Unix I/O 함수들과 함께 사용되는 함수들의 집합이다. 이것은 모든 Unix 변종, 윈동, 매킨토시 시스템을 포함하는 대부분의 현대 시스템에서 구현되었다. 아래와 같은 그림은 전형적인 client-server transaction의 문맥에서 소켓 인터페이스의 개요를 보여준다.</p>
+
+<p><img src="/assets/img/blog/computerscience/socketinterfaceoverview.png" alt="소켓 인터페이스 기반 네트워크 응용 프로그램의 개요" /></p>
 
 <h3 id="소켓-주소-구조체">소켓 주소 구조체</h3>
 
@@ -535,7 +565,7 @@ linux&gt; nslookup ics.cs.cmu.edu
   <li>Unix 프로그램에서는 network도 파일처럼 여겨진다.</li>
 </ul>
 
-<p>인터넷 소켓 주소는 아래 코드와 같이</p>
+<p>인터넷 소켓 주소는 아래 코드와 같이 프로토콜에 특화된 구조체로, 모든 포인터를 포괄적인 구조체로 캐스팅하도록 정의하는 것이었다.</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* IP socket address structure */</span>
 <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="p">{</span>
@@ -550,6 +580,1430 @@ linux&gt; nslookup ics.cs.cmu.edu
 <span class="kt">uint16_t</span> <span class="n">sa_family</span><span class="p">;</span> <span class="cm">/* Protocol family */</span>
 <span class="kt">char</span> <span class="n">sa_data</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span> <span class="cm">/* Address data */</span>
 <span class="p">};</span>
+</code></pre></div></div>
+
+<p>위에 두가지 구조체가 등장하는데, 첫번째 구조체는 IPv4전용 주소 구조체이며, 두번째 구조체는 TCP, IPv6, IPv4, UDP 등 범용적으로 사용할 수 있는 구조체이다.</p>
+
+<p>첫번째 구조체에서 두번째 구조체로 캐스팅할 필요가 있을 떄, 아래와 같은 타입을 사용한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="n">SA</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="socket-함수">socket 함수</h3>
+
+<p><strong>Client</strong>와 <strong>server</strong>는 소켓 식별자를 생성하기 위해 socket 함수를 사용한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="kt">int</span> <span class="nf">socket</span><span class="p">(</span><span class="kt">int</span> <span class="n">domain</span><span class="p">,</span> <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="kt">int</span> <span class="n">protocol</span><span class="p">);</span>
+
+<span class="cm">/* Returns: nonnegative descriptor if OK, −1 on error */</span>
+</code></pre></div></div>
+
+<p>음이 아닌 정수를 반환하며, 이 정수는 식별자다. 이 식별자로 커널 내부의 소켓 자료구조를 찾아갈 수 있어서 프로그래머에게는 핸들(handle) 역할을 함</p>
+
+<h3 id="connect-함수">connect 함수</h3>
+
+<p><strong>Client</strong>는 connect함수를 호출해서 server와의 연결을 수립한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="kt">int</span> <span class="nf">connect</span><span class="p">(</span><span class="kt">int</span> <span class="n">clientfd</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span>
+<span class="n">socklen_t</span> <span class="n">addrlen</span><span class="p">);</span>
+
+<span class="cm">/* Returns: 0 if OK, −1 on error */</span>
+<span class="o">~~~</span><span class="n">c</span>
+
+<span class="n">connect</span> <span class="err">함수는</span> <span class="err">소켓</span> <span class="err">주소</span> <span class="n">addr</span><span class="err">의</span> <span class="err">서버와</span> <span class="err">인터넷</span> <span class="err">연결을</span> <span class="err">시도하며</span><span class="p">,</span> <span class="n">addrlen</span><span class="err">은</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">sockaddr_in</span><span class="p">)</span><span class="err">이</span> <span class="err">된다</span><span class="p">.</span> <span class="n">connect</span><span class="err">함수는</span> <span class="err">연결이</span> <span class="err">성공할</span> <span class="err">때까지</span> <span class="err">블록되어</span> <span class="err">있거나</span> <span class="err">에러가</span> <span class="err">발생한다</span><span class="p">.</span> <span class="err">만일</span> <span class="err">성공이라면</span><span class="p">,</span> <span class="n">clientfd</span> <span class="err">식별자는</span> <span class="err">이제</span> <span class="err">읽거나</span> <span class="err">쓸</span> <span class="err">준비가</span> <span class="err">되었으며</span><span class="p">,</span> <span class="err">이</span> <span class="err">연결은</span> <span class="err">다음과</span> <span class="err">같은</span> <span class="err">소켓</span> <span class="err">쌍으로</span> <span class="err">규정된다</span><span class="p">.</span>
+
+<span class="o">~~~</span><span class="n">c</span>
+<span class="p">(</span><span class="n">x</span><span class="o">:</span><span class="n">y</span><span class="p">,</span> <span class="n">addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="o">:</span><span class="n">addr</span><span class="p">.</span><span class="n">sin_port</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="bind-함수">bind 함수</h3>
+
+<p>남아 있는 소켓 함수 bind, listen, accept는 server가 client와 연결을 수립하기 위해 사용한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="kt">int</span> <span class="nf">bind</span><span class="p">(</span><span class="kt">int</span> <span class="n">sockfd</span><span class="p">,</span> <span class="k">const</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span>
+<span class="n">socklen_t</span> <span class="n">addrlen</span><span class="p">);</span>
+
+<span class="cm">/* Returns: 0 if OK, −1 on error */</span>
+</code></pre></div></div>
+
+<p>bind 함수는 kernel에게 addr에 있는 server의 소켓 주소를 소켓 식별자 sockfd와 연결하라고 물어본다.</p>
+
+<h3 id="listen-함수">listen 함수</h3>
+
+<p>client는 연결 요청을 개시하는 능동적 개체이다. server는 client로부터의 연결 요청을 기다리는 수동적 개체이다. 그래서 socket함수가 함수가 만든 식별자는 한 연결의 클라이언트 쪽 끝에서 존재하는 능동 소켓에 대응된다. 서버는 listen함수를 호출해서 이 식별자를 client 대신에 server가 사용하게 될 것이라고 알려준다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="kt">int</span> <span class="nf">listen</span><span class="p">(</span><span class="kt">int</span> <span class="n">sockfd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">backlog</span><span class="p">);</span>
+
+<span class="cm">/* Returns: 0 if OK, −1 on error */</span> 
+</code></pre></div></div>
+
+<p>listen 함수는 sockfd를 능동 소켓에서 듣기 소켓으로 변환하며, 듣기 소켓은 client로부터의 연결 요청을 승락할 수 있다.</p>
+
+<h3 id="accept-함수">accept 함수</h3>
+
+<p>서버는 accept함수를 호출해서 client로부터의 연결 요청을 기다린다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="kt">int</span> <span class="nf">accept</span><span class="p">(</span><span class="kt">int</span> <span class="n">listenfd</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">addrlen</span><span class="p">);</span>
+
+<span class="cm">/* Returns: nonnegative connected descriptor if OK, −1 on error */</span>
+</code></pre></div></div>
+
+<p>accept함수는 client로부터의 연결 요청이 듣기 식별자 listenfd에 도달하기를 기다리고, 그 후에 addr 내의 client의 소켓 주소를 채우고, Unix I/O 함수들을 사용해서 client와 통신하기 위해 사용될 수 있는 연결 식별자를 리턴한다.</p>
+
+<h4 id="듣기-식별자와-연결-식별자">듣기 식별자와 연결 식별자</h4>
+
+<p>듣기 식별자와 연결 식별자 사이의 구분은 많은 학생들을 혼란스럽게 한다. 듣기 식별자는 client 연결 요청에 대해 끝점으로서의 역할을 한다. 이것은 대개 한 번 생성되며, 서버가 살아있는 동안 계속 존재한다. 연결 식별자는 client와 server 사이에 성립된 연결의 끝점이다. 이것은 server가 연결 요청을 수락할 때마다 생성되며, server가 client에 서비스하는 동안에만 존재한다.</p>
+
+<p>accept함수의 flow를 그림을 통해서 설명해 보겠다. 듣기 식별자와 연결 식별자 구분에 도움이 될 것이다.</p>
+
+<p><img src="/assets/img/blog/computerscience/listeningandconnecteddescriptor.png" alt="듣기와 연결 식별자의 역할" /></p>
+
+<ol>
+  <li>
+    <p>server는 accept를 호출하고, 이것은 연결 요청이 읽기 식별자에 도달하기를 기다리며, 명확하게 하기 위해서 이것을 식별자 3이라고 가정한다. 식별자 0 ~ 2는 표준 파일들을 위해 배정되어 있다는 점을 기억하라.</p>
+  </li>
+  <li>
+    <p>client는 connect함수를 호출하고, 이것은 listenfd로 연결 요청을 보낸다.</p>
+  </li>
+  <li>
+    <p>accept함수는 새로운 연결 식별자 connfd(이것은 식별자 4라고 가정한다)를 오픈하고, clientfd와 connfd 사이의 연결을 수립하고 응용에 connfd를 리턴한다. client는 또한 connect에서 return하고, 이 지점에서 client와 server는 clientfd와 connfd를 각각 읽고 쓰는 방법으로 data를 주고받을 수 있다.</p>
+  </li>
+</ol>
+
+<h3 id="호스트와-서비스-변환getaddrinfo--getnameinfo">호스트와 서비스 변환(getaddrinfo &amp; getnameinfo)</h3>
+
+<p>리눅스는 getaddrinfo와 getnameinfo라고 하는 강력한 함수들을 제공하는데, 소켓 interface와 함께 이용될 때 매우 유용하다. 또한 우리가 특정 IP 프로토콜의 버전에 의존하지 않는 네트워크 프로그램을 작성하게 해준다.</p>
+
+<h4 id="getaddrinfo-함수">getaddrinfo 함수</h4>
+
+<p>getaddrinfo함수는 host이름, host주소, service이름, port번호의 스트링 표시를 소켓 주소 구조체로 변환한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;sys/types.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;netdb.h&gt;</span><span class="cp">
+</span><span class="kt">int</span> <span class="nf">getaddrinfo</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">host</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">service</span><span class="p">,</span>
+<span class="k">const</span> <span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">*</span><span class="n">hints</span><span class="p">,</span>
+<span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">**</span><span class="n">result</span><span class="p">);</span>
+
+<span class="cm">/* Returns: 0 if OK, nonzero error code on error */</span>
+
+<span class="kt">void</span> <span class="nf">freeaddrinfo</span><span class="p">(</span><span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">*</span><span class="n">result</span><span class="p">);</span>
+<span class="n">Returns</span><span class="o">:</span> <span class="n">nothing</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">gai_strerror</span><span class="p">(</span><span class="kt">int</span> <span class="n">errcode</span><span class="p">);</span>
+
+<span class="cm">/* Returns: error message */</span>
+</code></pre></div></div>
+
+<p>host와 service(소켓 주소의 두 개의 구성요소)가 주어지면, getaddrinfo는 각각이 host와 service에 대응되는 소켓 주소 구조체를 가리키는 addrinfo 구조체의 연결리스트를 가리키는 <strong>result(pointer)를 return</strong>한다. result로 부터의 연결 리스트는 아래 사진과 같다.</p>
+
+<p><img src="/assets/img/blog/computerscience/getaddrinfolinkedlist.png" alt="getaddrinfo result의 자료구조" /></p>
+
+<p>연결리스트로 반환하는 이유에 대해서는, 하나의 IP로 접속이 실패할 수 있기 때문에, 그것에 대한 backup용으로 여러개의 IP를 포함시키기 위함이다.</p>
+
+<p>addrinfo에는 다음 같은 구조로 되어 있다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">addrinfo</span> <span class="p">{</span>
+<span class="kt">int</span> <span class="n">ai_flags</span><span class="p">;</span> <span class="cm">/* Hints argument flags */</span>
+<span class="kt">int</span> <span class="n">ai_family</span><span class="p">;</span> <span class="cm">/* First arg to socket function */</span>
+<span class="kt">int</span> <span class="n">ai_socktype</span><span class="p">;</span> <span class="cm">/* Second arg to socket function */</span>
+<span class="kt">int</span> <span class="n">ai_protocol</span><span class="p">;</span> <span class="cm">/* Third arg to socket function */</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">ai_canonname</span><span class="p">;</span> <span class="cm">/* Canonical hostname */</span>
+<span class="kt">size_t</span> <span class="n">ai_addrlen</span><span class="p">;</span> <span class="cm">/* Size of ai_addr struct */</span>
+<span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">ai_addr</span><span class="p">;</span> <span class="cm">/* Ptr to socket address structure */</span>
+<span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">*</span><span class="n">ai_next</span><span class="p">;</span> <span class="cm">/* Ptr to next item in linked list */</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>기본적으로, host에 연관된 각각의 고유의 주소에 대해, getaddrinfo함수는 최대 세개의 addrinfo 구조체를 return할 수 있으며, 각각은 서로 다른 ai_socktype 필드를 갖는다 : 한 개는 연결을 위해, 하나는 datagram, 마지막 하나는 원시 소켓을 위해.</p>
+
+<h4 id="getnameinfo-함수">getnameinfo 함수</h4>
+
+<p>getnameinfo함수는 getaddrinfo의 역이다. 이것은 소켓 주소 구조체를 대응되는 host와 service이름 스트링으로 변환한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;netdb.h&gt;</span><span class="cp">
+</span><span class="kt">int</span> <span class="nf">getnameinfo</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="n">sa</span><span class="p">,</span> <span class="n">socklen_t</span> <span class="n">salen</span><span class="p">,</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">host</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">hostlen</span><span class="p">,</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">service</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">servlen</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+
+<span class="cm">/* Returns: 0 if OK, nonzero error code on error */</span>
+</code></pre></div></div>
+
+<h3 id="open_clientfd함수">open_clientfd함수</h3>
+
+<p>client는 open_clientfd를 호출해서 server와 연결을 설정한다. 여기 안에 socket interface함수들이 많이 포함되어 있다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">open_clientfd</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">port</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">clientfd</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">addrinfo</span> <span class="n">hints</span><span class="p">,</span> <span class="o">*</span><span class="n">listp</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+
+    <span class="cm">/* Get a list of potential server addresses */</span>
+    <span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">addrinfo</span><span class="p">));</span>
+    <span class="n">hints</span><span class="p">.</span><span class="n">ai_socktype</span> <span class="o">=</span> <span class="n">SOCK_STREAM</span><span class="p">;</span> <span class="cm">/* Open a connection */</span>
+    <span class="n">hints</span><span class="p">.</span><span class="n">ai_flags</span> <span class="o">=</span> <span class="n">AI_NUMERICSERV</span><span class="p">;</span> <span class="cm">/* ... using a numeric port arg. */</span>
+    <span class="n">hints</span><span class="p">.</span><span class="n">ai_flags</span> <span class="o">|=</span> <span class="n">AI_ADDRCONFIG</span><span class="p">;</span> <span class="cm">/* Recommended for connections */</span>
+    <span class="n">Getaddrinfo</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">listp</span><span class="p">);</span>
+
+    <span class="cm">/* Walk the list for one that we can successfully connect to */</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">listp</span><span class="p">;</span> <span class="n">p</span><span class="p">;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* Create a socket descriptor */</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">clientfd</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_socktype</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_protocol</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">continue</span><span class="p">;</span> <span class="cm">/* Socket failed, try the next */</span>
+
+        <span class="cm">/* Connect to the server */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">connect</span><span class="p">(</span><span class="n">clientfd</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_addrlen</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">break</span><span class="p">;</span> <span class="cm">/* Success */</span>
+        <span class="n">Close</span><span class="p">(</span><span class="n">clientfd</span><span class="p">);</span> <span class="cm">/* Connect failed, try another */</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* Clean up */</span>
+    <span class="n">Freeaddrinfo</span><span class="p">(</span><span class="n">listp</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">p</span><span class="p">)</span> <span class="cm">/* All connects failed */</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">else</span> <span class="cm">/* The last connect succeeded */</span>
+        <span class="k">return</span> <span class="n">clientfd</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>함수를 실행하면 최종적으로 clientfd를 반환한다.</p>
+
+<h3 id="open_listenfd함수">open_listenfd함수</h3>
+
+<p>server는 open_listenfd함수를 호출해서 연결요청을 받을 준비가 된 듣기 식별자를 생성한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">open_listenfd</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">port</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">addrinfo</span> <span class="n">hints</span><span class="p">,</span> <span class="o">*</span><span class="n">listp</span><span class="p">,</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">listenfd</span><span class="p">,</span> <span class="n">optval</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="cm">/* Get a list of potential server addresses */</span>
+    <span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">addrinfo</span><span class="p">));</span>
+    <span class="n">hints</span><span class="p">.</span><span class="n">ai_socktype</span> <span class="o">=</span> <span class="n">SOCK_STREAM</span><span class="p">;</span> <span class="cm">/* Accept connections */</span>
+    <span class="n">hints</span><span class="p">.</span><span class="n">ai_flags</span> <span class="o">=</span> <span class="n">AI_PASSIVE</span> <span class="o">|</span> <span class="n">AI_ADDRCONFIG</span><span class="p">;</span> <span class="cm">/* ... on any IP address */</span>
+    <span class="n">hints</span><span class="p">.</span><span class="n">ai_flags</span> <span class="o">|=</span> <span class="n">AI_NUMERICSERV</span><span class="p">;</span> <span class="cm">/* ... using port number */</span>
+    <span class="n">Getaddrinfo</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">listp</span><span class="p">);</span>
+
+    <span class="cm">/* Walk the list for one that we can bind to */</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">listp</span><span class="p">;</span> <span class="n">p</span><span class="p">;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* Create a socket descriptor */</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">listenfd</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_socktype</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_protocol</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">continue</span><span class="p">;</span> <span class="cm">/* Socket failed, try the next */</span>
+
+        <span class="cm">/* Eliminates "Address already in use" error from bind */</span>
+        <span class="n">Setsockopt</span><span class="p">(</span><span class="n">listenfd</span><span class="p">,</span> <span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">SO_REUSEADDR</span><span class="p">,</span>
+                <span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">optval</span> <span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+
+        <span class="cm">/* Bind the descriptor to the address */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">bind</span><span class="p">(</span><span class="n">listenfd</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">ai_addrlen</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">break</span><span class="p">;</span> <span class="cm">/* Success */</span>
+        <span class="n">Close</span><span class="p">(</span><span class="n">listenfd</span><span class="p">);</span> <span class="cm">/* Bind failed, try the next */</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* Clean up */</span>
+    <span class="n">Freeaddrinfo</span><span class="p">(</span><span class="n">listp</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">p</span><span class="p">)</span> <span class="cm">/* No address worked */</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="cm">/* Make it a listening socket ready to accept connection requests */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">listen</span><span class="p">(</span><span class="n">listenfd</span><span class="p">,</span> <span class="n">LISTENQ</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Close</span><span class="p">(</span><span class="n">listenfd</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">listenfd</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>함수를 실행하면 최종적으로 listenfd를 반환한다.</p>
+
+<h2 id="echo-client와-server">Echo client와 server</h2>
+
+<p>이것은 교제에 나오는 한 예제인데, client가 server에 data를 보내면 server가 다시 client에 똑같은 data를 보내는 방식의 소통이다. 나는 이걸 구현할 때, 우선 책에 나와있는 예제를 따라서 쳐 보았다.</p>
+
+<ul>
+  <li>echoclient.c
+~~~c
+#include “csapp.h” // robust I/O 함수들과 네트워크 래퍼 함수들이 정의된 헤더</li>
+</ul>
+
+<p>int main(int argc, char **argv)
+{
+    int clientfd; // 클라이언트 소켓 식별자
+    char *host, *port, *buf[MAXLINE]; // 서버 호스트명, 포트 번호, 버퍼
+    rio_t rio; // robust I/O 구조체</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 명령줄 인자가 3개가 아니면 사용법 출력 후 종료
+if (argc != 3)
+{
+    fprintf(stderr, "usage: %s &lt;host&gt; &lt;port&gt;\n", argv[0]); // 사용법 출력
+    exit(0);
+}
+
+// 호스트명과 포트 번호를 명령줄 인자에서 가져옴
+host = argv[1]; // 호스트명
+port = argv[2]; // 포트 번호
+
+// 서버에 연결하기 위한 클라이언트 소켓 열기
+clientfd = Open_clientfd(host, port); // 호스트와 포트 번호로 클라이언트 소켓 열기
+
+// 클라이언트 소켓을 기반으로 robust I/O 구조체 초기화
+Rio_readinitb(&amp;rio, clientfd); // 클라이언트 소켓을 기반으로 rio 구조체 초기화
+
+// 사용자로부터 한 줄씩 입력받아 서버에 전송하는 반복문
+while (Fgets(buf, MAXLINE, stdin) != NULL) // 표준 입력으로부터 한 줄 읽기
+{
+    // 읽은 데이터를 서버에 전송
+    Rio_writen(clientfd, buf, strlen(buf)); // 클라이언트 소켓을 통해 서버에 데이터 전송
+
+    // 서버로부터 응답을 읽어와서 출력
+    Rio_readlineb(&amp;rio, buf, MAXLINE); // 서버로부터 한 줄 읽기
+    
+    // 읽은 데이터를 표준 출력으로 출력
+    Fputs(buf, stdout);
+}
+
+Close(clientfd); // 클라이언트 소켓 닫기
+exit(0); // 프로그램 종료 } ~~~
+</code></pre></div></div>
+
+<ul>
+  <li>echoserveri.c
+~~~c
+#include “csapp.h”          // robust I/O 함수와 네트워크 함수 래퍼가 포함된 헤더 파일</li>
+</ul>
+
+<p>void echo(int connfd);</p>
+
+<p>int main(int argc, char **argv)
+{
+    int listenfd, connfd;   // 서버의 listen용 듣기 식별자와 클라이언트 연결용 연결 식별자
+    socklen_t clientlen;    // 클라이언트 주소 구조체의 크기
+    struct sockaddr_storage clientaddr; // 클라이언트 주소 or domain name 저장할 구조체
+    char client_hostname[MAXLINE], client_port[MAXLINE]; // 클라이언트 호스트명과 포트 번호를 저장할 버퍼</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 명령줄 인자가 2개가 아니면 사용법 출력 후 종료
+if (argc != 2)
+{
+    fprintf(stderr, "usage: %s &lt;port&gt;\n", argv[0]); // 사용법 출력
+    exit(0);
+}
+
+// 포트 번호를 인자로 받아 서버 리슨 소켓 열기
+listenfd = Open_listenfd(argv[1]); // argv[1] 포트 번호로 리슨 소켓 열기
+
+while (1)   // 반복형 서버: 클라이언트가 연결 올 때마다 반복
+{
+    clientlen = sizeof(struct sockaddr_storage); // 클라이언트 주소 구조체 크기 초기화
+    // 클라이언트 연결 요청을 수락하고 연결된 소켓 식별자(connfd) 반환
+    connfd = Accept(listenfd, (SA *)&amp;clientaddr, &amp;clientlen);
+
+    // 클라이언트 주소를 문자열로 변환하여 client_hostname과 client_port에 저장
+    Getnameinfo((SA *)&amp;clientaddr, clientlen, client_hostname, MAXLINE,
+                client_port, MAXLINE, 0);
+    // 클라이언트의 호스트명과 포트 번호를 출력
+    printf("Connected to (%s, %s)\n", client_hostname, client_port);
+    // 클라이언트와 연결된 connfd를 인자로 하여 echo 함수 호출
+    echo(connfd);
+    // 클라이언트와의 연결 종료
+    Close(connfd);
+}
+exit(0); // 프로그램 종료 } ~~~
+</code></pre></div></div>
+
+<p>한 번에 한 개씩의 client를 반복해서 실행하는 이런 종류의 서버를 반복서버(iterative server)라고 부른다.</p>
+
+<ul>
+  <li>echo.c
+~~~c
+#include “csapp.h”          // robust I/O 함수와 관련 구조체를 포함한 헤더 파일 포함</li>
+</ul>
+
+<p>// 클라이언트와 연결된 소켓 파일 디스크립터(connfd)를 인자로 받음
+void echo(int connfd)
+{
+    size_t n;               // 읽은 바이트 수를 저장할 변수
+    char buf[MAXLINE];      // 데이터를 읽어올 버퍼 (한 줄 최대 MAXLINE 크기)
+    rio_t rio;              // robust I/O 버퍼 구조체</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// connfd(클라이언트와 연결된 소켓)를 기반으로 rio 구조체 초기화
+Rio_readinitb(&amp;rio, connfd);
+
+// 클라이언트로부터 한 줄씩 데이터를 계속 읽어들이는 반복문
+while ((n = Rio_readlineb(&amp;rio, buf, MAXLINE)) != 0)
+{
+    // 읽은 바이트 수를 서버 로그로 출력
+    printf("server received %zu bytes\n", n);
+
+    // 읽은 데이터를 그대로 다시 클라이언트에게 돌려보냄 (Echo!)
+    Rio_writen(connfd, buf, n);
+} } ~~~
+</code></pre></div></div>
+
+<h2 id="웹-기초">웹 기초</h2>
+
+<p>Web client와 server는 HTTP(Hypertext Transfer Protocol)라고 하는 텍스트 기반 응용수준 프로토콜을 사용해서 상호 연동한다.</p>
+
+<p>무엇이 FTP 같은 전통적인 파일 전송 서비스를 web service와 구별하게 해주는가?</p>
+
+<ul>
+  <li>
+    <p>주요 차이점은 web contents는 HTML(Hpertext Markup Language)이라는 언어로 작성될 수 있다는 것이다.</p>
+  </li>
+  <li>
+    <p>HTML 프로그램(페이지)은 명령들(태그)을 포함하고 있어서 브라우제에게 여러 가지 텍스트와 그래픽 객체를 페이지에 어떻게 표시할지를 알려준다.</p>
+  </li>
+</ul>
+
+<h3 id="웹-컨텐츠">웹 컨텐츠</h3>
+
+<p>Web client와 server에게, contents는 연관된 MIME(Multipurpose Internet Mail Extensions) 타입을 갖는 바이트 배열이다. 아래는 많이 쓰이는 MIME 타입들이다.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">MIME type</th>
+      <th style="text-align: center">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">text/html</td>
+      <td style="text-align: center">HTML page</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">text/plain</td>
+      <td style="text-align: center">Unformatted text</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">application/postscript</td>
+      <td style="text-align: center">Postscript document</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">image/gif</td>
+      <td style="text-align: center">Binary image encoded in GIF format</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">image/png</td>
+      <td style="text-align: center">Binary image encoded in PNG format</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">image/jpeg</td>
+      <td style="text-align: center">Binary image encoded in JPEG format</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Web server는 두 가지 서로 다른 방법으로 client에게 contents를 제공한다.</p>
+
+<ul>
+  <li>
+    <p>디스크 파일을 가져와서 그 내용을 client에게 보낸다. 디스크 파일은 정적 컨텐츠라고 하며, 파일을 client에게 돌려주는 작업은 정적 컨텐츠 처리한다고 말한다.</p>
+  </li>
+  <li>
+    <p>실행파일을 돌리고, 그 출력을 client에게 보낸다. 실행파일이 런타임에 만든 출력을 동적 컨텐츠라고 하며, 프로그램을 실행하고 그 결과를 client에게 보내주는 과정을 동적 컨텐츠 처리한다고 말한다.</p>
+  </li>
+</ul>
+
+<p>Web server가 return하는 모든 내용들은 server가 관리하는 file에 연관된다. 이 파일 각각은 URL(Universal Resource Locator)라고 하느 고유의 이름을 가진다. 예를 들어, 다음과 같은 URL은</p>
+
+<pre><code class="language-url">https://www.google.com:80/index.html
+</code></pre>
+
+<p>포트 80에서 듣고있는 웹 서버가 관리하는 인터넷 호스트 www.google.com의 /index.html이라는 HTML 파일을 지정한다.</p>
+
+<p>여기서 접두어는</p>
+
+<pre><code class="language-url">https://www.google.com:80
+</code></pre>
+
+<p>이고, 접두어를 통해 어떤 종류의 서버에 접속해야 하는지 결정하고, 어디에 서버가 있는지, 서버가 무슨 포트를 듣고 있는지를 결정한다.</p>
+
+<p>접미어는</p>
+
+<pre><code class="language-url">/index.html
+</code></pre>
+
+<p>이며, 자신의 파일 시스템 상의 파일을 검색하고, 이 요청이 정적 또는 동적 컨텐츠에 대한 것인지 결정한다.</p>
+
+<p>실행파일을 위한 URL은 파일 이름 뒤에 프로그램의 인자를 포함할 수 있다. ‘?’ 문자는 파일 이름과 인자를 구분하며, 각 인자는 ‘&amp;’로 구분된다. 예를 들어, 다음의 URL은</p>
+
+<pre><code class="language-url">hppts://bluefish.ics.cs.cmu.edu:8000/cgi-bin/adder?15000&amp;213
+</code></pre>
+
+<p>/cgi-bin/adder라는 실행파일을 식별하고, 이 파일은 두 개의 인자(15000과 213)와 함께 호출된다.</p>
+
+<h3 id="동적-컨텐츠의-처리">동적 컨텐츠의 처리</h3>
+
+<p>여기는 다시 한번 공부해보자.</p>
+
+<h2 id="소형-웹-서버tiny-web-server">소형 웹 서버(Tiny web server)</h2>
+
+<p>작은 웹 서버를 C와 html로 구현해보자</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* $begin tinymain */</span>
+<span class="cm">/*
+ * tiny.c - A simple, iterative HTTP/1.0 Web server that uses the
+ *     GET method to serve static and dynamic content.
+ *
+ * Updated 11/2019 droh
+ *   - Fixed sprintf() aliasing issue in serve_static(), and clienterror().
+ */</span>
+<span class="cp">#include</span> <span class="cpf">"csapp.h"</span><span class="cp">
+</span>
+<span class="kt">void</span> <span class="nf">doit</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">read_requesthdrs</span><span class="p">(</span><span class="n">rio_t</span> <span class="o">*</span><span class="n">rp</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">parse_uri</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">uri</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cgiargs</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">serve_static</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">int</span> <span class="n">filesize</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">get_filetype</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filetype</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">serve_dynamic</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cgiargs</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">clienterror</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cause</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">errnum</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">shortmsg</span><span class="p">,</span>
+                 <span class="kt">char</span> <span class="o">*</span><span class="n">longmsg</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">listenfd</span><span class="p">,</span> <span class="n">connfd</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="n">hostname</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">port</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+  <span class="n">socklen_t</span> <span class="n">clientlen</span><span class="p">;</span>
+  <span class="k">struct</span> <span class="n">sockaddr_storage</span> <span class="n">clientaddr</span><span class="p">;</span>
+
+  <span class="cm">/* Check command line args */</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"usage: %s &lt;port&gt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="n">listenfd</span> <span class="o">=</span> <span class="n">Open_listenfd</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">clientlen</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">clientaddr</span><span class="p">);</span>
+    <span class="n">connfd</span> <span class="o">=</span> <span class="n">Accept</span><span class="p">(</span><span class="n">listenfd</span><span class="p">,</span> <span class="p">(</span><span class="n">SA</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">clientaddr</span><span class="p">,</span>
+                    <span class="o">&amp;</span><span class="n">clientlen</span><span class="p">);</span> <span class="c1">// line:netp:tiny:accept</span>
+    <span class="n">Getnameinfo</span><span class="p">((</span><span class="n">SA</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">clientaddr</span><span class="p">,</span> <span class="n">clientlen</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">,</span>
+                <span class="mi">0</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Accepted connection from (%s, %s)</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+    <span class="n">doit</span><span class="p">(</span><span class="n">connfd</span><span class="p">);</span>  <span class="c1">// line:netp:tiny:doit</span>
+    <span class="n">Close</span><span class="p">(</span><span class="n">connfd</span><span class="p">);</span> <span class="c1">// line:netp:tiny:close</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">doit</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">)</span>
+<span class="p">{</span> <span class="c1">// fd : 클라이언트 소켓 파일 디스크립터(웹브라우저 연결)</span>
+  <span class="c1">// 이 함수를 통해 요청을 읽고 응답을 보내는 한 사이클이 이루어짐.</span>
+
+  <span class="c1">// 변수 선언</span>
+  <span class="kt">int</span> <span class="n">is_static</span><span class="p">;</span>    <span class="c1">// 정적인 파일 요청인지 여부</span>
+  <span class="k">struct</span> <span class="n">stat</span> <span class="n">sbuf</span><span class="p">;</span> <span class="c1">// stat()으로 얻는 파일 정보 구조체</span>
+  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">method</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">uri</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">version</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+  <span class="c1">// buf : 전체 요청 줄 저장</span>
+  <span class="c1">//  method : GET, POST 같은 요청 방식</span>
+  <span class="c1">//  uri : 요청된 자원경로 ex) index.html</span>
+  <span class="kt">char</span> <span class="n">filename</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">cgiargs</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+  <span class="c1">// filename : 실제 서버 상의 파일경로</span>
+  <span class="c1">// cgiargs : CGI 프로그램에 넘길 인자</span>
+  <span class="n">rio_t</span> <span class="n">rio</span><span class="p">;</span>
+
+  <span class="c1">// 클라이언트 요청 한줄읽기</span>
+  <span class="n">Rio_readinitb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio</span><span class="p">,</span> <span class="n">fd</span><span class="p">);</span>
+  <span class="n">Rio_readlineb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"Request line: %s"</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"%s"</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+  <span class="c1">// HTTP 요청의 첫줄은 이런 형태 : GET /index.html HTTP/1.1.</span>
+  <span class="c1">// 이 줄을 buf에 저장한다.</span>
+
+  <span class="c1">// 요청 파싱  파싱 : 어떤 문자열 데이터를 구조적으로 쪼개서 의미를 이해하는 과정</span>
+  <span class="n">sscanf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"%s %s %s"</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">version</span><span class="p">);</span>
+
+  <span class="c1">// GET이외의 메서드는 거절한다</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">strcasecmp</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s">"GET"</span><span class="p">))</span>
+  <span class="p">{</span>
+    <span class="n">clienterror</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="s">"501"</span><span class="p">,</span> <span class="s">"Not inplemented"</span><span class="p">,</span> <span class="s">"Tiny does not implement this method"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span> <span class="c1">// 대소문자 구분 없이 "GET"인지 확인, POST,PUT 등이 오면 501 에러 반환</span>
+
+  <span class="c1">// 요청 헤더 읽기</span>
+  <span class="n">read_requesthdrs</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio</span><span class="p">);</span> <span class="c1">// 나머지 요청 헤더들을 읽고 무시함</span>
+
+  <span class="c1">// URI 파싱(정적VS동적)</span>
+  <span class="n">is_static</span> <span class="o">=</span> <span class="n">parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">cgiargs</span><span class="p">);</span>
+  <span class="c1">// ex) index,html -&gt; 정적 | cgi-bin/adder?arg1=1&amp;arg2=2 -&gt; 동적</span>
+  <span class="c1">//  filename : 실제 서버 경로로 바뀜 | cgiargs : CGI 인자 저장</span>
+
+  <span class="c1">// 파일 존재 확인</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sbuf</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="n">clienterror</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="s">"404"</span><span class="p">,</span> <span class="s">"Not found"</span><span class="p">,</span> <span class="s">"Tiny couldn't find this file"</span><span class="p">);</span>
+    <span class="k">return</span><span class="p">;</span> <span class="c1">// 파일이 없으면 404 Not Found</span>
+  <span class="p">}</span>
+  <span class="c1">// 정적 파일 제공</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">is_static</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">S_ISREG</span><span class="p">(</span><span class="n">sbuf</span><span class="p">.</span><span class="n">st_mode</span><span class="p">))</span> <span class="o">||</span> <span class="o">!</span><span class="p">(</span><span class="n">S_IRUSR</span> <span class="o">&amp;</span> <span class="n">sbuf</span><span class="p">.</span><span class="n">st_mode</span><span class="p">))</span>
+    <span class="p">{</span>
+      <span class="n">clienterror</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="s">"403"</span><span class="p">,</span> <span class="s">"Forbidden"</span><span class="p">,</span> <span class="s">"Tiny couldn't read the file"</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span> <span class="c1">// 정적 파일이 일반 파일인지, 읽을 수 있는지 확인</span>
+    <span class="p">}</span>
+    <span class="n">serve_static</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">sbuf</span><span class="p">.</span><span class="n">st_size</span><span class="p">);</span>
+    <span class="c1">// serve_static()으로 파일 전송</span>
+  <span class="p">}</span>
+  <span class="k">else</span>
+  <span class="p">{</span> <span class="c1">// CGI 프로그램 실행</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">S_ISREG</span><span class="p">(</span><span class="n">sbuf</span><span class="p">.</span><span class="n">st_mode</span><span class="p">))</span> <span class="o">||</span> <span class="o">!</span><span class="p">(</span><span class="n">S_IXUSR</span> <span class="o">&amp;</span> <span class="n">sbuf</span><span class="p">.</span><span class="n">st_mode</span><span class="p">))</span>
+    <span class="p">{</span>
+      <span class="n">clienterror</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="s">"403"</span><span class="p">,</span> <span class="s">"Forbidden"</span><span class="p">,</span> <span class="s">"Tiny couldn't run the CGI program"</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span> <span class="c1">// 실행 가능한 CGI 프로그램인지 확인</span>
+    <span class="p">}</span>
+    <span class="n">serve_dynamic</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">cgiargs</span><span class="p">);</span>
+    <span class="c1">// serve_dynamic()으로 CGI 실행 후 결과 전송</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// 함수 헤더 ,이 함수는 에러 응답을 만드는 데 필요한 모든 정보를 받아서 사용한다.</span>
+<span class="kt">void</span> <span class="nf">clienterror</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cause</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">errnum</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">shortmsg</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">longmsg</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">// fd:클라이언트와 연결된 소켓, cause:에러 원인 ex파일이름 , errnum : 상태코드 ex)404</span>
+  <span class="c1">// shortmsg:짧은 설명 ex)Not Found , longmsg : 긴 설명 ex) Tiny couldn't find this file</span>
+  <span class="c1">//  이 함수는 에러 응답을 만드는 데 필요한 모든 정보를 받아서 사용한다.</span>
+
+  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">body</span><span class="p">[</span><span class="n">MAXBUF</span><span class="p">];</span>
+  <span class="c1">// buf : HTTP 헤더를 담는 용도 | body : HTML 본문(에러 메세지 페이지)</span>
+
+  <span class="c1">// HTML 본문(body) 작성</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s">"&lt;html&gt;&lt;title&gt;Tiny Error&lt;/title&gt;"</span><span class="p">);</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s">"%s&lt;body bgcolor=</span><span class="se">\"</span><span class="s">ffffff</span><span class="se">\"</span><span class="s">&gt;</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">body</span><span class="p">);</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s">"%s%s: %s</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">errnum</span><span class="p">,</span> <span class="n">shortmsg</span><span class="p">);</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s">"%s&lt;p&gt;%s: %s</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">longmsg</span><span class="p">,</span> <span class="n">cause</span><span class="p">);</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s">"%s&lt;hr&gt;&lt;em&gt;The Tiny Web server&lt;/em&gt;</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">body</span><span class="p">);</span>
+  <span class="c1">// HTML 페이지를 한 줄씩 누적해서 작성</span>
+
+  <span class="c1">// HTTP헤더와 본문을 출력</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"HTTP/1.0 %s %s</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">errnum</span><span class="p">,</span> <span class="n">shortmsg</span><span class="p">);</span>
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+  <span class="c1">// HTTP/1.0 404 Not Found 같은 상태 줄 출력</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"Content-type: text/html</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+  <span class="c1">// Content-type은 text/html(브라우저가 HTML로 렌더링 하도록)</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"Content-length: %d</span><span class="se">\r\n\r\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">strlen</span><span class="p">(</span><span class="n">body</span><span class="p">));</span>
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+  <span class="c1">// Content-length는 본문 길이</span>
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">body</span><span class="p">));</span>
+  <span class="c1">// 마지막에 실제 HTML 본물 출력</span>
+<span class="p">}</span>
+<span class="kt">void</span> <span class="nf">read_requesthdrs</span><span class="p">(</span><span class="n">rio_t</span> <span class="o">*</span><span class="n">rp</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">//	•	rp: robust I/O 구조체 포인터 (Rio_readlineb 사용을 위한 스트림)</span>
+  <span class="c1">//  •	역할: HTTP 요청 헤더를 한 줄씩 읽다가 빈 줄 "\r\n"이 나오면 멈춰.</span>
+  <span class="c1">//  •	이유: HTTP 요청 헤더는 빈 줄로 끝난다는 규칙이 있기 때문.</span>
+
+  <span class="c1">// 버퍼 선언</span>
+  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+
+  <span class="c1">// 첫번째 줄 읽기</span>
+  <span class="n">Rio_readlineb</span><span class="p">(</span><span class="n">rp</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">);</span>
+
+  <span class="c1">// 빈 줄까지 반복해서 읽기</span>
+  <span class="k">while</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"</span><span class="se">\r\n</span><span class="s">"</span><span class="p">))</span>
+  <span class="p">{</span>                                  <span class="c1">// 지금 읽은 줄이 빈 줄인지 확인</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Header: %s"</span><span class="p">,</span><span class="n">buf</span><span class="p">);</span>
+    <span class="n">Rio_readlineb</span><span class="p">(</span><span class="n">rp</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">);</span> <span class="c1">// 빈줄(\r\n)이 나오기 전까지 계속 읽고 출력</span>
+    <span class="c1">//printf("%s", buf);               // 헤더의 끝 줄은 빈 줄로 표시되므로 이 조건으로 반복 종료</span>
+  <span class="p">}</span>
+  <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="nf">parse_uri</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">uri</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cgiargs</span><span class="p">)</span>
+<span class="p">{</span> <span class="c1">// 요청된 URI가 정적인지(dynamic인지) 판단하고,해당하는 파일 이름과 CGI 인자를 추출</span>
+  <span class="c1">//	•	uri: 클라이언트가 요청한 경로 (예: /index.html, /cgi-bin/adder?x=1&amp;y=2)</span>
+  <span class="c1">//  •	filename: 실제 서버 파일 경로로 변환되어 담길 곳</span>
+  <span class="c1">//  •	cgiargs: CGI 인자 문자열이 담길 곳</span>
+  <span class="c1">//  •	리턴값:</span>
+  <span class="c1">//    •	1이면 정적(static) 콘텐츠</span>
+  <span class="c1">//    •	0이면 동적(dynamic) 콘텐츠</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strstr</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s">"cgi-bin"</span><span class="p">))</span>
+  <span class="p">{</span> <span class="c1">// 정적 콘텐츠라면</span>
+    <span class="c1">//  •	strstr(uri, "cgi-bin")ㄹ이 NULL이면, "cgi-bin"이 없다는 뜻 → 정적 콘텐츠</span>
+    <span class="c1">//  •	예: /index.html, /images/logo.png 등</span>
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">cgiargs</span><span class="p">,</span> <span class="s">""</span><span class="p">);</span>             <span class="c1">// CGI 인자는 없음</span>
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">"."</span><span class="p">);</span>           <span class="c1">// 현재 디렉터리 기준 시작</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span>           <span class="c1">// 파일 경로 완성</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">uri</span><span class="p">[</span><span class="n">strlen</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'/'</span><span class="p">)</span> <span class="c1">// URI가 폴더로 끝나면</span>
+      <span class="n">strcat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">"home.html"</span><span class="p">);</span> <span class="c1">// 기본 파일로 home.html 사용</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>                        <span class="c1">// 정적 콘텐츠임을 반환</span>
+  <span class="p">}</span>
+  <span class="k">else</span>
+  <span class="p">{</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">index</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="sc">'?'</span><span class="p">);</span> <span class="c1">// '?' 위치 찾기 (cgi 인자 구분자)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
+    <span class="p">{</span>                           <span class="c1">// 인자가 있는 경우</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">cgiargs</span><span class="p">,</span> <span class="n">ptr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// ? 뒤 내용 복사</span>
+      <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>              <span class="c1">// ? 기준으로 문자열 자르기</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">cgiargs</span><span class="p">,</span> <span class="s">""</span><span class="p">);</span> <span class="c1">// 인자 없음</span>
+    <span class="p">}</span>
+
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">"."</span><span class="p">);</span> <span class="c1">// 경로 시작</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span> <span class="c1">// 파일 경로 완성</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>              <span class="c1">// 동적 콘텐츠임을 반환</span>
+  <span class="p">}</span>
+  <span class="cm">/*어떤 친구가 웹서버에 와서 무언가를 요청했어.
+    •	요청 주소에 "cgi-bin"이 없으면 "파일 보여달라"는 거고,
+    •	있으면 "계산 좀 해줘"라는 뜻이야.
+
+  그래서 서버는 이렇게 판단해:
+    •	"정적이면, 파일 경로만 만들어주고"
+    •	"동적이면, 실행파일이랑 인자도 준비해!"*/</span>
+<span class="p">}</span>
+<span class="kt">void</span> <span class="nf">serve_static</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">int</span> <span class="n">filesize</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">// 정적인 파일(HTML, 이미지 등)을 클라이언트에게 보내는 핵심 함수</span>
+  <span class="cm">/*•	fd: 클라이언트와 연결된 소켓
+    •	filename: 클라이언트가 요청한 파일 이름
+    •	filesize: 파일 크기 (이미 stat으로 구했음)  */</span>
+
+  <span class="c1">// 변수 선언</span>
+  <span class="kt">int</span> <span class="n">srcfd</span><span class="p">;</span>                                  <span class="c1">// 파일 디스크립터</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">srcp</span><span class="p">,</span> <span class="n">filetype</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXBUF</span><span class="p">];</span> <span class="c1">// srcp:메모리에 매핑된 파일 주소</span>
+  <span class="c1">// filetype : MIME 타입 저장할 버퍼 , buf : 응답 헤더 저장용</span>
+
+  <span class="n">get_filetype</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">filetype</span><span class="p">);</span> <span class="c1">// MIME 타입 결정</span>
+  <span class="c1">// •	filetype에 따라 브라우저가 어떻게 해석할지 결정됨 (text/html, image/jpeg 등)</span>
+
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"HTTP/1.0 200 OK</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">"Server: Tiny Web Server</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">"Connection: close</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">"Content-length: %d</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">filesize</span><span class="p">);</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">"Content-type: %s</span><span class="se">\r\n\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">filetype</span><span class="p">);</span>
+  <span class="c1">//	마지막 줄에 빈 줄 \r\n\r\n은 본문 시작을 알리는 신호</span>
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span> <span class="c1">// 클라이언트로 헤더 전송</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">"Response headers:</span><span class="se">\n</span><span class="s">%s"</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+
+  <span class="n">srcfd</span> <span class="o">=</span> <span class="n">Open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>                        <span class="c1">// 파일 열기</span>
+  <span class="n">srcp</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">filesize</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">srcp</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">Close</span><span class="p">(</span><span class="n">srcfd</span><span class="p">);</span>
+      <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Error: malloc failed for file %s (size: %d)</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">filesize</span><span class="p">);</span>
+
+      <span class="c1">// 클라이언트에 HTTP 500 오류 응답 전송</span>
+      <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"HTTP/1.0 500 Internal Server Error</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+      <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">"Content-type: text/html</span><span class="se">\r\n\r\n</span><span class="s">"</span><span class="p">);</span>
+      <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">"&lt;html&gt;&lt;body&gt;&lt;p&gt;Server error: memory allocation failed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+      <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+      <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">//srcp = Mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0); // 파일을 메모리에 매핑</span>
+
+  <span class="n">Rio_readn</span><span class="p">(</span><span class="n">srcfd</span><span class="p">,</span><span class="n">srcp</span><span class="p">,</span><span class="n">filesize</span><span class="p">);</span>
+  <span class="c1">// Mmap : 파일을 메모리에 통째로 올림(성능 좋고 코드 간결함)</span>
+  <span class="n">Close</span><span class="p">(</span><span class="n">srcfd</span><span class="p">);</span> <span class="c1">// 파일 디스크립터는 닫아도 메모리엔 살아있음</span>
+
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">srcp</span><span class="p">,</span> <span class="n">filesize</span><span class="p">);</span> <span class="c1">// 파일 내용을 클라이언트로 전송</span>
+  <span class="n">free</span><span class="p">(</span><span class="n">srcp</span><span class="p">);</span>
+  <span class="c1">//Munmap(srcp, filesize);         // 메모리 해제, 매핑 해제</span>
+<span class="p">}</span>
+<span class="kt">void</span> <span class="nf">get_filetype</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filetype</span><span class="p">)</span>
+<span class="c1">//  •	확장자를 보고 MIME 타입 결정</span>
+<span class="c1">//  •	브라우저가 어떻게 렌더링할지를 결정하는 중요한 역할</span>
+<span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">strstr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">".html"</span><span class="p">))</span>
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">filetype</span><span class="p">,</span> <span class="s">"text/html"</span><span class="p">);</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">strstr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">".gif"</span><span class="p">))</span>
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">filetype</span><span class="p">,</span> <span class="s">"image/gif"</span><span class="p">);</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">strstr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">".mpg"</span><span class="p">))</span>
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">filetype</span><span class="p">,</span> <span class="s">"video/mp4"</span><span class="p">);</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">strstr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">".png"</span><span class="p">))</span>
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">filetype</span><span class="p">,</span> <span class="s">"image/png"</span><span class="p">);</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">strstr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">".jpg"</span><span class="p">))</span>
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">filetype</span><span class="p">,</span> <span class="s">"image/jpeg"</span><span class="p">);</span>
+  <span class="k">else</span>
+    <span class="n">strcpy</span><span class="p">(</span><span class="n">filetype</span><span class="p">,</span> <span class="s">"text/plain"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kt">void</span> <span class="nf">serve_dynamic</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filename</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cgiargs</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1">//  •	fd: 클라이언트와 연결된 소켓</span>
+  <span class="c1">//  •	filename: 실행할 CGI 프로그램 경로 (예: ./cgi-bin/adder)</span>
+  <span class="c1">//  •	cgiargs: CGI 프로그램에 넘겨줄 인자 (예: x=1&amp;y=2)</span>
+
+  <span class="c1">// 버퍼와 exec 인자 준비</span>
+  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="o">*</span><span class="n">emptylist</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="nb">NULL</span><span class="p">};</span>
+  <span class="c1">// buf : HTTP 헤더를 담을 임시 버퍼 | emptylist:execve()함수에서 사용할 프로그램 인자 리스트(여기선없대)</span>
+
+  <span class="c1">// HTTP 응답 헤더 전송</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"HTTP/1.0 200 OK</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+  <span class="c1">// CGI 프로그램을 실행하기 전에 최소한의 응답 헤더를 먼저 전송</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"Server: Tiny Web Server</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
+  <span class="c1">// 이후에 실제 프로그램의 출력 stdout이 이어짐</span>
+
+  <span class="c1">// 자식 프로세스 생성 후 CGI 실행</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">Fork</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>  <span class="c1">// 자식 프로세스 | fork()로 새 프로세스를 생성</span>
+    <span class="n">setenv</span><span class="p">(</span><span class="s">"QUERY_STRING"</span><span class="p">,</span> <span class="n">cgiargs</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>   <span class="c1">// 환경 변수 설정 (인자 전달) | adder.c에서 사용하는 getenv("QUERY_STRING")가능하게 설정</span>
+    <span class="n">Dup2</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">STDOUT_FILENO</span><span class="p">);</span>              <span class="c1">// Dup2()를 통해 stdout을 클라이언트 소켓으로 리다이렉션</span>
+    <span class="n">Execve</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">emptylist</span><span class="p">,</span> <span class="n">environ</span><span class="p">);</span> <span class="c1">// Execve()로 CGI 실행 (출력은 fd로 감) , 실행되면 그 아래 코드는 실행 안됨</span>
+  <span class="p">}</span>
+  <span class="n">Wait</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span> <span class="c1">//부모 프로세스는 자식이 끝날 때 까지 기다림(좀비 프로세스 방지)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;&lt;title&gt;</span>test<span class="nt">&lt;/title&gt;&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span> 
+<span class="nt">&lt;img</span> <span class="na">align=</span><span class="s">"middle"</span> <span class="na">src=</span><span class="s">"godzilla.gif"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;br&gt;</span>
+<span class="nt">&lt;br&gt;</span>
+Dave O'Hallaron
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+
+</code></pre></div></div>
+
+<p>이렇게 구현하라고 책에 나와 있었고 여기에 동영상 파일을 넣으라는 과제가 있어서 진행했다. 바뀐 부분은 아래와 같다.</p>
+
+<p>tiny.c 파일에 아래와 같은 코드를 추가하고</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">strcpy</span><span class="p">(</span><span class="n">filetype</span><span class="p">,</span> <span class="s">"video/mp4"</span><span class="p">);</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">strstr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">".png"</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>html 파일에는 아래와 같은 코드와 videoplayback.mp4파일을 디렉토리에 저장했다.</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;video</span> <span class="na">width=</span><span class="s">"320"</span> <span class="na">height=</span><span class="s">"240"</span> <span class="na">controls</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;source</span> <span class="na">src=</span><span class="s">"videoplayback.mp4"</span> <span class="na">type=</span><span class="s">"video/mp4"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<h2 id="소형-웹-서버tiny-web-server--프록시-서버">소형 웹 서버(Tiny web server) + 프록시 서버</h2>
+
+<p>Tiny 서버 구현 후 프록시 서버도 구현하라는 과제가 주어졌어서, 프록시에 대한 개념을 먼저 알아보았다.</p>
+
+<h3 id="웹-프록시란">웹 프록시란?</h3>
+
+<p>웹 브라우저와 웹 서버 사이에 중간자 역할을 하는 프로그램이다. 브라우저는 직접 서버에 요청하지 않고, 프록시 서버에 요청을 보낸다. 프록시는 그 요청을 웹 서버로 전달하고, 받은 응답을 다시 브라우저에게 돌려주며 마무리.</p>
+
+<h2 id="프록시-서버">프록시 서버</h2>
+
+<p>프록시 서버에서 사용할 코드는 아래와 같이 나왔다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"csapp.h"</span><span class="cp">
+</span>
+<span class="cp">#define MAX_CACHE_SIZE 1049000
+#define MAX_OBJECT_SIZE 102400
+</span>
+<span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">user_agent_hdr</span> <span class="o">=</span>
+    <span class="s">"User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:10.0.3) Gecko/20120305 "</span>
+    <span class="s">"Firefox/10.0.3</span><span class="se">\r\n</span><span class="s">"</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">doit</span><span class="p">(</span><span class="kt">int</span> <span class="n">connfd</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">parse_uri</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">uri</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">port</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">build_http_header</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">http_header</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">listenfd</span><span class="p">,</span> <span class="n">connfd</span><span class="p">;</span>
+    <span class="n">socklen_t</span> <span class="n">clientlen</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sockaddr_storage</span> <span class="n">clientaddr</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">port</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">host</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Usage: %s &lt;port&gt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">listenfd</span> <span class="o">=</span> <span class="n">Open_listenfd</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">clientlen</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">clientaddr</span><span class="p">);</span>
+        <span class="n">connfd</span> <span class="o">=</span> <span class="n">Accept</span><span class="p">(</span><span class="n">listenfd</span><span class="p">,</span> <span class="p">(</span><span class="n">SA</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">clientaddr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clientlen</span><span class="p">);</span>
+        <span class="n">Getnameinfo</span><span class="p">((</span><span class="n">SA</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">clientaddr</span><span class="p">,</span> <span class="n">clientlen</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Accepted connection from (%s, %s)</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+        <span class="n">doit</span><span class="p">(</span><span class="n">connfd</span><span class="p">);</span>
+        <span class="n">Close</span><span class="p">(</span><span class="n">connfd</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">doit</span><span class="p">(</span><span class="kt">int</span> <span class="n">connfd</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">method</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">uri</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">version</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+    <span class="kt">char</span> <span class="n">hostname</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">port</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+    <span class="kt">char</span> <span class="n">http_header</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+    <span class="n">rio_t</span> <span class="n">rio_client</span><span class="p">,</span> <span class="n">rio_server</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">serverfd</span><span class="p">;</span>
+
+    <span class="n">Rio_readinitb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_client</span><span class="p">,</span> <span class="n">connfd</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">Rio_readlineb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_client</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">))</span> <span class="k">return</span><span class="p">;</span>
+    <span class="n">sscanf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"%s %s %s"</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">version</span><span class="p">);</span>
+
+    <span class="c1">// URI 앞 '/' 제거 ("/http://..." → "http://...")</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">uri</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'/'</span><span class="p">)</span>
+        <span class="n">memmove</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">uri</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">uri</span><span class="p">));</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Received URI: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">strcasecmp</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s">"GET"</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Proxy does not implement the method %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">method</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"URI parsing failed: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">build_http_header</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+    <span class="n">serverfd</span> <span class="o">=</span> <span class="n">Open_clientfd</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">serverfd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Connection to server %s:%s failed.</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">Rio_readinitb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_server</span><span class="p">,</span> <span class="n">serverfd</span><span class="p">);</span>
+    <span class="n">Rio_writen</span><span class="p">(</span><span class="n">serverfd</span><span class="p">,</span> <span class="n">http_header</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">http_header</span><span class="p">));</span>
+
+    <span class="kt">size_t</span> <span class="n">n</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">Rio_readlineb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_server</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Rio_writen</span><span class="p">(</span><span class="n">connfd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">Close</span><span class="p">(</span><span class="n">serverfd</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">parse_uri</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">uri</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">port</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">hostbegin</span><span class="p">,</span> <span class="o">*</span><span class="n">pathbegin</span><span class="p">,</span> <span class="o">*</span><span class="n">portpos</span><span class="p">;</span>
+  
+  <span class="k">if</span> <span class="p">(</span><span class="n">strncasecmp</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s">"http://"</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+  <span class="n">hostbegin</span> <span class="o">=</span> <span class="n">uri</span> <span class="o">+</span> <span class="mi">7</span><span class="p">;</span>
+  <span class="n">pathbegin</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">hostbegin</span><span class="p">,</span> <span class="sc">'/'</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">pathbegin</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pathbegin</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"/"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// 이제 host:port만 분리할 수 있게 별도로 복사해놓자</span>
+  <span class="kt">char</span> <span class="n">hostcopy</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">pathbegin</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">pathbegin</span> <span class="o">-</span> <span class="n">hostbegin</span><span class="p">;</span>
+      <span class="n">strncpy</span><span class="p">(</span><span class="n">hostcopy</span><span class="p">,</span> <span class="n">hostbegin</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+      <span class="n">hostcopy</span><span class="p">[</span><span class="n">len</span><span class="p">]</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">hostcopy</span><span class="p">,</span> <span class="n">hostbegin</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="n">portpos</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">hostcopy</span><span class="p">,</span> <span class="sc">':'</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">portpos</span><span class="p">)</span> <span class="p">{</span>
+      <span class="o">*</span><span class="n">portpos</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">hostcopy</span><span class="p">);</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">portpos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">hostcopy</span><span class="p">);</span>
+      <span class="n">strcpy</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="s">"80"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">build_http_header</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">http_header</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+
+    <span class="n">sprintf</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="s">"GET %s HTTP/1.0</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+    <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"Host: %s</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">);</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="n">user_agent_hdr</span><span class="p">);</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="s">"Connection: close</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="s">"Proxy-Connection: close</span><span class="se">\r\n\r\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>이거는 시행착오를 겪으며 나온 코드이다. 이거를 구현하기 위해서 AWS EC2 instance 2개를 만들었고, 하나는 tiny server 그리고 하나는 proxy server로 만들었다. 내 컴퓨터로는 client로 사용을 했다. 아래 사진으로 proxy server와 main server가 연결된것을 확인할 수 있다.</p>
+
+<p><img src="/assets/img/blog/computerscience/proxytinyconnected.png" alt="프록시 서버와 메인 서버 연결" /></p>
+
+<p>다만 아쉬웠던 점이 하나 있었다. 이렇게 구현을 하면 아래 사진과 같이 메인서버의 주소를 URI로써 넣어줘야 했다.</p>
+
+<p><img src="/assets/img/blog/computerscience/mainserveruri.png" alt="메인 서버 URI" /></p>
+
+<p>이렇게 되면, 프록시로써의 기능이 없는거 아닌가? 라는 생각을 했고 그걸 바꾸고 싶었다. 그래서 doit함수에서 아래부분을,</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">if</span> <span class="p">(</span><span class="n">parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"URI parsing failed: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>아래와 같이 바꾸었다. 이미 AWS EC2 instance를 만들었기 때문에, IP 주소에 대한 정보는 있는 상태였다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1">// 고정된 최종 서버 정보</span>
+  <span class="n">strcpy</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="s">"15.164.219.65"</span><span class="p">);</span>
+  <span class="n">strcpy</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="s">"8080"</span><span class="p">);</span>
+  <span class="n">strcpy</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span>  <span class="c1">// 예: "/home.html", "/godzilla.jpg"</span>
+</code></pre></div></div>
+
+<p>이렇게 진행을 해서 아래 사진과 같이 프록시로써의 기능을 충분히 하는것을 확인하였다.</p>
+
+<p><img src="/assets/img/blog/computerscience/afterdoitrevision.png" alt="doit함수 수정 후" /></p>
+
+<h2 id="프록시-서버-쓰레딩과-캐싱-기능-추가">프록시 서버 쓰레딩과 캐싱 기능 추가</h2>
+
+<p>팀원들과 같이 쓰레딩과 캐싱 기능도 추가하였는데, 완성 코드는 아래와 같다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"csapp.h"</span><span class="cp">
+#include</span> <span class="cpf">&lt;limits.h&gt;</span><span class="c1">  /* ULONG_MAX 정의를 위해 추가 */</span><span class="cp">
+</span>
+<span class="cp">#define MAX_CACHE_SIZE 1049000
+#define MAX_OBJECT_SIZE 102400
+</span>
+<span class="cm">/* 캐시 구조체 및 관련 데이터 정의 */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">url</span><span class="p">;</span>          <span class="cm">/* 캐시된 URL */</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">content</span><span class="p">;</span>      <span class="cm">/* 캐시된 웹 객체 내용 */</span>
+    <span class="kt">size_t</span> <span class="n">content_size</span><span class="p">;</span> <span class="cm">/* 객체 크기 */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">timestamp</span><span class="p">;</span> <span class="cm">/* LRU를 위한 타임스탬프 */</span>
+    <span class="kt">int</span> <span class="n">is_valid</span><span class="p">;</span>       <span class="cm">/* 유효한 캐시 항목인지 여부 */</span>
+    <span class="kt">int</span> <span class="n">readers</span><span class="p">;</span>        <span class="cm">/* 현재 읽고 있는 스레드 수 */</span>
+    <span class="n">pthread_rwlock_t</span> <span class="n">rwlock</span><span class="p">;</span> <span class="cm">/* 읽기/쓰기 락 */</span>
+<span class="p">}</span> <span class="n">cache_entry_t</span><span class="p">;</span>
+
+<span class="cm">/* 캐시 구조체 */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">cache_entry_t</span> <span class="o">*</span><span class="n">entries</span><span class="p">;</span> <span class="cm">/* 캐시 항목 배열 */</span>
+    <span class="kt">int</span> <span class="n">num_entries</span><span class="p">;</span>       <span class="cm">/* 총 항목 수 */</span>
+    <span class="kt">int</span> <span class="n">max_entries</span><span class="p">;</span>       <span class="cm">/* 최대 허용 항목 수 */</span>
+    <span class="kt">size_t</span> <span class="n">current_size</span><span class="p">;</span>   <span class="cm">/* 현재 캐시 크기 (바이트) */</span>
+    <span class="n">pthread_mutex_t</span> <span class="n">mutex</span><span class="p">;</span> <span class="cm">/* 캐시 전체 락 */</span>
+<span class="p">}</span> <span class="n">cache_t</span><span class="p">;</span>
+
+<span class="cm">/* 전역 캐시 변수 */</span>
+<span class="n">cache_t</span> <span class="n">cache</span><span class="p">;</span>
+
+<span class="cm">/* 스레드 함수 인자를 위한 구조체 정의 */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">connfd</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">thread_args</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">user_agent_hdr</span> <span class="o">=</span>
+    <span class="s">"User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:10.0.3) Gecko/20120305 "</span>
+    <span class="s">"Firefox/10.0.3</span><span class="se">\r\n</span><span class="s">"</span><span class="p">;</span>
+
+<span class="cm">/* 함수 프로토타입 */</span>
+<span class="kt">void</span> <span class="nf">doit</span><span class="p">(</span><span class="kt">int</span> <span class="n">connfd</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">parse_uri</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">uri</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">port</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">build_http_header</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">http_header</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">thread</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">vargp</span><span class="p">);</span>
+
+<span class="cm">/* 캐시 관련 함수 프로토타입 */</span>
+<span class="kt">void</span> <span class="nf">cache_init</span><span class="p">(</span><span class="kt">int</span> <span class="n">max_entries</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">cache_free</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+<span class="n">cache_entry_t</span> <span class="o">*</span><span class="nf">cache_find</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">url</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">cache_add</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">url</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">content</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">content_size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">cache_evict_lru</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">required_size</span><span class="p">);</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">listenfd</span><span class="p">,</span> <span class="n">connfd</span><span class="p">;</span>
+    <span class="n">socklen_t</span> <span class="n">clientlen</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">sockaddr_storage</span> <span class="n">clientaddr</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">port</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">host</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+    <span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+    <span class="n">thread_args</span> <span class="o">*</span><span class="n">args</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Usage: %s &lt;port&gt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// SIGPIPE 신호 무시 설정 (연결이 끊어진 소켓에 쓰기 시도할 때 발생)</span>
+    <span class="n">Signal</span><span class="p">(</span><span class="n">SIGPIPE</span><span class="p">,</span> <span class="n">SIG_IGN</span><span class="p">);</span>
+    
+    <span class="c1">// 캐시 초기화 (MAX_CACHE_SIZE / MAX_OBJECT_SIZE 객체의 10배)</span>
+    <span class="n">cache_init</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Cache initialized with max size %d bytes</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">MAX_CACHE_SIZE</span><span class="p">);</span>
+
+    <span class="n">listenfd</span> <span class="o">=</span> <span class="n">Open_listenfd</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">clientlen</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">clientaddr</span><span class="p">);</span>
+        <span class="n">connfd</span> <span class="o">=</span> <span class="n">Accept</span><span class="p">(</span><span class="n">listenfd</span><span class="p">,</span> <span class="p">(</span><span class="n">SA</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">clientaddr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">clientlen</span><span class="p">);</span>
+        <span class="n">Getnameinfo</span><span class="p">((</span><span class="n">SA</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">clientaddr</span><span class="p">,</span> <span class="n">clientlen</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"Accepted connection from (%s, %s)</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+        
+        <span class="c1">// 스레드 인자 구조체 할당</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">thread_args</span> <span class="o">*</span><span class="p">)</span><span class="n">Malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">thread_args</span><span class="p">));</span>
+        <span class="n">args</span><span class="o">-&gt;</span><span class="n">connfd</span> <span class="o">=</span> <span class="n">connfd</span><span class="p">;</span>
+        
+        <span class="c1">// 새 스레드 생성하여 클라이언트 요청 처리</span>
+        <span class="n">Pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="kr">thread</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+        <span class="c1">// 메인 스레드는 바로 다음 연결을 기다림 (connfd를 닫지 않음)</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// 여기에 도달하지 않지만 안전을 위해 추가</span>
+    <span class="n">cache_free</span><span class="p">();</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">doit</span><span class="p">(</span><span class="kt">int</span> <span class="n">connfd</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">method</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">uri</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">version</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+  <span class="kt">char</span> <span class="n">hostname</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">port</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+  <span class="n">rio_t</span> <span class="n">rio_client</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">serverfd</span><span class="p">;</span>
+
+  <span class="c1">// 클라이언트 요청 라인 읽기</span>
+  <span class="n">Rio_readinitb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_client</span><span class="p">,</span> <span class="n">connfd</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">Rio_readlineb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_client</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">))</span> <span class="k">return</span><span class="p">;</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"Request line: %s"</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+
+  <span class="c1">// 요청 라인 파싱</span>
+  <span class="n">sscanf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"%s %s %s"</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">version</span><span class="p">);</span>
+
+  <span class="c1">// GET 요청만 처리</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">strcasecmp</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s">"GET"</span><span class="p">))</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"Proxy does not implement the method %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">method</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="c1">// URI 파싱하여 hostname, path, port 추출</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"URI parsing failed: %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+  
+  <span class="c1">// 전체 URL을 캐시 키로 사용</span>
+  <span class="kt">char</span> <span class="n">url_key</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">url_key</span><span class="p">,</span> <span class="s">"http://%s:%s%s"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+  
+  <span class="c1">// 캐시에서 URL 검색</span>
+  <span class="n">cache_entry_t</span> <span class="o">*</span><span class="n">entry</span> <span class="o">=</span> <span class="n">cache_find</span><span class="p">(</span><span class="n">url_key</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 캐시 히트: 캐시된 내용을 클라이언트에게 전송</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"Cache hit for %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">url_key</span><span class="p">);</span>
+      <span class="n">Rio_writen</span><span class="p">(</span><span class="n">connfd</span><span class="p">,</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">content</span><span class="p">,</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">content_size</span><span class="p">);</span>
+      <span class="n">cache_read_complete</span><span class="p">(</span><span class="n">entry</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+  
+  <span class="c1">// 캐시 미스: 서버에 요청</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"Cache miss for %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">url_key</span><span class="p">);</span>
+  
+  <span class="c1">// 서버 연결</span>
+  <span class="n">serverfd</span> <span class="o">=</span> <span class="n">Open_clientfd</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">serverfd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"Connection to server %s:%s failed.</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+  
+  <span class="c1">// 서버에 보낼 HTTP 요청 헤더 작성</span>
+  <span class="kt">char</span> <span class="n">request_hdrs</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">host_hdr</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">],</span> <span class="n">other_hdrs</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+  <span class="n">sprintf</span><span class="p">(</span><span class="n">request_hdrs</span><span class="p">,</span> <span class="s">"GET %s HTTP/1.0</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+  
+  <span class="c1">// 클라이언트 헤더 읽기 및 필요한 헤더 수정 또는 추가</span>
+  <span class="kt">int</span> <span class="n">is_host_hdr_seen</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">other_hdrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+  
+  <span class="k">while</span> <span class="p">(</span><span class="n">Rio_readlineb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_client</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 헤더의 끝 확인 (빈 줄)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"</span><span class="se">\r\n</span><span class="s">"</span><span class="p">))</span> <span class="k">break</span><span class="p">;</span>
+      
+      <span class="c1">// Host 헤더 확인</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strncasecmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"Host:"</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="p">{</span>
+          <span class="n">is_host_hdr_seen</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="n">strcpy</span><span class="p">(</span><span class="n">host_hdr</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="c1">// Connection 또는 Proxy-Connection 헤더는 건너뜀</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strncasecmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"Connection:"</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span> <span class="o">||</span> 
+               <span class="o">!</span><span class="n">strncasecmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"Proxy-Connection:"</span><span class="p">,</span> <span class="mi">17</span><span class="p">))</span> <span class="p">{</span>
+          <span class="k">continue</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="c1">// User-Agent 헤더는 건너뜀 (나중에 추가됨)</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">strncasecmp</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"User-Agent:"</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span> <span class="p">{</span>
+          <span class="k">continue</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="c1">// 그 외 헤더는 그대로 전달</span>
+      <span class="k">else</span> <span class="p">{</span>
+          <span class="n">strcat</span><span class="p">(</span><span class="n">other_hdrs</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+  
+  <span class="c1">// HTTP 요청 헤더 완성</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">is_host_hdr_seen</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">sprintf</span><span class="p">(</span><span class="n">host_hdr</span><span class="p">,</span> <span class="s">"Host: %s</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">);</span>
+  <span class="p">}</span>
+  
+  <span class="c1">// 최종 HTTP 요청 헤더 조합</span>
+  <span class="n">strcat</span><span class="p">(</span><span class="n">request_hdrs</span><span class="p">,</span> <span class="n">host_hdr</span><span class="p">);</span>
+  <span class="n">strcat</span><span class="p">(</span><span class="n">request_hdrs</span><span class="p">,</span> <span class="n">user_agent_hdr</span><span class="p">);</span>
+  <span class="n">strcat</span><span class="p">(</span><span class="n">request_hdrs</span><span class="p">,</span> <span class="s">"Connection: close</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">strcat</span><span class="p">(</span><span class="n">request_hdrs</span><span class="p">,</span> <span class="s">"Proxy-Connection: close</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">strcat</span><span class="p">(</span><span class="n">request_hdrs</span><span class="p">,</span> <span class="n">other_hdrs</span><span class="p">);</span>
+  <span class="n">strcat</span><span class="p">(</span><span class="n">request_hdrs</span><span class="p">,</span> <span class="s">"</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>  <span class="c1">// 헤더의 끝</span>
+  
+  <span class="n">printf</span><span class="p">(</span><span class="s">"Forwarding request to server %s:%s</span><span class="se">\n</span><span class="s">%s"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">request_hdrs</span><span class="p">);</span>
+  
+  <span class="c1">// 서버에 요청 전송</span>
+  <span class="n">rio_t</span> <span class="n">rio_server</span><span class="p">;</span>
+  <span class="n">Rio_readinitb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_server</span><span class="p">,</span> <span class="n">serverfd</span><span class="p">);</span>
+  <span class="n">Rio_writen</span><span class="p">(</span><span class="n">serverfd</span><span class="p">,</span> <span class="n">request_hdrs</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">request_hdrs</span><span class="p">));</span>
+  
+  <span class="c1">// 서버로부터 응답을 받아 클라이언트에게 전달하고 캐싱</span>
+  <span class="kt">size_t</span> <span class="n">n</span><span class="p">;</span>
+  <span class="kt">size_t</span> <span class="n">total_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="n">cache_buf</span><span class="p">[</span><span class="n">MAX_OBJECT_SIZE</span><span class="p">];</span>
+  <span class="kt">int</span> <span class="n">cacheable</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// 객체가 캐시 가능한지 여부</span>
+  
+  <span class="c1">// 응답을 버퍼 단위로 읽어 전달</span>
+  <span class="k">while</span> <span class="p">((</span><span class="n">n</span> <span class="o">=</span> <span class="n">Rio_readnb</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rio_server</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">MAXLINE</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 클라이언트에게 전송</span>
+      <span class="n">Rio_writen</span><span class="p">(</span><span class="n">connfd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+      
+      <span class="c1">// 캐시 가능한 크기이면 응답을 캐시 버퍼에 저장</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">cacheable</span> <span class="o">&amp;&amp;</span> <span class="n">total_size</span> <span class="o">+</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">MAX_OBJECT_SIZE</span><span class="p">)</span> <span class="p">{</span>
+          <span class="n">memcpy</span><span class="p">(</span><span class="n">cache_buf</span> <span class="o">+</span> <span class="n">total_size</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+          <span class="n">total_size</span> <span class="o">+=</span> <span class="n">n</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">total_size</span> <span class="o">+</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">MAX_OBJECT_SIZE</span><span class="p">)</span> <span class="p">{</span>
+          <span class="n">cacheable</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">// 최대 객체 크기를 초과하여 캐시 불가능</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+  
+  <span class="c1">// 모든 응답을 받았으면 캐시에 저장</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">cacheable</span> <span class="o">&amp;&amp;</span> <span class="n">total_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">cache_add</span><span class="p">(</span><span class="n">url_key</span><span class="p">,</span> <span class="n">cache_buf</span><span class="p">,</span> <span class="n">total_size</span><span class="p">);</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"Cached %zu bytes for %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">total_size</span><span class="p">,</span> <span class="n">url_key</span><span class="p">);</span>
+  <span class="p">}</span>
+  
+  <span class="n">Close</span><span class="p">(</span><span class="n">serverfd</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">parse_uri</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">uri</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">port</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">hostbegin</span><span class="p">,</span> <span class="o">*</span><span class="n">hostend</span><span class="p">,</span> <span class="o">*</span><span class="n">pathbegin</span><span class="p">;</span>
+    
+    <span class="c1">// URI에 http:// 접두사가 없는 경우 (driver.sh는 완전한 URL을 요구함)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">strncasecmp</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s">"http://"</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 이미 경로만 있는 경우 (예: /home.html)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">uri</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'/'</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// localhost로 간주하고 기본 경로 사용</span>
+            <span class="n">strcpy</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="s">"localhost"</span><span class="p">);</span>
+            <span class="n">strcpy</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span>
+            <span class="n">strcpy</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="s">"80"</span><span class="p">);</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">"Error: Invalid URI format (no http://): %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">uri</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// http:// 이후의 호스트 시작 위치</span>
+    <span class="n">hostbegin</span> <span class="o">=</span> <span class="n">uri</span> <span class="o">+</span> <span class="mi">7</span><span class="p">;</span>
+    
+    <span class="c1">// 경로 부분 찾기 (첫 번째 '/')</span>
+    <span class="n">pathbegin</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">hostbegin</span><span class="p">,</span> <span class="sc">'/'</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">pathbegin</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 호스트 부분의 마지막 위치</span>
+        <span class="n">hostend</span> <span class="o">=</span> <span class="n">pathbegin</span><span class="p">;</span>
+        <span class="c1">// 경로 복사</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pathbegin</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// 경로가 없으면 루트 경로로 설정</span>
+        <span class="n">hostend</span> <span class="o">=</span> <span class="n">hostbegin</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">hostbegin</span><span class="p">);</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">"/"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 임시 호스트 문자열 생성 및 복사</span>
+    <span class="kt">char</span> <span class="n">hostcopy</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+    <span class="n">strncpy</span><span class="p">(</span><span class="n">hostcopy</span><span class="p">,</span> <span class="n">hostbegin</span><span class="p">,</span> <span class="n">hostend</span> <span class="o">-</span> <span class="n">hostbegin</span><span class="p">);</span>
+    <span class="n">hostcopy</span><span class="p">[</span><span class="n">hostend</span> <span class="o">-</span> <span class="n">hostbegin</span><span class="p">]</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+
+    <span class="c1">// 호스트에서 포트 번호 분리</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">portPos</span> <span class="o">=</span> <span class="n">strchr</span><span class="p">(</span><span class="n">hostcopy</span><span class="p">,</span> <span class="sc">':'</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">portPos</span><span class="p">)</span> <span class="p">{</span>
+        <span class="o">*</span><span class="n">portPos</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">hostcopy</span><span class="p">);</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">portPos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">hostcopy</span><span class="p">);</span>
+        <span class="n">strcpy</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="s">"80"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Parsed URI - Host: '%s', Path: '%s', Port: '%s'</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">build_http_header</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">http_header</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAXLINE</span><span class="p">];</span>
+
+    <span class="n">sprintf</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="s">"GET %s HTTP/1.0</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+    <span class="n">sprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">"Host: %s</span><span class="se">\r\n</span><span class="s">"</span><span class="p">,</span> <span class="n">hostname</span><span class="p">);</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="n">user_agent_hdr</span><span class="p">);</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="s">"Connection: close</span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="n">strcat</span><span class="p">(</span><span class="n">http_header</span><span class="p">,</span> <span class="s">"Proxy-Connection: close</span><span class="se">\r\n\r\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* 스레드 함수 구현 */</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">thread</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">vargp</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">thread_args</span> <span class="o">*</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">thread_args</span> <span class="o">*</span><span class="p">)</span><span class="n">vargp</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">connfd</span> <span class="o">=</span> <span class="n">args</span><span class="o">-&gt;</span><span class="n">connfd</span><span class="p">;</span>
+    
+    <span class="c1">// 스레드를 detach 상태로 만들어 자원을 자동으로 반환하도록 함</span>
+    <span class="n">Pthread_detach</span><span class="p">(</span><span class="n">pthread_self</span><span class="p">());</span>
+    
+    <span class="c1">// 메모리 누수 방지를 위해 할당된 인자 구조체 해제</span>
+    <span class="n">Free</span><span class="p">(</span><span class="n">vargp</span><span class="p">);</span>
+    
+    <span class="c1">// 클라이언트 요청 처리</span>
+    <span class="n">doit</span><span class="p">(</span><span class="n">connfd</span><span class="p">);</span>
+    
+    <span class="c1">// 연결 종료</span>
+    <span class="n">Close</span><span class="p">(</span><span class="n">connfd</span><span class="p">);</span>
+    
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* 캐시 초기화 함수 */</span>
+<span class="kt">void</span> <span class="nf">cache_init</span><span class="p">(</span><span class="kt">int</span> <span class="n">max_entries</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">entries</span> <span class="o">=</span> <span class="p">(</span><span class="n">cache_entry_t</span> <span class="o">*</span><span class="p">)</span><span class="n">Calloc</span><span class="p">(</span><span class="n">max_entries</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">cache_entry_t</span><span class="p">));</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">num_entries</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">max_entries</span> <span class="o">=</span> <span class="n">max_entries</span><span class="p">;</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">current_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">pthread_mutex_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">max_entries</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">is_valid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">url</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">content</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">content_size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">timestamp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">readers</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">pthread_rwlock_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">rwlock</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/* 캐시 해제 함수 */</span>
+<span class="kt">void</span> <span class="nf">cache_free</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">cache</span><span class="p">.</span><span class="n">max_entries</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">is_valid</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Free</span><span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">url</span><span class="p">);</span>
+            <span class="n">Free</span><span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">content</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">pthread_rwlock_destroy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">rwlock</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">Free</span><span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">);</span>
+    <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+    <span class="n">pthread_mutex_destroy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* 현재 시간 반환 */</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">timeval</span> <span class="n">tv</span><span class="p">;</span>
+    <span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="mi">1000000</span> <span class="o">+</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* 캐시에서 URL에 해당하는 항목 찾기 */</span>
+<span class="n">cache_entry_t</span> <span class="o">*</span><span class="nf">cache_find</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">url</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">cache</span><span class="p">.</span><span class="n">max_entries</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">is_valid</span> <span class="o">&amp;&amp;</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">url</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// 읽기 락 획득</span>
+            <span class="n">pthread_rwlock_rdlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">rwlock</span><span class="p">);</span>
+            <span class="c1">// 타임스탬프 갱신</span>
+            <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">get_timestamp</span><span class="p">();</span>
+            <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+            <span class="k">return</span> <span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* 캐시 항목 읽기 완료 */</span>
+<span class="kt">void</span> <span class="nf">cache_read_complete</span><span class="p">(</span><span class="n">cache_entry_t</span> <span class="o">*</span><span class="n">entry</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">pthread_rwlock_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">rwlock</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* LRU 정책에 따라 캐시에서 항목 제거 */</span>
+<span class="kt">void</span> <span class="nf">cache_evict_lru</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">required_size</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">min_timestamp</span> <span class="o">=</span> <span class="n">ULONG_MAX</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">lru_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="c1">// 가장 오래 사용되지 않은 항목 찾기</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">cache</span><span class="p">.</span><span class="n">max_entries</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">is_valid</span> <span class="o">&amp;&amp;</span> <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">timestamp</span> <span class="o">&lt;</span> <span class="n">min_timestamp</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">min_timestamp</span> <span class="o">=</span> <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">timestamp</span><span class="p">;</span>
+            <span class="n">lru_index</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">lru_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 쓰기 락 획득</span>
+        <span class="n">pthread_rwlock_wrlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">lru_index</span><span class="p">].</span><span class="n">rwlock</span><span class="p">);</span>
+        
+        <span class="c1">// 해당 항목의 메모리 해제</span>
+        <span class="n">Free</span><span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">lru_index</span><span class="p">].</span><span class="n">url</span><span class="p">);</span>
+        <span class="n">Free</span><span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">lru_index</span><span class="p">].</span><span class="n">content</span><span class="p">);</span>
+        
+        <span class="c1">// 캐시 항목 무효화</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">lru_index</span><span class="p">].</span><span class="n">url</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">lru_index</span><span class="p">].</span><span class="n">content</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">lru_index</span><span class="p">].</span><span class="n">is_valid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        
+        <span class="c1">// 캐시 크기 갱신</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">current_size</span> <span class="o">-=</span> <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">lru_index</span><span class="p">].</span><span class="n">content_size</span><span class="p">;</span>
+        <span class="n">cache</span><span class="p">.</span><span class="n">num_entries</span><span class="o">--</span><span class="p">;</span>
+        
+        <span class="c1">// 쓰기 락 해제</span>
+        <span class="n">pthread_rwlock_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">lru_index</span><span class="p">].</span><span class="n">rwlock</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/* 캐시에 새로운 항목 추가 */</span>
+<span class="kt">void</span> <span class="nf">cache_add</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">url</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">content</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">content_size</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">content_size</span> <span class="o">&gt;</span> <span class="n">MAX_OBJECT_SIZE</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span> <span class="c1">// 최대 객체 크기 초과하면 캐시하지 않음</span>
+    <span class="p">}</span>
+
+    <span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+
+    <span class="c1">// 필요한 경우 공간 확보</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">current_size</span> <span class="o">+</span> <span class="n">content_size</span> <span class="o">&gt;</span> <span class="n">MAX_CACHE_SIZE</span> <span class="o">||</span> <span class="n">cache</span><span class="p">.</span><span class="n">num_entries</span> <span class="o">&gt;=</span> <span class="n">cache</span><span class="p">.</span><span class="n">max_entries</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">cache_evict_lru</span><span class="p">(</span><span class="n">content_size</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 빈 슬롯 찾기</span>
+    <span class="kt">int</span> <span class="n">empty_slot</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">cache</span><span class="p">.</span><span class="n">max_entries</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">is_valid</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">empty_slot</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">empty_slot</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span> <span class="c1">// 빈 슬롯이 없음</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 쓰기 락 획득</span>
+    <span class="n">pthread_rwlock_wrlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">empty_slot</span><span class="p">].</span><span class="n">rwlock</span><span class="p">);</span>
+    
+    <span class="c1">// 새 항목 초기화</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">empty_slot</span><span class="p">].</span><span class="n">url</span> <span class="o">=</span> <span class="n">strdup</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">empty_slot</span><span class="p">].</span><span class="n">content</span> <span class="o">=</span> <span class="n">Malloc</span><span class="p">(</span><span class="n">content_size</span><span class="p">);</span>
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">empty_slot</span><span class="p">].</span><span class="n">content</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">content_size</span><span class="p">);</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">empty_slot</span><span class="p">].</span><span class="n">content_size</span> <span class="o">=</span> <span class="n">content_size</span><span class="p">;</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">empty_slot</span><span class="p">].</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">get_timestamp</span><span class="p">();</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">empty_slot</span><span class="p">].</span><span class="n">is_valid</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    
+    <span class="c1">// 캐시 상태 갱신</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">current_size</span> <span class="o">+=</span> <span class="n">content_size</span><span class="p">;</span>
+    <span class="n">cache</span><span class="p">.</span><span class="n">num_entries</span><span class="o">++</span><span class="p">;</span>
+    
+    <span class="c1">// 쓰기 락 해제</span>
+    <span class="n">pthread_rwlock_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">entries</span><span class="p">[</span><span class="n">empty_slot</span><span class="p">].</span><span class="n">rwlock</span><span class="p">);</span>
+    <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cache</span><span class="p">.</span><span class="n">mutex</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
   
@@ -686,7 +2140,7 @@ linux&gt; nslookup ics.cs.cmu.edu
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/time-and-space-complexity(wBig-O)/" class="flip-title"><span>시간과 공간 복잡도(w.BigO)</span></a>  <time class="faded fine" datetime="2025-03-18T00:00:00+00:00">18 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/b-tree/" class="flip-title"><span>B-Tree & B+Tree</span></a>  <time class="faded fine" datetime="2025-04-02T00:00:00+00:00">02 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/hash-table-and-hashing/" class="flip-title"><span>해시 테이블(Hash table), 해시법(Hashing)</span></a>  <time class="faded fine" datetime="2025-03-24T00:00:00+00:00">24 Mar 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/diary/essay-written-in-jungle/" class="flip-title"><span>Essay written in KRAFTON JUNGLE</span></a>  <time class="faded fine" datetime="2025-03-14T00:00:00+00:00">14 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/pre-order-post-order/" class="flip-title"><span>전위 순회(Pre-Order Traversal)와 후위 순회(Post-Order Traversal)의 연관성</span></a>  <time class="faded fine" datetime="2025-04-16T00:00:00+00:00">16 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/introducing-hydejack-9/" class="flip-title"><span>Introducing Hydejack 9</span></a>  <time class="faded fine" datetime="2020-07-03T00:00:00+00:00">03 Jul 2020</time></li>      </ul></aside>
 
   
 
