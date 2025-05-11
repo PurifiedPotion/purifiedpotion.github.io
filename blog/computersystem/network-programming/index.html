@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+
+
+
+
+
+
+<head>
+  
+
+
+
+
+
+
+  
+    
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>CS:APP 11장 네트워크 프로그래밍 &amp; Proxy 서버 C언어로 구현 | PurifiedPotion’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="CS:APP 11장 네트워크 프로그래밍 &amp; Proxy 서버 C언어로 구현" />
+<meta name="author" content="Kwansoo Kim" />
+<meta property="og:locale" content="ko_KR, en_US" />
+<meta name="description" content="우리가 웹을 검색하고, 이메일 메시지를 보내고, 온라인 게임을 하는 등의 모든 경우 우리는 네트워크 응용을 사용한다" />
+<meta property="og:description" content="우리가 웹을 검색하고, 이메일 메시지를 보내고, 온라인 게임을 하는 등의 모든 경우 우리는 네트워크 응용을 사용한다" />
+<meta property="og:site_name" content="PurifiedPotion’s Blog" />
+<meta property="og:image" content="/assets/img/blog/postimage/ComputerSystem.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-08T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/assets/img/blog/postimage/ComputerSystem.png" />
+<meta property="twitter:title" content="CS:APP 11장 네트워크 프로그래밍 &amp; Proxy 서버 C언어로 구현" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Kwansoo Kim"},"dateModified":"2025-05-08T00:00:00+00:00","datePublished":"2025-05-08T00:00:00+00:00","description":"우리가 웹을 검색하고, 이메일 메시지를 보내고, 온라인 게임을 하는 등의 모든 경우 우리는 네트워크 응용을 사용한다","headline":"CS:APP 11장 네트워크 프로그래밍 &amp; Proxy 서버 C언어로 구현","image":"/assets/img/blog/postimage/ComputerSystem.png","mainEntityOfPage":{"@type":"WebPage","@id":"/blog/computersystem/network-programming/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/PurifiedPotion.png"},"name":"Kwansoo Kim"},"url":"/blog/computersystem/network-programming/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  
+
+
+
+  <meta name="color-scheme" content="dark light">
+
+
+
+  <meta name="theme-color" content="rgb(200,200,200)">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PurifiedPotion's Blog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="application-name" content="PurifiedPotion's Blog">
+
+<meta name="generator" content="Hydejack v9.2.1" />
+
+
+<link rel="alternate" href="/blog/computersystem/network-programming/" hreflang="ko-kr, en-us">
+
+<link type="application/atom+xml" rel="alternate" href="/feed.xml" title="PurifiedPotion&apos;s Blog" />
+
+
+<link rel="shortcut icon"    href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+
+<link rel="manifest" href="/assets/site.webmanifest">
+
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"><link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+
+
+<link rel="preload" href="/assets/img/swipe.svg" as="image" id="_hrefSwipeSVG">
+
+<link rel="dns-prefetch" href="/assets/js/search-worker-9.2.1.js" as="worker" id="_hrefSearch">
+
+
+
+
+
+<script>((r,a)=>{function d(e,t,n,o){e.addEventListener?e.addEventListener(t,n,o):e.attachEvent?e.attachEvent("on"+t,n):e["on"+t]=n}r.loadJS=function(e,t){var n=a.createElement("script"),e=(n.src=e,t&&d(n,"load",t,{once:!0}),a.scripts[0]);return e.parentNode.insertBefore(n,e),n},r._loaded=!1,r.loadJSDeferred=function(e,t){var n=a.createElement("script");function o(){r._loaded=!0,t&&d(n,"load",t,{once:!0});var e=a.scripts[0];e.parentNode.insertBefore(n,e)}return n.src=e,r._loaded?o():d(r,"load",o,{once:!0}),n},r.setRel=r.setRelStylesheet=function(e){d(a.getElementById(e),"load",function(){this.rel="stylesheet"},{once:!0})}})(window,document);
+!function(a){"use strict";var b=function(b,c,d){function e(a){return h.body?a():void setTimeout(function(){e(a)})}function f(){i.addEventListener&&i.removeEventListener("load",f),i.media=d||"all"}var g,h=a.document,i=h.createElement("link");if(c)g=c;else{var j=(h.body||h.getElementsByTagName("head")[0]).childNodes;g=j[j.length-1]}var k=h.styleSheets;i.rel="stylesheet",i.href=b,i.media="only x",e(function(){g.parentNode.insertBefore(i,c?g:g.nextSibling)});var l=function(a){for(var b=i.href,c=k.length;c--;)if(k[c].href===b)return a();setTimeout(function(){l(a)})};return i.addEventListener&&i.addEventListener("load",f),i.onloadcssdefined=l,l(f),i};"undefined"!=typeof exports?exports.loadCSS=b:a.loadCSS=b}("undefined"!=typeof global?global:this);
+!function(a){if(a.loadCSS){var b=loadCSS.relpreload={};if(b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}},b.poly=function(){for(var b=a.document.getElementsByTagName("link"),c=0;c<b.length;c++){var d=b[c];"preload"===d.rel&&"style"===d.getAttribute("as")&&(a.loadCSS(d.href,d,d.getAttribute("media")),d.rel=null)}},!b.support()){b.poly();var c=a.setInterval(b.poly,300);a.addEventListener&&a.addEventListener("load",function(){b.poly(),a.clearInterval(c)}),a.attachEvent&&a.attachEvent("onload",function(){a.clearInterval(c)})}}}(this);
+!function(w) {
+  w._baseURL = '/';
+  w._publicPath = '/assets/js/';
+  w._noPushState = false;
+  w._noDrawer = false;
+  w._noNavbar = false;
+  w._noToc = false;
+  w._noSearch = false;
+  w._advertise = false;
+  w._search = {
+    DATA_URL: '/assets/sitedata.json?no-cache',
+    STORAGE_KEY: 'mini-search/',
+    INDEX_KEY: 'index--2025-05-11T09:42:19+00:00',
+  };
+  w._clapButton = true;
+}(window);</script>
+
+
+<script async src="/assets/bower_components/MathJax/es5/tex-mml-chtml.js" id="_MathJax"></script>
+
+
+<!--[if gt IE 8]><!---->
+
+  
+
+
+
+
+<link rel="stylesheet" href="/assets/css/hydejack-9.2.1.css" id="_stylePreload">
+<link rel="stylesheet" href="/assets/icomoon/style.css" id="_iconsPreload">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700%7CNoto+Sans:400,400i,700,700i&display=swap" id="_fontsPreload">
+
+
+
+  <style id="_pageStyle">
+
+html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5);--accent-color-highlight: rgba(200,200,200,0.1);--accent-color-darkened: #b5b5b5;--theme-color: rgb(200,200,200);--dark-mode-body-bg: #2d2d2d;--dark-mode-border-color: #393939}
+
+</style>
+
+
+<!--<![endif]-->
+
+
+
+
+
+</head>
+
+<body class="no-break-layout">
+  
+<script>
+  window._sunrise = 6;
+  window._sunset =  18;
+  ((e,s)=>{var d="light-mode",a="dark-mode",o=(new Date).getHours();"matchMedia"in e&&e.matchMedia("(prefers-color-scheme)")||(e=(o=o<=e._sunrise||o>=e._sunset?a:d)==a?d:a,s.body.classList.add(o),s.body.classList.remove(e))})(window,document);
+
+</script>
+
+
+
+<hy-push-state
+  id="_pushState"
+  replace-selector="#_main"
+  link-selector="a[href]:not([href^='/assets/']):not(.external):not(.no-push-state)"
+  script-selector="script"
+  duration="500"
+  hashchange
+>
+  
+  
+  <div id="_navbar" class="navbar fixed-top">
+  <div class="content">
+    <span class="sr-only">Jump to:</span>
+    <div class="nav-btn-bar">
+      <a id="_menu" class="nav-btn no-hover" href="#_drawer--opened">
+        <span class="sr-only">Navigation</span>
+        <span class="icon-menu"></span>
+      </a>
+      <div class="nav-span"></div>
+    </div>
+  </div>
+</div>
+<hr class="sr-only" hidden />
+
+  <main
+  id="_main"
+  class="content layout-post"
+  role="main"
+>
+  <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+    <li><a href="/">home</a></li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/">blog</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/computersystem/">computersystem</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          <span>network-programming</span>
+        
+      </li>
+    
+  
+</ul></nav>
+  
+
+
+
+
+
+
+
+
+
+
+<article id="post-blog-computersystem-network-programming" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      
+        CS:APP 11장 네트워크 프로그래밍 & Proxy 서버 C언어로 구현
+      
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2025-05-08T00:00:00+00:00">08 May 2025</time> in <span>Blog</span> / <a href="/computersystem/" class="flip-title">COMPUTER SYSTEM</a> 
+      </span>
+      
+    </div>
+
+    
+    
+      
+        <div class="img-wrapper lead aspect-ratio sixteen-nine flip-project-img">
+          
+
+
+<img
+  
+    src="/assets/img/blog/postimage/ComputerSystem.png"
+  
+  alt="CS:APP 11장 네트워크 프로그래밍 & Proxy 서버 C언어로 구현"
+  
+  
+  width="864"
+  height="486"
+  loading="lazy"
+/>
+
+        </div>
+      
+      
+    
+
+    
+
+
+
+  
+    <p class="note-sm" >
+      우리가 웹을 검색하고, 이메일 메시지를 보내고, 온라인 게임을 하는 등의 모든 경우 우리는 네트워크 응용을 사용한다
+
+    </p>
+  
+
+
+  </header>
+
+  
+    <ul class="large-only" id="markdown-toc">
+  <li><a href="#클라이언트---서버-프로그래밍-모델" id="markdown-toc-클라이언트---서버-프로그래밍-모델">클라이언트 - 서버 프로그래밍 모델</a></li>
+  <li><a href="#네트워크" id="markdown-toc-네트워크">네트워크</a>    <ul>
+      <li><a href="#nic-network-interface-card" id="markdown-toc-nic-network-interface-card">NIC (Network Interface Card)</a></li>
+      <li><a href="#이더넷-ethernet" id="markdown-toc-이더넷-ethernet">이더넷 (Ethernet)</a>        <ul>
+          <li><a href="#더-큰-lan---브릿지의-등장" id="markdown-toc-더-큰-lan---브릿지의-등장">더 큰 LAN - 브릿지의 등장</a></li>
+          <li><a href="#브릿지와-허브의-차이점" id="markdown-toc-브릿지와-허브의-차이점">브릿지와 허브의 차이점</a></li>
+        </ul>
+      </li>
+      <li><a href="#wan-wide-area-network" id="markdown-toc-wan-wide-area-network">WAN (Wide Area Network)</a></li>
+      <li><a href="#internet" id="markdown-toc-internet">internet</a></li>
+    </ul>
+  </li>
+  <li><a href="#글로벌-ip-인터넷" id="markdown-toc-글로벌-ip-인터넷">글로벌 IP 인터넷</a>    <ul>
+      <li><a href="#ip-주소" id="markdown-toc-ip-주소">IP 주소</a>        <ul>
+          <li><a href="#dotted-decimal" id="markdown-toc-dotted-decimal">Dotted-decimal</a></li>
+        </ul>
+      </li>
+      <li><a href="#인터넷-도메인-이름" id="markdown-toc-인터넷-도메인-이름">인터넷 도메인 이름</a></li>
+      <li><a href="#인터넷-연결" id="markdown-toc-인터넷-연결">인터넷 연결</a></li>
+    </ul>
+  </li>
+  <li><a href="#소켓-인터페이스" id="markdown-toc-소켓-인터페이스">소켓 인터페이스</a>    <ul>
+      <li><a href="#소켓-주소-구조체" id="markdown-toc-소켓-주소-구조체">소켓 주소 구조체</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>흥미로운 것은 모든 네트워크 응용들은 동일한 기본적인 프로그래밍 모델에 기초하고 있으며, 이들은 비슷한 전체 논리 구조를 가지며, 동일한 프로그래밍 인터페이스를 사용한다는 점이다. 개념들을 설명하고 난 후 개념들을 모두 연결해서 아주 작지만 실제로 동작하는 웹 서버를 개발할 것이다.</p>
+
+<h2 id="클라이언트---서버-프로그래밍-모델">클라이언트 - 서버 프로그래밍 모델</h2>
+
+<p>** 모든 네트워크 응용 프로그램은 클라이언트-서버 모델에 기초하고 있다.** 아래와 같은 사진과 같이 한 개의 서버 프로세스와 한 개 이상의 클라이언트 프로세스로 구성된다.</p>
+
+<p><img src="/assets/img/blog/computerscience/clientservertransaction.png" alt="클라이언트 서버 모델" /></p>
+
+<ol>
+  <li>
+    <p>클라이언트가 한 개의 요청(request)을 서버에 보내는 것으로 트랜잭션을 개시한다. 예를 들어, 웹 브라우저가 파일을 필요로 할때, 웹 서버로 요청을 보낸다.</p>
+  </li>
+  <li>
+    <p>서버는 요청을 받고, 해석하고, 자신의 자원들을 적절한 방법으로 조작한다. 예를 들어, 웹 서버가 브라우저로부터 요청을 받을 때, 디스크 파일을 읽는다.</p>
+  </li>
+  <li>
+    <p>서버는 응답(response)을 클라이언트로 보내고, 그 후에 다음 요청을 기다린다. 예를 들어, 웹 서버는 이 파일을 다시 클라이언트로 돌려보낸다.</p>
+  </li>
+  <li>
+    <p>클라이언트는 응답을 받고 이걸을 처리한다. 예를 들어, 웹 브라우저가 서버로부터 페이지를 한 개 받은 후, 이것을 스크린에 디스플레이한다.</p>
+  </li>
+</ol>
+
+<h2 id="네트워크">네트워크</h2>
+
+<p>물리적으로 네트워크는 기하학적 위치로 구성된 <strong>계층구조 시스템</strong>이다 하위수준은 <strong>LAN(Local Area Network)</strong>으로 빌딩이나 캠퍼스에 설치된다. 가장 대중적인 LAN기술은 현재까지는 이더넷(Ehternet)이며, 시간에 따라서 엄청 발전되어 왔다. 이더넷(Ethernet)에 관련한 설명은 아래에 있다.</p>
+
+<h3 id="nic-network-interface-card">NIC (Network Interface Card)</h3>
+
+<p>호스트에게 네트워크는 단지 또 다른 I/O 디바이스이다. 아래 사진과 같이 네트워크에서 수신한 데이터는 I/O와 메모리 버스를 거쳐서 어댑터에서 메모리로, 대개 DMA 전송으로 복사된다. 비슷하게 데이터는 또한 메모리에서 네트워크로 복사될 수 있다.</p>
+
+<p><img src="/assets/img/blog/computerscience/hosthardwareorganization.png" alt="호스트의 네트워크 구성" /></p>
+
+<h3 id="이더넷-ethernet">이더넷 (Ethernet)</h3>
+
+<p>이더넷 세그먼트는 아래 사진과 같이 몇 개의 전선들과 허브라고 부르는 작은 상자로 구성된다. 한쪽 끝은 호스트의 어댑터에 연결되고, 다른 끝은 허브의 포트에 연결된다. 허브는 각 포트에서 수신한 모든 비트를 종속적으로 다른 모든 포트로 복사한다.</p>
+
+<p><img src="/assets/img/blog/computerscience/ethernetsegment.png" alt="이더넷 세그먼트" /></p>
+
+<ul>
+  <li>
+    <p><strong>이더넷 어댑터</strong>는 어댑터의 비휘발성 메모리에 저장된 전체적으로 <strong>고유한 48비트 주소</strong>를 가진다.</p>
+  </li>
+  <li>
+    <p>호스트는 <strong>프레임</strong>이라고 부르는 비트들을 세그먼트의 다른 호스트에 보낼 수 있다.</p>
+  </li>
+  <li>
+    <p>각 <strong>프레임</strong>은 프레임의 <strong>소스</strong>와 <strong>목적지</strong>, 프레임의 <strong>길이</strong>를 식별할 수 있는 고정된 <strong>헤더 비트</strong>를 가지고 있으며, 그 뒤에 데이터 비트가 이어진다.</p>
+  </li>
+  <li>
+    <p>모든 호스트 어댑터는 이 프레임을 볼 수 있지만, 목적지 호스트만이 실제로 이것을 읽어들인다.</p>
+  </li>
+</ul>
+
+<h4 id="더-큰-lan---브릿지의-등장">더 큰 LAN - 브릿지의 등장</h4>
+
+<p>아래 사진에 나타난 것처럼 전선들과 브릿지라고 하는 작은 상자들을 사용해서 **다수의 이더넷 세그먼트가 연결되어 브릿지형 이더넷이라고 하는 더 큰 LAN을 구성할 수 있다.</p>
+
+<p><img src="/assets/img/blog/computerscience/bridgedethernetsegments.png" alt="브릿지로 연결된 이더넷 세그먼트" /></p>
+
+<ul>
+  <li>
+    <p>브릿지형 이더넷에서 일부 선은 브릿지를 브릿지로 연결하고, 다른 선들은 브릿지를 허브로 연결한다.</p>
+  </li>
+  <li>
+    <p>각 선의 대역폭은 다를 수 있다. 우리의 예제에서 브릿지-브릿지선은 1Gb/s 대역폭을, 네 개의 허브-브릿지 선은 100Mb/s 대역폭을 가진다.</p>
+  </li>
+</ul>
+
+<h4 id="브릿지와-허브의-차이점">브릿지와 허브의 차이점</h4>
+
+<ul>
+  <li>
+    <p>브릿지는 허브보다 더 높은 전선의 대역폭을 가진다.</p>
+  </li>
+  <li>
+    <p>허브는 각 포트에서 수신한 모든 비트를 종속적으로 다른 모든 포트로 복사한다.</p>
+  </li>
+  <li>
+    <p>브릿지는 우수한 분산 알고리즘을 통해 필요한 경우 선택적으로 하나의 포트에서 다른 포트로 프레임을 복사한다.</p>
+  </li>
+</ul>
+
+<h3 id="wan-wide-area-network">WAN (Wide Area Network)</h3>
+
+<p>계층구조의 상부에서 다수의 비호환성 LAN들은 라우터라고 부르는 특별한 컴퓨터에 의해서 연결될 수 있으며, <strong>라우터는 네트워크 간 연결을 구성한다(상호연결 네트워크)</strong>. 각 라우터는 이들이 연결되는 각 네트워크에 대해 어댑터(포트)를 가지고 있다. <strong>라우터는 또한 고속의 point-to-point 전화 연결을 할 수 있으며, 이들은 WAN이라고 하는 네트워크의 사례다</strong>. 이 이름은 이들이 LAN보다 지리적으로 더 넓은 지역에서 운용되기 때문에 불리게 되었다.</p>
+
+<h3 id="internet">internet</h3>
+
+<p><strong>internet의 중요한 특성은 이것이 매우 다르고 비호환적인 기술을 갖는 여러 가지 LAN과 WAN들로 이루어져 있다는 점이다</strong>. internet 프로토콜은 두 가지 기본 기능을 제공해야 한다.</p>
+
+<ul>
+  <li>
+    <p>명명법(Naming Scheme) : internet 프로토콜은 호스트 주소를 위한 통일된 포맷을 정의해서 이 차이점들을 줄인다.</p>
+  </li>
+  <li>
+    <p>전달기법(Delivery Mechanism) : internet 프로토콜은 데이터 비트를 패킷(packet)이라고 부르는 비연속적인 단위로 묶는 통일된 방법을 정의해서 이 차이점을 줄인다. 패킷은 패킷 크기와 소스 및 목적지 호스트 주소를 포함하는 헤더와 소스 호스트가 보낸 데이터 비트를 포함하는 데이터로 구성된다. 이것을 Datagram이라고도 부른다.</p>
+  </li>
+</ul>
+
+<p>전달기법 관련하여서 패킷화하는 과정은 아래 사진과 같다. 여기서 말하는 Datagram은 (1) → (2) 로 가는 방법이다.</p>
+
+<p><img src="/assets/img/blog/computerscience/internetpacket.png" alt="인터넷 패킷화 과정" /></p>
+
+<h2 id="글로벌-ip-인터넷">글로벌 IP 인터넷</h2>
+
+<p>인터넷 클라이언트 - 서버 응용의 기본적인 하드웨어 및 소프트웨어 구조는 아래 사진과 같으며, 이 구조는 1980년대 이후로 안정적이었다.</p>
+
+<p><img src="/assets/img/blog/computerscience/clientserverstructure.png" alt="클라이언트 서버 구조" /></p>
+
+<p>각 인터넷 호스트는 TCP/IP 프로토콜(Transmission Control Protocol/Internet Protocol)을 구현한 소프트웨어를 실행하며, 이것은 거의 모든 현대 컴퓨터 시스템에서 지원되고 있다.</p>
+
+<p>관련한 프로토콜 HTTP/TCP/UDP 관련하여서는 <a href="../../computersystem/http-tcp-udp" class="heading flip-title">HTTP, TCP, UDP</a>을 참고하면 된다.</p>
+
+<h3 id="ip-주소">IP 주소</h3>
+
+<p>IPv4 주소는 비부호형 32비트 정수다. 네트워크 프로그램은 IP주소를 아래와 같은 IP주소 구조체에 저장한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* IP address structure */</span>
+<span class="k">struct</span> <span class="n">in_addr</span> <span class="p">{</span>
+<span class="kt">uint32_t</span> <span class="n">s_addr</span><span class="p">;</span> <span class="cm">/* Address in network byte order (big-endian) */</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>TCP/IP는 네트워크 패킷 헤더에 포함되는 IP 주소 같은 모든 정수형 데이터 아이템에 대해서 통일된 <strong>Network Byte Order(Big Endian 바이트 순서)</strong>를 정의한다.</p>
+
+<ul>
+  <li>
+    <p>Big Endian : 가장 큰 자릿값(최상위 바이트)을 가장 낮은 주소에, 그 다음 바이트를 뒤쪽 주소에 차례로 저장</p>
+  </li>
+  <li>
+    <p>Little Endian : 반대로 최하위 바이트를 가장 낮은 주소에 두고, 큰 바이트로 갈수록 주소가 커짐. x86, ARM(Android/iOS) 같은 현대 CPU 대부분이 사용함</p>
+  </li>
+</ul>
+
+<h4 id="dotted-decimal">Dotted-decimal</h4>
+
+<p>IP 주소는 대게 사람들에게 dotted-decimal 표기라고 하는 형식으로 제시되며, 이것은 각 바이트가 십진수 값을 사용하고 다른 바이트들과는 점을 사용해서 구분된다. 아래와 같은 것이 dotted-decimal이다.</p>
+
+<pre><code class="language-linux">linux&gt; hostname -i
+128.2.210.175
+</code></pre>
+
+<h3 id="인터넷-도메인-이름">인터넷 도메인 이름</h3>
+
+<p><strong>DNS(Domain Name System)</strong> 데이터베이스는 수백만 개의 호스트 엔트리로 구성되어 있으며, 이들 각각은 도메인 이름의 집합과 IP 주소 집합 사이의 매핑을 정의한다.</p>
+
+<p>4가지의 매핑을 아래에 나열하겠다.</p>
+
+<ol>
+  <li>가장 간단한 경우로, 도메인 이름과 IP 주소 사이의 일대일 매핑</li>
+</ol>
+
+<pre><code class="language-linux">linux&gt; nslookup whaleshark.ics.cs.cmu.edu
+Address: 128.2.210.175
+</code></pre>
+
+<ol>
+  <li>다수의 도메인 이름이 동일한 IP 주소에 매핑</li>
+</ol>
+
+<pre><code class="language-linux">linux&gt; nslookup cs.mit.edu
+Address: 18.62.1.6
+
+linux&gt; nslookup eecs.mit.edu
+Address: 18.62.1.6
+</code></pre>
+
+<ol>
+  <li>다수의 도메인 이름들은 다수의 IP 주소로 매핑</li>
+</ol>
+
+<pre><code class="language-linux">linux&gt; nslookup www.twitter.com
+Address: 199.16.156.6
+Address: 199.16.156.70
+Address: 199.16.156.102
+Address: 199.16.156.230
+
+linux&gt; nslookup twitter.com
+Address: 199.16.156.102
+Address: 199.16.156.230
+Address: 199.16.156.6
+Address: 199.16.156.70
+</code></pre>
+
+<ol>
+  <li>마지막으로, 일부 유효한 도메인 이름들은 어떤 IP 주소에도 매핑되어 있지 않다.</li>
+</ol>
+
+<pre><code class="language-linux">linux&gt; nslookup edu
+*** Can’t find edu: No answer
+linux&gt; nslookup ics.cs.cmu.edu
+*** Can’t find ics.cs.cmu.edu: No answer
+</code></pre>
+
+<h3 id="인터넷-연결">인터넷 연결</h3>
+
+<p><strong>인터넷 client와 server는 연결(connection)을 통해서 바이트 스트림을 주고받는 방식으로 통신한다</strong>. 이 연결은 두개의 프로세스를 연결한다는 점에서 <strong>point-to-point 연결</strong>이다. 데이터가 동시에 양방향으로 흐를 수 있다는 의미에서 이것은 <strong>완전양방향(full-duplex)</strong>이다.</p>
+
+<ul>
+  <li>
+    <p>소켓(Socket)은 연결의 종단점이다.</p>
+  </li>
+  <li>
+    <p>각 소켓은 인터넷 주소와 16비트 정수 포트로 이루어진 소켓 주소를 가지며, 이것은 address : port로 나타낸다.</p>
+  </li>
+  <li>
+    <p>클라이언트의 소켓 주소 내의 포트는 클라이언트가 연결 요청을 할 때 커널이 자동으로 할당하며, 이것은 단기(Ephemeral) 포트라고 한다.</p>
+  </li>
+  <li>
+    <p>서버는 서비스에 연관된 포트를 사용한다.</p>
+  </li>
+</ul>
+
+<p>인터넷 연결같은 경우 두 개의 종단점의 소켓 주소에 의해 유일하게 식별된다. 이 두개의 소켓 주소는 소켓 쌍이라고 알려져 있으며, 아래와 같이 tuple로 나타낸다.</p>
+
+<p><img src="/assets/img/blog/computerscience/internetconnection.png" alt="인터넷 연결의 구조" /></p>
+
+<h2 id="소켓-인터페이스">소켓 인터페이스</h2>
+
+<p>소켓 인터페이스는 네트워크 응용을 만들기 위한 Unix I/O 함수들과 함께 사용되는 함수들의 집합이다.</p>
+
+<h3 id="소켓-주소-구조체">소켓 주소 구조체</h3>
+
+<p><strong>리눅스 커널의 관점에서 보면, 소켓은 통신을 위한 끝점이다. Unix 프로그램의 관점에서 보면 소켓은 해당 식별자를 가지는 열린 파일이다</strong>.</p>
+
+<ul>
+  <li>Unix 프로그램에서는 network도 파일처럼 여겨진다.</li>
+</ul>
+
+<p>인터넷 소켓 주소는 아래 코드와 같이</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* IP socket address structure */</span>
+<span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="p">{</span>
+<span class="kt">uint16_t</span> <span class="n">sin_family</span><span class="p">;</span> <span class="cm">/* Protocol family (always AF_INET) */</span>
+<span class="kt">uint16_t</span> <span class="n">sin_port</span><span class="p">;</span> <span class="cm">/* Port number(16bit) in network byte order */</span>
+<span class="k">struct</span> <span class="n">in_addr</span> <span class="n">sin_addr</span><span class="p">;</span> <span class="cm">/* IP address in network byte order */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">sin_zero</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span> <span class="cm">/* Pad to sizeof(struct sockaddr) */</span>
+<span class="p">};</span>
+
+<span class="cm">/* Generic socket address structure (for connect, bind, and accept) */</span>
+<span class="k">struct</span> <span class="n">sockaddr</span> <span class="p">{</span>
+<span class="kt">uint16_t</span> <span class="n">sa_family</span><span class="p">;</span> <span class="cm">/* Protocol family */</span>
+<span class="kt">char</span> <span class="n">sa_data</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span> <span class="cm">/* Address data */</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+  
+</article>
+
+
+
+  <hr class="dingbat related mb6" />
+
+
+
+
+
+
+  
+     
+
+
+  <aside class="about related mt4 mb4" role="complementary">
+    
+    
+
+<div class="author mt4">
+  
+
+  
+    
+
+
+<img
+  
+    src="https://via.placeholder.com/128x128"
+    srcset="https://via.placeholder.com/128x128 1x,https://via.placeholder.com/256x256 2x"
+    
+  
+  alt="Kwansoo Kim"
+  class="avatar"
+  
+  width="120"
+  height="120"
+  loading="lazy"
+/>
+
+  
+
+  
+  
+  <h2  class="page-title hr-bottom">
+    About
+  </h2>
+
+  <p>noob in Computer Science, currently getting education in Krafton Jungle.</p>
+
+
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+
+  </aside>
+
+
+  
+
+  
+    
+
+
+  
+
+  
+    
+
+
+  <aside class="other-projects related mb0" role="complementary">  <h2>Related Posts</h2>  <div class="columns">          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/computersystem/http-tcp-udp/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/ComputerSystem.png"    alt="HTTP, TCP, UDP"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/computersystem/http-tcp-udp/" class="flip-title">HTTP, TCP, UDP</a>  </h3>      <p class="project-card-text fine" property="disambiguatingDescription">      HTTP, TCP, UDP는 네트워크 통신에서 자주 등장하는 개념들이고, 이들은 OSI 7계층 모델 또는 TCP/IP 4계층 모델의 서로 다른 계층에 위치해 있어. 아래에 각 개념과 계층별 차이점을 정리해줄게    </p>      <a class="fill-card no-hover" href="/blog/computersystem/http-tcp-udp/" tabindex="-1"><span class="sr-only">Continue reading HTTP, TCP, UDP</span></a></article>              </div>          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/computersystem/datagram-stream-socket/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/ComputerSystem.png"    alt="Datagram Socket과 Stream Socket"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/computersystem/datagram-stream-socket/" class="flip-title">Datagram Socket과 Stream Socket</a>  </h3>      <p class="project-card-text fine" property="disambiguatingDescription">      Datagram Socket과 Stream Socket은 네트워크 통신 방식에 따라 소켓을 분류한 두 가지 종류이며, 각각은 UDP와 TCP를 기반으로 두고 있음    </p>      <a class="fill-card no-hover" href="/blog/computersystem/datagram-stream-socket/" tabindex="-1"><span class="sr-only">Continue reading Datagram Socket과 Stream Socket</span></a></article>              </div>      </div></aside>
+
+  
+
+  
+    
+
+
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/time-and-space-complexity(wBig-O)/" class="flip-title"><span>시간과 공간 복잡도(w.BigO)</span></a>  <time class="faded fine" datetime="2025-03-18T00:00:00+00:00">18 Mar 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/b-tree/" class="flip-title"><span>B-Tree & B+Tree</span></a>  <time class="faded fine" datetime="2025-04-02T00:00:00+00:00">02 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/hash-table-and-hashing/" class="flip-title"><span>해시 테이블(Hash table), 해시법(Hashing)</span></a>  <time class="faded fine" datetime="2025-03-24T00:00:00+00:00">24 Mar 2025</time></li>      </ul></aside>
+
+  
+
+  
+    
+
+  
+
+
+  
+<footer class="content" role="contentinfo">
+  <hr/>
+  
+    <p><small class="copyright">© 2024. All rights reserved.
+</small></p>
+  
+  
+    <nav class="legal"><small>
+    
+      
+      <a class="heading flip-title" href="/LICENSE/">LICENSE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/NOTICE/">NOTICE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/CHANGELOG/">CHANGELOG</a>
+      
+    
+    </small></nav>
+  
+  
+  <hr class="sr-only"/>
+</footer>
+
+
+</main>
+
+  <hy-drawer
+  id="_drawer"
+  class=""
+  side="left"
+  threshold="10"
+  noscroll
+  
+>
+  <header id="_sidebar" class="sidebar" role="banner">
+    
+
+
+
+
+<div class="sidebar-bg sidebar-overlay" style="background-color:rgb(200,200,200);background-image:url(/assets/img/sidebar-bg.png)"></div>
+
+    <div class="sidebar-sticky">
+  <div class="sidebar-about">
+    
+      <a class="no-hover" href="/" tabindex="-1">
+        <img src="/assets/img/PurifiedPotion.png" class="avatar" alt="PurifiedPotion's Blog" width="120" height="120" loading="lazy" />
+      </a>
+    
+    <a class="sidebar-title" href="/"><h2 class="h1">PurifiedPotion's Blog</h2></a>
+    
+    
+      <p class="">
+        Blog for Computer Science
+
+      </p>
+    
+  </div>
+
+  <nav class="sidebar-nav heading" role="navigation">
+    <span class="sr-only">Navigation:</span>
+<ul>
+  
+    
+      
+      <li>
+        <a
+          id="_drawer--opened"
+          href="/algorithm/"
+          class="sidebar-nav-item "
+          
+        >
+          ALGORITHM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/c/"
+          class="sidebar-nav-item "
+          
+        >
+          C 언어
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/computersystem/"
+          class="sidebar-nav-item "
+          
+        >
+          COMPUTER SYSTEM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/diary/"
+          class="sidebar-nav-item "
+          
+        >
+          회고
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/projects/"
+          class="sidebar-nav-item "
+          
+        >
+          PROJECTS
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/docs/"
+          class="sidebar-nav-item "
+          
+        >
+          DOCUMENTATION
+        </a>
+      </li>
+    
+  
+</ul>
+
+  </nav>
+
+  
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+  </header>
+</hy-drawer>
+<hr class="sr-only" hidden />
+
+</hy-push-state>
+
+
+  <!--[if gt IE 10]><!---->
+  <script nomodule>(()=>{var t,n=document.createElement("script");!("noModule"in n)&&"onbeforeload"in n&&(t=!1,document.addEventListener("beforeload",function(e){if(e.target===n)t=!0;else if(!e.target.hasAttribute("nomodule")||!t)return;e.preventDefault()},!0),n.type="module",n.src=".",document.head.appendChild(n),n.remove())})();
+</script>
+  <script src="/assets/js/hydejack-9.2.1.js" type="module"></script>
+  <script src="/assets/js/LEGACY-hydejack-9.2.1.js" nomodule defer></script>
+  
+
+  
+
+  <script type="module">
+    if ('serviceWorker' in navigator) {
+      /**/
+      navigator.serviceWorker.getRegistration()
+        .then(r => r.unregister())
+        .catch(() => {});
+      /**/
+    }
+  </script>
+<!--<![endif]-->
+  
+
+
+
+<div hidden>
+  
+  <h2 class="sr-only">Templates (for web app):</h2>
+
+  <template id="_animation-template">
+  <div class="animation-main fixed-top">
+    <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+</ul></nav>
+    <div class="content">
+      <div class="page"></div>
+    </div>
+  </div>
+</template>
+
+  <template id="_loading-template">
+  <div class="loading nav-btn fr">
+    <span class="sr-only">Loading…</span>
+    <span class="icon-cog"></span>
+  </div>
+</template>
+
+  <template id="_error-template">
+  <div class="page">
+    <h1 class="page-title">Error</h1>
+    
+    
+    <p class="lead">
+      Sorry, an error occurred while loading <a class="this-link" href=""></a>.
+
+    </p>
+  </div>
+</template>
+
+  <template id="_permalink-template">
+  <a href="#" class="permalink">
+    <span class="sr-only">Permalink</span>
+    <span class="content-hash"></span>
+  </a>
+</template>
+
+  
+    <template id="_cookies-banner-template">
+  <div id="_cookies-banner" class="navbar fixed-bottom CookiesOK">
+    <div class="content">
+      <div class="nav-btn-bar">
+        <small class="faded">
+          <span>This site uses cookies. <a href="/cookies-policy/">Cookies Policy</a>.
+</span>
+          <button id="_cookies-ok" class="btn btn-primary btn-sm">Okay</button>
+        </small>
+      </div>
+    </div>
+  </div>
+</template>
+
+  
+  
+    <template id="_dark-mode-template">
+  <button id="_dark-mode" class="nav-btn no-hover" >
+    <span class="sr-only">Dark Mode</span>
+    <span class="icon-brightness-contrast"></span>
+  </button>
+</template>
+
+  
+  
+    <template id="_search-template">
+  <button id="_search" class="nav-btn no-hover">
+    <label class="sr-only" for="_search-input">Search</label>
+    <span class="icon-search"></span>
+  </button>
+  <div id="_search-box">
+    <div class="nav-btn">
+      <span class="icon-search"></span>
+    </div>
+    <input 
+      id="_search-input"
+      type="search"
+      class="form-control form-control-lg nav-btn"
+      placeholder="Build with JEKYLL_ENV=production to enable search."
+    />
+    <button type="reset" class="nav-btn no-hover">
+      <span class="sr-only">Close</span>
+      <span class="icon-cross"></span>
+    </button>
+  </div>
+  <div id="_hits"></div>
+</template>
+
+  
+</div>
+
+</body>
+</html>

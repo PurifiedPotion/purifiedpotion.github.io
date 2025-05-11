@@ -1,5 +1,278 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-08T07:55:41+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
-</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">8주차 퀴즈</title><link href="/blog/algorithm/8th-week/" rel="alternate" type="text/html" title="8주차 퀴즈" /><published>2025-05-06T00:00:00+00:00</published><updated>2025-05-06T00:00:00+00:00</updated><id>/blog/algorithm/8th-week</id><content type="html" xml:base="/blog/algorithm/8th-week/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-11T09:42:19+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현</title><link href="/blog/computersystem/network-programming/" rel="alternate" type="text/html" title="CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>/blog/computersystem/network-programming</id><content type="html" xml:base="/blog/computersystem/network-programming/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#클라이언트---서버-프로그래밍-모델" id="markdown-toc-클라이언트---서버-프로그래밍-모델">클라이언트 - 서버 프로그래밍 모델</a></li>
+  <li><a href="#네트워크" id="markdown-toc-네트워크">네트워크</a>    <ul>
+      <li><a href="#nic-network-interface-card" id="markdown-toc-nic-network-interface-card">NIC (Network Interface Card)</a></li>
+      <li><a href="#이더넷-ethernet" id="markdown-toc-이더넷-ethernet">이더넷 (Ethernet)</a>        <ul>
+          <li><a href="#더-큰-lan---브릿지의-등장" id="markdown-toc-더-큰-lan---브릿지의-등장">더 큰 LAN - 브릿지의 등장</a></li>
+          <li><a href="#브릿지와-허브의-차이점" id="markdown-toc-브릿지와-허브의-차이점">브릿지와 허브의 차이점</a></li>
+        </ul>
+      </li>
+      <li><a href="#wan-wide-area-network" id="markdown-toc-wan-wide-area-network">WAN (Wide Area Network)</a></li>
+      <li><a href="#internet" id="markdown-toc-internet">internet</a></li>
+    </ul>
+  </li>
+  <li><a href="#글로벌-ip-인터넷" id="markdown-toc-글로벌-ip-인터넷">글로벌 IP 인터넷</a>    <ul>
+      <li><a href="#ip-주소" id="markdown-toc-ip-주소">IP 주소</a>        <ul>
+          <li><a href="#dotted-decimal" id="markdown-toc-dotted-decimal">Dotted-decimal</a></li>
+        </ul>
+      </li>
+      <li><a href="#인터넷-도메인-이름" id="markdown-toc-인터넷-도메인-이름">인터넷 도메인 이름</a></li>
+      <li><a href="#인터넷-연결" id="markdown-toc-인터넷-연결">인터넷 연결</a></li>
+    </ul>
+  </li>
+  <li><a href="#소켓-인터페이스" id="markdown-toc-소켓-인터페이스">소켓 인터페이스</a>    <ul>
+      <li><a href="#소켓-주소-구조체" id="markdown-toc-소켓-주소-구조체">소켓 주소 구조체</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>흥미로운 것은 모든 네트워크 응용들은 동일한 기본적인 프로그래밍 모델에 기초하고 있으며, 이들은 비슷한 전체 논리 구조를 가지며, 동일한 프로그래밍 인터페이스를 사용한다는 점이다. 개념들을 설명하고 난 후 개념들을 모두 연결해서 아주 작지만 실제로 동작하는 웹 서버를 개발할 것이다.</p>
+
+<h2 id="클라이언트---서버-프로그래밍-모델">클라이언트 - 서버 프로그래밍 모델</h2>
+
+<p>** 모든 네트워크 응용 프로그램은 클라이언트-서버 모델에 기초하고 있다.** 아래와 같은 사진과 같이 한 개의 서버 프로세스와 한 개 이상의 클라이언트 프로세스로 구성된다.</p>
+
+<p><img src="/assets/img/blog/computerscience/clientservertransaction.png" alt="클라이언트 서버 모델" /></p>
+
+<ol>
+  <li>
+    <p>클라이언트가 한 개의 요청(request)을 서버에 보내는 것으로 트랜잭션을 개시한다. 예를 들어, 웹 브라우저가 파일을 필요로 할때, 웹 서버로 요청을 보낸다.</p>
+  </li>
+  <li>
+    <p>서버는 요청을 받고, 해석하고, 자신의 자원들을 적절한 방법으로 조작한다. 예를 들어, 웹 서버가 브라우저로부터 요청을 받을 때, 디스크 파일을 읽는다.</p>
+  </li>
+  <li>
+    <p>서버는 응답(response)을 클라이언트로 보내고, 그 후에 다음 요청을 기다린다. 예를 들어, 웹 서버는 이 파일을 다시 클라이언트로 돌려보낸다.</p>
+  </li>
+  <li>
+    <p>클라이언트는 응답을 받고 이걸을 처리한다. 예를 들어, 웹 브라우저가 서버로부터 페이지를 한 개 받은 후, 이것을 스크린에 디스플레이한다.</p>
+  </li>
+</ol>
+
+<h2 id="네트워크">네트워크</h2>
+
+<p>물리적으로 네트워크는 기하학적 위치로 구성된 <strong>계층구조 시스템</strong>이다 하위수준은 <strong>LAN(Local Area Network)</strong>으로 빌딩이나 캠퍼스에 설치된다. 가장 대중적인 LAN기술은 현재까지는 이더넷(Ehternet)이며, 시간에 따라서 엄청 발전되어 왔다. 이더넷(Ethernet)에 관련한 설명은 아래에 있다.</p>
+
+<h3 id="nic-network-interface-card">NIC (Network Interface Card)</h3>
+
+<p>호스트에게 네트워크는 단지 또 다른 I/O 디바이스이다. 아래 사진과 같이 네트워크에서 수신한 데이터는 I/O와 메모리 버스를 거쳐서 어댑터에서 메모리로, 대개 DMA 전송으로 복사된다. 비슷하게 데이터는 또한 메모리에서 네트워크로 복사될 수 있다.</p>
+
+<p><img src="/assets/img/blog/computerscience/hosthardwareorganization.png" alt="호스트의 네트워크 구성" /></p>
+
+<h3 id="이더넷-ethernet">이더넷 (Ethernet)</h3>
+
+<p>이더넷 세그먼트는 아래 사진과 같이 몇 개의 전선들과 허브라고 부르는 작은 상자로 구성된다. 한쪽 끝은 호스트의 어댑터에 연결되고, 다른 끝은 허브의 포트에 연결된다. 허브는 각 포트에서 수신한 모든 비트를 종속적으로 다른 모든 포트로 복사한다.</p>
+
+<p><img src="/assets/img/blog/computerscience/ethernetsegment.png" alt="이더넷 세그먼트" /></p>
+
+<ul>
+  <li>
+    <p><strong>이더넷 어댑터</strong>는 어댑터의 비휘발성 메모리에 저장된 전체적으로 <strong>고유한 48비트 주소</strong>를 가진다.</p>
+  </li>
+  <li>
+    <p>호스트는 <strong>프레임</strong>이라고 부르는 비트들을 세그먼트의 다른 호스트에 보낼 수 있다.</p>
+  </li>
+  <li>
+    <p>각 <strong>프레임</strong>은 프레임의 <strong>소스</strong>와 <strong>목적지</strong>, 프레임의 <strong>길이</strong>를 식별할 수 있는 고정된 <strong>헤더 비트</strong>를 가지고 있으며, 그 뒤에 데이터 비트가 이어진다.</p>
+  </li>
+  <li>
+    <p>모든 호스트 어댑터는 이 프레임을 볼 수 있지만, 목적지 호스트만이 실제로 이것을 읽어들인다.</p>
+  </li>
+</ul>
+
+<h4 id="더-큰-lan---브릿지의-등장">더 큰 LAN - 브릿지의 등장</h4>
+
+<p>아래 사진에 나타난 것처럼 전선들과 브릿지라고 하는 작은 상자들을 사용해서 **다수의 이더넷 세그먼트가 연결되어 브릿지형 이더넷이라고 하는 더 큰 LAN을 구성할 수 있다.</p>
+
+<p><img src="/assets/img/blog/computerscience/bridgedethernetsegments.png" alt="브릿지로 연결된 이더넷 세그먼트" /></p>
+
+<ul>
+  <li>
+    <p>브릿지형 이더넷에서 일부 선은 브릿지를 브릿지로 연결하고, 다른 선들은 브릿지를 허브로 연결한다.</p>
+  </li>
+  <li>
+    <p>각 선의 대역폭은 다를 수 있다. 우리의 예제에서 브릿지-브릿지선은 1Gb/s 대역폭을, 네 개의 허브-브릿지 선은 100Mb/s 대역폭을 가진다.</p>
+  </li>
+</ul>
+
+<h4 id="브릿지와-허브의-차이점">브릿지와 허브의 차이점</h4>
+
+<ul>
+  <li>
+    <p>브릿지는 허브보다 더 높은 전선의 대역폭을 가진다.</p>
+  </li>
+  <li>
+    <p>허브는 각 포트에서 수신한 모든 비트를 종속적으로 다른 모든 포트로 복사한다.</p>
+  </li>
+  <li>
+    <p>브릿지는 우수한 분산 알고리즘을 통해 필요한 경우 선택적으로 하나의 포트에서 다른 포트로 프레임을 복사한다.</p>
+  </li>
+</ul>
+
+<h3 id="wan-wide-area-network">WAN (Wide Area Network)</h3>
+
+<p>계층구조의 상부에서 다수의 비호환성 LAN들은 라우터라고 부르는 특별한 컴퓨터에 의해서 연결될 수 있으며, <strong>라우터는 네트워크 간 연결을 구성한다(상호연결 네트워크)</strong>. 각 라우터는 이들이 연결되는 각 네트워크에 대해 어댑터(포트)를 가지고 있다. <strong>라우터는 또한 고속의 point-to-point 전화 연결을 할 수 있으며, 이들은 WAN이라고 하는 네트워크의 사례다</strong>. 이 이름은 이들이 LAN보다 지리적으로 더 넓은 지역에서 운용되기 때문에 불리게 되었다.</p>
+
+<h3 id="internet">internet</h3>
+
+<p><strong>internet의 중요한 특성은 이것이 매우 다르고 비호환적인 기술을 갖는 여러 가지 LAN과 WAN들로 이루어져 있다는 점이다</strong>. internet 프로토콜은 두 가지 기본 기능을 제공해야 한다.</p>
+
+<ul>
+  <li>
+    <p>명명법(Naming Scheme) : internet 프로토콜은 호스트 주소를 위한 통일된 포맷을 정의해서 이 차이점들을 줄인다.</p>
+  </li>
+  <li>
+    <p>전달기법(Delivery Mechanism) : internet 프로토콜은 데이터 비트를 패킷(packet)이라고 부르는 비연속적인 단위로 묶는 통일된 방법을 정의해서 이 차이점을 줄인다. 패킷은 패킷 크기와 소스 및 목적지 호스트 주소를 포함하는 헤더와 소스 호스트가 보낸 데이터 비트를 포함하는 데이터로 구성된다. 이것을 Datagram이라고도 부른다.</p>
+  </li>
+</ul>
+
+<p>전달기법 관련하여서 패킷화하는 과정은 아래 사진과 같다. 여기서 말하는 Datagram은 (1) → (2) 로 가는 방법이다.</p>
+
+<p><img src="/assets/img/blog/computerscience/internetpacket.png" alt="인터넷 패킷화 과정" /></p>
+
+<h2 id="글로벌-ip-인터넷">글로벌 IP 인터넷</h2>
+
+<p>인터넷 클라이언트 - 서버 응용의 기본적인 하드웨어 및 소프트웨어 구조는 아래 사진과 같으며, 이 구조는 1980년대 이후로 안정적이었다.</p>
+
+<p><img src="/assets/img/blog/computerscience/clientserverstructure.png" alt="클라이언트 서버 구조" /></p>
+
+<p>각 인터넷 호스트는 TCP/IP 프로토콜(Transmission Control Protocol/Internet Protocol)을 구현한 소프트웨어를 실행하며, 이것은 거의 모든 현대 컴퓨터 시스템에서 지원되고 있다.</p>
+
+<p>관련한 프로토콜 HTTP/TCP/UDP 관련하여서는 <a href="../../computersystem/http-tcp-udp" class="heading flip-title">HTTP, TCP, UDP</a>을 참고하면 된다.</p>
+
+<h3 id="ip-주소">IP 주소</h3>
+
+<p>IPv4 주소는 비부호형 32비트 정수다. 네트워크 프로그램은 IP주소를 아래와 같은 IP주소 구조체에 저장한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* IP address structure */</span>
+<span class="k">struct</span> <span class="n">in_addr</span> <span class="p">{</span>
+<span class="kt">uint32_t</span> <span class="n">s_addr</span><span class="p">;</span> <span class="cm">/* Address in network byte order (big-endian) */</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>TCP/IP는 네트워크 패킷 헤더에 포함되는 IP 주소 같은 모든 정수형 데이터 아이템에 대해서 통일된 <strong>Network Byte Order(Big Endian 바이트 순서)</strong>를 정의한다.</p>
+
+<ul>
+  <li>
+    <p>Big Endian : 가장 큰 자릿값(최상위 바이트)을 가장 낮은 주소에, 그 다음 바이트를 뒤쪽 주소에 차례로 저장</p>
+  </li>
+  <li>
+    <p>Little Endian : 반대로 최하위 바이트를 가장 낮은 주소에 두고, 큰 바이트로 갈수록 주소가 커짐. x86, ARM(Android/iOS) 같은 현대 CPU 대부분이 사용함</p>
+  </li>
+</ul>
+
+<h4 id="dotted-decimal">Dotted-decimal</h4>
+
+<p>IP 주소는 대게 사람들에게 dotted-decimal 표기라고 하는 형식으로 제시되며, 이것은 각 바이트가 십진수 값을 사용하고 다른 바이트들과는 점을 사용해서 구분된다. 아래와 같은 것이 dotted-decimal이다.</p>
+
+<pre><code class="language-linux">linux&gt; hostname -i
+128.2.210.175
+</code></pre>
+
+<h3 id="인터넷-도메인-이름">인터넷 도메인 이름</h3>
+
+<p><strong>DNS(Domain Name System)</strong> 데이터베이스는 수백만 개의 호스트 엔트리로 구성되어 있으며, 이들 각각은 도메인 이름의 집합과 IP 주소 집합 사이의 매핑을 정의한다.</p>
+
+<p>4가지의 매핑을 아래에 나열하겠다.</p>
+
+<ol>
+  <li>가장 간단한 경우로, 도메인 이름과 IP 주소 사이의 일대일 매핑</li>
+</ol>
+
+<pre><code class="language-linux">linux&gt; nslookup whaleshark.ics.cs.cmu.edu
+Address: 128.2.210.175
+</code></pre>
+
+<ol>
+  <li>다수의 도메인 이름이 동일한 IP 주소에 매핑</li>
+</ol>
+
+<pre><code class="language-linux">linux&gt; nslookup cs.mit.edu
+Address: 18.62.1.6
+
+linux&gt; nslookup eecs.mit.edu
+Address: 18.62.1.6
+</code></pre>
+
+<ol>
+  <li>다수의 도메인 이름들은 다수의 IP 주소로 매핑</li>
+</ol>
+
+<pre><code class="language-linux">linux&gt; nslookup www.twitter.com
+Address: 199.16.156.6
+Address: 199.16.156.70
+Address: 199.16.156.102
+Address: 199.16.156.230
+
+linux&gt; nslookup twitter.com
+Address: 199.16.156.102
+Address: 199.16.156.230
+Address: 199.16.156.6
+Address: 199.16.156.70
+</code></pre>
+
+<ol>
+  <li>마지막으로, 일부 유효한 도메인 이름들은 어떤 IP 주소에도 매핑되어 있지 않다.</li>
+</ol>
+
+<pre><code class="language-linux">linux&gt; nslookup edu
+*** Can’t find edu: No answer
+linux&gt; nslookup ics.cs.cmu.edu
+*** Can’t find ics.cs.cmu.edu: No answer
+</code></pre>
+
+<h3 id="인터넷-연결">인터넷 연결</h3>
+
+<p><strong>인터넷 client와 server는 연결(connection)을 통해서 바이트 스트림을 주고받는 방식으로 통신한다</strong>. 이 연결은 두개의 프로세스를 연결한다는 점에서 <strong>point-to-point 연결</strong>이다. 데이터가 동시에 양방향으로 흐를 수 있다는 의미에서 이것은 <strong>완전양방향(full-duplex)</strong>이다.</p>
+
+<ul>
+  <li>
+    <p>소켓(Socket)은 연결의 종단점이다.</p>
+  </li>
+  <li>
+    <p>각 소켓은 인터넷 주소와 16비트 정수 포트로 이루어진 소켓 주소를 가지며, 이것은 address : port로 나타낸다.</p>
+  </li>
+  <li>
+    <p>클라이언트의 소켓 주소 내의 포트는 클라이언트가 연결 요청을 할 때 커널이 자동으로 할당하며, 이것은 단기(Ephemeral) 포트라고 한다.</p>
+  </li>
+  <li>
+    <p>서버는 서비스에 연관된 포트를 사용한다.</p>
+  </li>
+</ul>
+
+<p>인터넷 연결같은 경우 두 개의 종단점의 소켓 주소에 의해 유일하게 식별된다. 이 두개의 소켓 주소는 소켓 쌍이라고 알려져 있으며, 아래와 같이 tuple로 나타낸다.</p>
+
+<p><img src="/assets/img/blog/computerscience/internetconnection.png" alt="인터넷 연결의 구조" /></p>
+
+<h2 id="소켓-인터페이스">소켓 인터페이스</h2>
+
+<p>소켓 인터페이스는 네트워크 응용을 만들기 위한 Unix I/O 함수들과 함께 사용되는 함수들의 집합이다.</p>
+
+<h3 id="소켓-주소-구조체">소켓 주소 구조체</h3>
+
+<p><strong>리눅스 커널의 관점에서 보면, 소켓은 통신을 위한 끝점이다. Unix 프로그램의 관점에서 보면 소켓은 해당 식별자를 가지는 열린 파일이다</strong>.</p>
+
+<ul>
+  <li>Unix 프로그램에서는 network도 파일처럼 여겨진다.</li>
+</ul>
+
+<p>인터넷 소켓 주소는 아래 코드와 같이</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* IP socket address structure */</span>
+<span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="p">{</span>
+<span class="kt">uint16_t</span> <span class="n">sin_family</span><span class="p">;</span> <span class="cm">/* Protocol family (always AF_INET) */</span>
+<span class="kt">uint16_t</span> <span class="n">sin_port</span><span class="p">;</span> <span class="cm">/* Port number(16bit) in network byte order */</span>
+<span class="k">struct</span> <span class="n">in_addr</span> <span class="n">sin_addr</span><span class="p">;</span> <span class="cm">/* IP address in network byte order */</span>
+<span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">sin_zero</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span> <span class="cm">/* Pad to sizeof(struct sockaddr) */</span>
+<span class="p">};</span>
+
+<span class="cm">/* Generic socket address structure (for connect, bind, and accept) */</span>
+<span class="k">struct</span> <span class="n">sockaddr</span> <span class="p">{</span>
+<span class="kt">uint16_t</span> <span class="n">sa_family</span><span class="p">;</span> <span class="cm">/* Protocol family */</span>
+<span class="kt">char</span> <span class="n">sa_data</span><span class="p">[</span><span class="mi">14</span><span class="p">];</span> <span class="cm">/* Address data */</span>
+<span class="p">};</span>
+</code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[우리가 웹을 검색하고, 이메일 메시지를 보내고, 온라인 게임을 하는 등의 모든 경우 우리는 네트워크 응용을 사용한다]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">8주차 퀴즈</title><link href="/blog/algorithm/8th-week/" rel="alternate" type="text/html" title="8주차 퀴즈" /><published>2025-05-06T00:00:00+00:00</published><updated>2025-05-06T00:00:00+00:00</updated><id>/blog/algorithm/8th-week</id><content type="html" xml:base="/blog/algorithm/8th-week/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#8주차-퀴즈" id="markdown-toc-8주차-퀴즈">8주차 퀴즈</a>    <ul>
       <li><a href="#1-http-get-요청과-post-요청의-가장-큰-차이점은-무엇이며-이것이-요청-헤더나-데이터-전송에-어떤-영향을-미칩니까-1점" id="markdown-toc-1-http-get-요청과-post-요청의-가장-큰-차이점은-무엇이며-이것이-요청-헤더나-데이터-전송에-어떤-영향을-미칩니까-1점">1. HTTP GET 요청과 POST 요청의 가장 큰 차이점은 무엇이며, 이것이 요청 헤더나 데이터 전송에 어떤 영향을 미칩니까? (1점)</a></li>
       <li><a href="#2-http-응답-코드-404의-의미는-무엇입니까-그리고-서버가-요청을-처리할-수-없을-때-반환하는-http-상태-코드는-무엇입니까-1점" id="markdown-toc-2-http-응답-코드-404의-의미는-무엇입니까-그리고-서버가-요청을-처리할-수-없을-때-반환하는-http-상태-코드는-무엇입니까-1점">2. HTTP 응답 코드 404의 의미는 무엇입니까? 그리고 서버가 요청을 처리할 수 없을 때 반환하는 HTTP 상태 코드는 무엇입니까? (1점)</a></li>
@@ -1817,1162 +2090,4 @@ final : 1 2 3 4 4 5 5 6</p>]]></content><author><name>Kwansoo Kim</name><email>a
   <li>
     <p>실제 사용시에는 page fault 되면서 물리 메모리 할당이 이루어짐, PTE의 Not-present → Present로 갱신</p>
   </li>
-</ol>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[응용프로그램(User level code)이 Hardware를 조작하고 싶을때, 무엇을 할까?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">수작업으로 Malloc 구현(9.9장)</title><link href="/blog/computersystem/dynamic-memory-allocation/" rel="alternate" type="text/html" title="수작업으로 Malloc 구현(9.9장)" /><published>2025-04-27T00:00:00+00:00</published><updated>2025-04-27T00:00:00+00:00</updated><id>/blog/computersystem/dynamic-memory-allocation</id><content type="html" xml:base="/blog/computersystem/dynamic-memory-allocation/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#malloc-할당" id="markdown-toc-malloc-할당">Malloc 할당</a>    <ul>
-      <li><a href="#응용-프로그램" id="markdown-toc-응용-프로그램">응용 프로그램</a></li>
-      <li><a href="#allocator" id="markdown-toc-allocator">Allocator</a></li>
-      <li><a href="#용어-정리" id="markdown-toc-용어-정리">용어 정리</a></li>
-    </ul>
-  </li>
-  <li><a href="#malloc-할당-기초" id="markdown-toc-malloc-할당-기초">Malloc 할당 기초</a>    <ul>
-      <li><a href="#header-탄생" id="markdown-toc-header-탄생">Header 탄생</a></li>
-      <li><a href="#footer-탄생" id="markdown-toc-footer-탄생">Footer 탄생</a></li>
-      <li><a href="#c-언어로-구현된-malloc" id="markdown-toc-c-언어로-구현된-malloc">C 언어로 구현된 Malloc</a></li>
-    </ul>
-  </li>
-  <li><a href="#명시적-리스트explicit-list에서의-refactoring" id="markdown-toc-명시적-리스트explicit-list에서의-refactoring">명시적 리스트(Explicit list)에서의 refactoring</a>    <ul>
-      <li><a href="#refactoring-함수" id="markdown-toc-refactoring-함수">Refactoring 함수</a></li>
-      <li><a href="#개선된-case-4" id="markdown-toc-개선된-case-4">개선된 Case 4</a></li>
-    </ul>
-  </li>
-</ul>
-
-<p>말록 구현에 앞서, <strong>명시적 할당자(Explicit allocator)</strong>와 <strong>묵시적 할당자(Implicit allocator)</strong>에 대해 알아 보자</p>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center"> </th>
-      <th style="text-align: center">Explicit allocator</th>
-      <th style="text-align: center">Implicit allocator</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">사용 예</td>
-      <td style="text-align: center">C언어에서 malloc 할당과 free</td>
-      <td style="text-align: center">Java의 garbage collection, ML, and Lisp</td>
-    </tr>
-  </tbody>
-</table>
-
-<ul>
-  <li>free 수행에 관해서 직접적인지 또는 간접적인지에 따라서 달라진다</li>
-</ul>
-
-<p><strong>Malloc</strong>에 관하여서는 이전에 포스팅한 <a href="../../c/malloc-calloc-realloc" class="heading flip-title">동적 메모리 할당(Dynamic memory allocation)</a> 을 참조하면 된다</p>
-
-<p>여기서 다룰 내용은 <strong>Explicit allocator</strong>인 malloc 할당을 직접 구현할 예정이다</p>
-
-<h2 id="malloc-할당">Malloc 할당</h2>
-
-<p><img src="/assets/img/blog/computerscience/mallocallocation.png" alt="말록 할당" /></p>
-
-<p>위 사진의 순서 같은 경우 아래와 같다</p>
-
-<ol>
-  <li>
-    <p>p1(int사이즈X4) 할당</p>
-  </li>
-  <li>
-    <p>p2(int사이즈X5) 할당</p>
-  </li>
-  <li>
-    <p>p3(int사이즈X6) 할당</p>
-  </li>
-  <li>
-    <p>p2 free</p>
-  </li>
-  <li>
-    <p>p4(int사이즈X2) 할당</p>
-  </li>
-</ol>
-
-<h3 id="응용-프로그램">응용 프로그램</h3>
-
-<ul>
-  <li>
-    <p>응용프로그램 같은 경우 마음대로 malloc 할당과 free 요청이 가능하다</p>
-  </li>
-  <li>
-    <p>free 할 시에는 malloc된 block이어야 한다</p>
-  </li>
-</ul>
-
-<h3 id="allocator">Allocator</h3>
-
-<p>명시적 할당기들은 아래와 같은 엄격한 제한사항 내에서 동작해야 함</p>
-
-<ul>
-  <li>
-    <p>할당된 블럭의 갯수와 크기에 대한 관리 권한이 없다</p>
-  </li>
-  <li>
-    <p>malloc 요청에 즉각 반응해야 함</p>
-
-    <ul>
-      <li>이 뜻은 추후 할당에 대해 대기가 불가능하다는 것이다</li>
-    </ul>
-  </li>
-  <li>
-    <p>free된 메모리에서만 할당이 가능하다</p>
-  </li>
-  <li>
-    <p>block의 크기에 대해서 정렬 요구사항에 맞추어야 한다</p>
-
-    <ul>
-      <li>
-        <p>리눅스 기준 아래와 같다</p>
-      </li>
-      <li>
-        <p>x86 : 8byte, x86-64 : 16byte</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>free블록에 관해서만 조작이 가능하다</p>
-  </li>
-  <li>
-    <p>일단 malloc할당 되었으면, 움직일 수 없다</p>
-
-    <ul>
-      <li>이 말은 압축이 불가능하다는 이야기</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="용어-정리">용어 정리</h3>
-
-<p><img src="/assets/img/blog/computerscience/blockdefinition.png" alt="블록 용어 정리" /></p>
-
-<ul>
-  <li>
-    <p>Throughput : 시간당 완료된 요청의 갯수 (5000의 malloc할당과 5000의 free요청을 10초 안에 완수하면, 1000operations/second)</p>
-  </li>
-  <li>
-    <p>Payload : 블럭 안에서 실제로 사용할 Data</p>
-  </li>
-  <li>
-    <p>Overhead : 블럭 안에서 payload 제외한 나머지(header, footer, padding)</p>
-  </li>
-  <li>
-    <p>Aggregate payload : 할당된 블럭들의 Data들의 총합</p>
-  </li>
-  <li>
-    <p>최고 이용도(Peak utilization) : 할당기가 힙을 얼마나 효율적으로 사용하는지를 규정하는 많은 방법들 중 하나</p>
-
-    <ul>
-      <li>
-        <p>Pk는 현재 할당된 블록들의 데이터들의 합, Hk는 현재 힙의 크기</p>
-      </li>
-      <li>
-        <p>수식(높은것이 좋다) :
-\(U_k = \frac{\max_{i \le k} P_i}{H_k}\)</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>내부 단편화(Internal fragmentation) : Overhead나 padding에 의해서 발생되는데, 블록 내부에서 메모리를 효율적으로 관리하지 못하는 것</p>
-  </li>
-</ul>
-
-<p><img src="/assets/img/blog/computerscience/externalfragmentation.png" alt="외부 단편화" /></p>
-
-<ul>
-  <li>외부 단편화(External fragmentation) : 가용 블록의 합들은 충분하지만, 가용 블록에 할당할 적당한 크기가 없게 관리가 된것</li>
-</ul>
-
-<h2 id="malloc-할당-기초">Malloc 할당 기초</h2>
-
-<h3 id="header-탄생">Header 탄생</h3>
-
-<p>우리가 포인터를 사용해서 블럭과 블럭을 건너뛰기 위해서는 어떻게 해야 할까? payload가 어디서부터 시작하지? 어디까지 읽어야 하지?</p>
-
-<p>라는 의문에서 탄생한 개념이 ‘<strong>header라는 overhead를 만들어서 거기에 block의 사이즈를 넣으면 어떨까?</strong>’ 이다</p>
-
-<ol>
-  <li>
-    <p>header를 사용해서 각 블럭의 처음으로 순차적으로 탐색이 가능해 졌다</p>
-
-    <ul>
-      <li>
-        <p>그러면 header를 어디에 할당을 할까?</p>
-
-        <ul>
-          <li>
-            <p>규칙이야 만들면 그만이지만, 책에서는 특정 주소를 받으면 payload 시작 주소를 받기로 했다</p>
-          </li>
-          <li>
-            <p>payload 주소를 먼저 받게 되면, 그 앞에 overhead를 추가하기로 했다</p>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>그러면 태초의 주소를 받게 되면, 앞이 없기 때문에 overhead를 못 넣지 않은가?</p>
-
-        <ul>
-          <li>그렇기 때문에 우리는 첫 주소에 항상 overhead용 padding을 해줘야 한다</li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ol>
-
-<p><img src="/assets/img/blog/computerscience/header.png" alt="헤더" /></p>
-
-<p>여기서 추가적으로 우리는 가용 블록 or 비가용 블록인지 확인이 필요하다. 
-그 이유는 할당 블럭에 다른 용도로 또 할당을 하면 안되기 때문.</p>
-
-<p>32bit 기준으로 8byte기준, 64bit system으로는 16byte 정렬이 됨(여기서 정렬이라 하는것은 정렬만큼 최소크기로 블럭을 관리하겠다는 얘기이다)
-그렇게 되면 3bit 또는 4bit는 항상 0으로 남게 된다.</p>
-
-<ol>
-  <li>
-    <p>남게 되는 bit들을 이용해 다른 정보들을 저장하자</p>
-
-    <ul>
-      <li>
-        <p>overhead를 읽을 때 첫 3bit or 4bit를 제외하고 읽고 3bit or 4bit를 따로 읽는것이다. 그렇게 되면 block size와 다른 정보들이 나오게 된다.</p>
-      </li>
-      <li>
-        <p>책에서는 32bit system을 사용해서 3bit가 남고 가장 첫번째 bit에 가용/비가용(1/0)으로 구분하기로 했다</p>
-      </li>
-    </ul>
-  </li>
-</ol>
-
-<p><img src="/assets/img/blog/computerscience/headerwithalloc.png" alt="헤더" /></p>
-
-<h3 id="footer-탄생">Footer 탄생</h3>
-
-<p>할당을 하면서 Free도 하게 될텐데, 그렇게 되면 Free블록이 연속될 수 있다.
-아래와 같은 사진을 보면 4사이즈 가용 블럭과 2사이즈 가용 블럭이 연속된다
-이 상황에서 5사이즈 블럭을 할당하고자 할 때, 할당이 되지 않는 상황(외부 단편화)이 발생한다.</p>
-
-<p><img src="/assets/img/blog/computerscience/sequentialfreeblock.png" alt="연속된 가용 블럭" /></p>
-
-<p>할당이 되지 않는 이유는 코드상 ‘할당하려는 크기보다 같거나 큰 블럭을 찾게 되어 있어서’이다. 
-여기서 다른 방법을 생각할 수도 있지만, 코드를 유지하면서 방법을 생각해보자.</p>
-
-<ol>
-  <li>
-    <p>연속된 가용 블럭이 나오지 않게 하자</p>
-
-    <ul>
-      <li>
-        <p>만약 연속된 가용 블럭이 없으면 아쉽지도 않을 것이다</p>
-      </li>
-      <li>
-        <p>그렇다면 어떻게 가용 블럭이 연속되지 않게 할까?</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>할당된 블럭을 free 할때 앞과 뒤에 가용 블럭이 있다면 병합을 하자</p>
-
-    <ul>
-      <li>
-        <p>뒤에 블록 같은 경우 현재 header에서 사이즈를 더해 확인이 가능</p>
-      </li>
-      <li>
-        <p>앞 블록 같은 경우 사이즈를 모름 → <strong>footer 도입</strong>해서 블럭뒤에 블럭의 크기와 가용/비가용 정보를 저장</p>
-      </li>
-      <li>
-        <p>병합같은 경우 free하고 병합(coalesce)진행</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>(extra) Footer같은 경우 overhead이기 때문에 없는게 좋다. 그렇다면 모든 블럭에 footer가 필요할까?</p>
-
-    <ul>
-      <li>
-        <p>아까 정렬에 따라 3 ~ 4bit가 남는다고 했다. 여기에는 현재 블록의 가용/비가용 정보가 들어가는데, 앞블럭의 가용/비가용 정보를 넣자</p>
-      </li>
-      <li>
-        <p>앞블럭의 가용/비가용 정보가 있으면, 가용 블럭에만 footer가 필요하고 할당된 블럭에는 footer가 필요 없게 된다</p>
-      </li>
-    </ul>
-  </li>
-</ol>
-
-<h3 id="c-언어로-구현된-malloc">C 언어로 구현된 Malloc</h3>
-
-<p>내가 직접 구현하지 않고 CS:APP 교제를 통해 구할 수 있게 되었다. 묵시적 list에 first-fit 할당이다</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
- * mm-naive.c - The fastest, least memory-efficient malloc package.
- *
- * In this naive approach, a block is allocated by simply incrementing
- * the brk pointer.  A block is pure payload. There are no headers or
- * footers.  Blocks are never coalesced or reused. Realloc is
- * implemented directly using mm_malloc and mm_free.
- *
- * NOTE TO STUDENTS: Replace this header comment with your own header
- * comment that gives a high level description of your solution.
- */</span>
-<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;assert.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
-</span>
-<span class="cp">#include</span> <span class="cpf">"mm.h"</span><span class="cp">
-#include</span> <span class="cpf">"memlib.h"</span><span class="cp">
-</span>
-<span class="cm">/*********************************************************
- * NOTE TO STUDENTS: Before you do anything else, please
- * provide your team information in the following struct.
- ********************************************************/</span>
-<span class="n">team_t</span> <span class="n">team</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="cm">/* Team name */</span>
-    <span class="s">"ateam"</span><span class="p">,</span>
-    <span class="cm">/* First member's full name */</span>
-    <span class="s">"Harry Bovik"</span><span class="p">,</span>
-    <span class="cm">/* First member's email address */</span>
-    <span class="s">"bovik@cs.cmu.edu"</span><span class="p">,</span>
-    <span class="cm">/* Second member's full name (leave blank if none) */</span>
-    <span class="s">""</span><span class="p">,</span>
-    <span class="cm">/* Second member's email address (leave blank if none) */</span>
-    <span class="s">""</span><span class="p">};</span>
-
-<span class="cm">/* single word (4) or double word (8) alignment */</span>
-<span class="cp">#define ALIGNMENT 8
-#define WSIZE 4 </span><span class="cm">/* header/footer size */</span><span class="cp">
-#define DSIZE 8 </span><span class="cm">/* double word size */</span><span class="cp">
-#define CHUNKSIZE (1 &lt;&lt; 12) </span><span class="cm">/* Extend heap by this amount (bytes) */</span><span class="cp">
-</span>
-<span class="cp">#define MAX(x, y) ((x) &gt; (y) ? (x) : (y))
-</span>
-<span class="cm">/* Pack a size and allocated bit into a word */</span>
-<span class="cp">#define PACK(size, alloc) ((size) | (alloc))
-</span>
-<span class="cm">/* Read and write a word at address p */</span>
-<span class="cp">#define GET(p) (*(unsigned int *)(p))
-#define PUT(p, val) (*(unsigned int *)(p) = (val))
-</span>
-<span class="cm">/* Read the size and allocated fields from address p */</span>
-<span class="cp">#define GET_SIZE(p) (GET(p) &amp; ~0x7)
-#define GET_ALLOC(p) (GET(p) &amp; 0x1)
-</span>
-<span class="cm">/* Given block ptr bp, compute address of its header and footer */</span>
-<span class="cp">#define HDRP(bp) ((char *)(bp) - WSIZE)
-#define FTRP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
-</span>
-<span class="cm">/* Given block ptr bp, compute address of next and previous blocks */</span>
-<span class="cp">#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(((char *)(bp)-WSIZE)))
-#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE(((char *)(bp)-DSIZE)))
-</span>
-<span class="cm">/* rounds up to the nearest multiple of ALIGNMENT */</span>
-<span class="cp">#define ALIGN(size) (((size) + (ALIGNMENT - 1)) &amp; ~0x7)
-</span>
-<span class="cp">#define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
-</span>
-<span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="n">heap_listp</span><span class="p">;</span>
-<span class="kt">int</span> <span class="nf">mm_init</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">extend_heap</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">words</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">find_fit</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">asize</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">place</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">asize</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">coalesce</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">);</span>
-
-
-<span class="cm">/*
- * mm_init - initialize the malloc package.
- */</span>
-<span class="kt">int</span> <span class="nf">mm_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="cm">/* Create the initial empty heap */</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">heap_listp</span> <span class="o">=</span> <span class="n">mem_sbrk</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">heap_listp</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">heap_listp</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">DSIZE</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">heap_listp</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">DSIZE</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">heap_listp</span> <span class="o">+</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-    <span class="n">heap_listp</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">);</span>
-    <span class="c1">// next_ptr = heap_listp; /* Reset next_ptr to NULL */</span>
-
-    <span class="cm">/* Extend the empty heap with a free block of CHUNKSIZE bytes */</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">extend_heap</span><span class="p">(</span><span class="n">CHUNKSIZE</span><span class="o">/</span><span class="n">WSIZE</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">extend_heap</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">words</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">char</span> <span class="o">*</span><span class="n">bp</span><span class="p">;</span>
-    <span class="kt">size_t</span> <span class="n">size</span><span class="p">;</span>
-
-    <span class="cm">/* Allocate an even number of words to maintain alignment */</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">words</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">words</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">WSIZE</span> <span class="o">:</span> <span class="n">words</span> <span class="o">*</span> <span class="n">WSIZE</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">((</span><span class="kt">long</span><span class="p">)(</span><span class="n">bp</span> <span class="o">=</span> <span class="n">mem_sbrk</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-
-    <span class="cm">/* Initialize free block header/footer and the epilogue header */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="cm">/* Free block header */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="cm">/* Free block footer */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span> <span class="cm">/* New epilogue header */</span>
-
-
-    <span class="cm">/* Coalesce if the previous block was free */</span>
-    <span class="k">return</span> <span class="n">coalesce</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="cm">/*
- * mm_malloc - Allocate a block by incrementing the brk pointer.
- *     Always allocate a block whose size is a multiple of the alignment.
- */</span>
-<span class="kt">void</span> <span class="o">*</span><span class="nf">mm_malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">asize</span><span class="p">;</span>
-    <span class="kt">size_t</span> <span class="n">extendsize</span><span class="p">;</span>
-    <span class="kt">char</span> <span class="o">*</span> <span class="n">bp</span><span class="p">;</span>
-
-    <span class="cm">/* Ignore spurious requests */</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-    
-    <span class="cm">/* Adjust block size to include overhead and alignment reqs. */</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">DSIZE</span><span class="p">)</span>
-        <span class="n">asize</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">DSIZE</span><span class="p">;</span>
-    <span class="k">else</span>
-        <span class="n">asize</span> <span class="o">=</span> <span class="n">DSIZE</span> <span class="o">*</span> <span class="p">((</span><span class="n">size</span> <span class="o">+</span> <span class="n">DSIZE</span> <span class="o">+</span> <span class="p">(</span><span class="n">DSIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">DSIZE</span><span class="p">);</span>
-
-    <span class="cm">/* Search the free list for a fit */</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">bp</span> <span class="o">=</span> <span class="n">find_fit</span><span class="p">(</span><span class="n">asize</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">place</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">asize</span><span class="p">);</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="cm">/* No fit found. Get more memory and place the block */</span>
-    <span class="n">extendsize</span> <span class="o">=</span> <span class="n">MAX</span><span class="p">(</span><span class="n">asize</span><span class="p">,</span> <span class="n">CHUNKSIZE</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">bp</span> <span class="o">=</span> <span class="n">extend_heap</span><span class="p">(</span><span class="n">extendsize</span><span class="o">/</span><span class="n">WSIZE</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-    <span class="n">place</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">asize</span><span class="p">);</span>
-    <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">find_fit</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">asize</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="cm">/* First-fit search */</span>
-
-    <span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">;</span>
-
-    <span class="k">for</span> <span class="p">(</span><span class="n">bp</span> <span class="o">=</span> <span class="n">heap_listp</span><span class="p">;</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">bp</span> <span class="o">=</span> <span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">))</span>
-    <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">asize</span> <span class="o">&lt;=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">))))</span>
-        <span class="p">{</span>
-            <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">place</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">asize</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">csize</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-
-    <span class="k">if</span> <span class="p">((</span><span class="n">csize</span> <span class="o">-</span> <span class="n">asize</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">DSIZE</span><span class="p">))</span>
-    <span class="p">{</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">asize</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">asize</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">csize</span><span class="o">-</span><span class="n">asize</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">csize</span><span class="o">-</span><span class="n">asize</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-    <span class="p">}</span>
-    <span class="k">else</span>
-    <span class="p">{</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">csize</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">csize</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="cm">/*
- * mm_free - Freeing a block does nothing.
- */</span>
-<span class="kt">void</span> <span class="nf">mm_free</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">ptr</span><span class="p">));</span>
-
-    <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">ptr</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="cm">/* 헤더에 동일한 사이즈와 할당되지 않은 정보로 update */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">ptr</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="cm">/* 푸터에 동일한 사이즈와 할당되지 않은 정보로 update */</span>
-    <span class="n">coalesce</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span> <span class="cm">/* free 끼리 병합 */</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">coalesce</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">prev_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-    <span class="kt">size_t</span> <span class="n">next_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">next_alloc</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">else</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)))</span> <span class="o">+</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="cm">/*
- * mm_realloc - Implemented simply in terms of mm_malloc and mm_free
- */</span>
-<span class="kt">void</span> <span class="o">*</span><span class="nf">mm_realloc</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">oldptr</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">newptr</span><span class="p">;</span>
-    <span class="kt">size_t</span> <span class="n">copySize</span><span class="p">;</span>
-
-    <span class="n">newptr</span> <span class="o">=</span> <span class="n">mm_malloc</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">newptr</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-    <span class="n">copySize</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">size_t</span> <span class="o">*</span><span class="p">)((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">oldptr</span> <span class="o">-</span> <span class="n">SIZE_T_SIZE</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">copySize</span><span class="p">)</span>
-        <span class="n">copySize</span> <span class="o">=</span> <span class="n">size</span><span class="p">;</span>
-    <span class="n">memcpy</span><span class="p">(</span><span class="n">newptr</span><span class="p">,</span> <span class="n">oldptr</span><span class="p">,</span> <span class="n">copySize</span><span class="p">);</span>
-    <span class="n">mm_free</span><span class="p">(</span><span class="n">oldptr</span><span class="p">);</span>
-    <span class="k">return</span> <span class="n">newptr</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>이 코드로 돌려보니 아래와 같은 결과가 나왔다
-<img src="/assets/img/blog/computerscience/implicitfirst.png" alt="묵시적 first-fit 결과" /></p>
-
-<p>그 다음으로는 묵시적에서 제일 빠르다는 next-fit을 구현해 보았다</p>
-
-<p>바뀐 부분은 아래에 정리했다</p>
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="n">next_ptr</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">// 전역변수로 선언</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">extend_heap</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">words</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">char</span> <span class="o">*</span><span class="n">bp</span><span class="p">;</span>
-    <span class="kt">size_t</span> <span class="n">size</span><span class="p">;</span>
-
-    <span class="cm">/* Allocate an even number of words to maintain alignment */</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">words</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">?</span> <span class="p">(</span><span class="n">words</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">WSIZE</span> <span class="o">:</span> <span class="n">words</span> <span class="o">*</span> <span class="n">WSIZE</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">((</span><span class="kt">long</span><span class="p">)(</span><span class="n">bp</span> <span class="o">=</span> <span class="n">mem_sbrk</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-
-    <span class="cm">/* Initialize free block header/footer and the epilogue header */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="cm">/* Free block header */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="cm">/* Free block footer */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span> <span class="cm">/* New epilogue header */</span>
-    <span class="n">next_ptr</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span> <span class="cm">/* Set next_ptr to the new block */</span>
-
-    <span class="cm">/* Coalesce if the previous block was free */</span>
-    <span class="k">return</span> <span class="n">coalesce</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">find_fit</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">asize</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">;</span>
-
-    <span class="k">for</span> <span class="p">(</span><span class="n">bp</span> <span class="o">=</span> <span class="n">next_ptr</span><span class="p">;</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span> <span class="n">bp</span> <span class="o">=</span> <span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">))</span>
-    <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">asize</span> <span class="o">&lt;=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">))))</span>
-        <span class="p">{</span>
-            <span class="n">next_ptr</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-            <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">coalesce</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">prev_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-    <span class="kt">size_t</span> <span class="n">next_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">next_alloc</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">else</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)))</span> <span class="o">+</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="n">next_ptr</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>바뀐 코드중에 보면 사실 coalesce에 next_ptr을 free한 블럭에 넣는것은 next-fit 개념에 어긋난다. 하지만, test case가 조금 많은 편이어서 이렇게 진행을 했다.</p>
-
-<p>결과는 아래와 같이 21점이 올라간것을 확인할 수 있다</p>
-
-<p><img src="/assets/img/blog/computerscience/implicitnext.png" alt="묵시적 next-fit 결과" /></p>
-
-<p>마지막으로 명시적을 구현해 보았다 코드는 아래와 같다</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
- * mm-naive.c - The fastest, least memory-efficient malloc package.
- *
- * In this naive approach, a block is allocated by simply incrementing
- * the brk pointer.  A block is pure payload. There are no headers or
- * footers.  Blocks are never coalesced or reused. Realloc is
- * implemented directly using mm_malloc and mm_free.
- *
- * NOTE TO STUDENTS: Replace this header comment with your own header
- * comment that gives a high level description of your solution.
- */</span>
-<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;assert.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
-</span>
-<span class="cp">#include</span> <span class="cpf">"mm.h"</span><span class="cp">
-#include</span> <span class="cpf">"memlib.h"</span><span class="cp">
-</span>
-<span class="cm">/*********************************************************
- * NOTE TO STUDENTS: Before you do anything else, please
- * provide your team information in the following struct.
- ********************************************************/</span>
-<span class="n">team_t</span> <span class="n">team</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="cm">/* Team name */</span>
-    <span class="s">"ateam"</span><span class="p">,</span>
-    <span class="cm">/* First member's full name */</span>
-    <span class="s">"Harry Bovik"</span><span class="p">,</span>
-    <span class="cm">/* First member's email address */</span>
-    <span class="s">"bovik@cs.cmu.edu"</span><span class="p">,</span>
-    <span class="cm">/* Second member's full name (leave blank if none) */</span>
-    <span class="s">""</span><span class="p">,</span>
-    <span class="cm">/* Second member's email address (leave blank if none) */</span>
-    <span class="s">""</span><span class="p">};</span>
-
-<span class="cm">/* single word (4) or double word (8) alignment */</span>
-<span class="cp">#define ALIGNMENT 16
-#define WSIZE 4 </span><span class="cm">/* header/footer size */</span><span class="cp">
-#define PTR_SIZE sizeof(void *) </span><span class="cm">/* pointer size */</span><span class="cp">
-#define MIN_FREE_BLOCK_SIZE (WSIZE + PTR_SIZE + PTR_SIZE + WSIZE)
-#define CHUNKSIZE (1 &lt;&lt; 12) </span><span class="cm">/* Extend heap by this amount (bytes) */</span><span class="cp">
-</span>
-<span class="cp">#define MAX(x, y) ((x) &gt; (y) ? (x) : (y))
-</span>
-<span class="cm">/* Pack a size and allocated bit into a word */</span>
-<span class="cp">#define PACK(size, alloc) ((size) | (alloc))
-</span>
-<span class="cm">/* Read and write a word at address p */</span>
-<span class="cp">#define GET(p) (*(unsigned int *)(p))
-#define PUT(p, val) (*(unsigned int *)(p) = (val))
-</span>
-<span class="cm">/* Read the size and allocated fields from address p */</span>
-<span class="cp">#define GET_SIZE(p) (GET(p) &amp; ~0x7)
-#define GET_ALLOC(p) (GET(p) &amp; 0x1)
-</span>
-<span class="cm">/* Given block ptr bp, compute address of its header and footer */</span>
-<span class="cp">#define HDRP(bp) ((char *)(bp) - WSIZE)
-#define FTRP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)) - (WSIZE*2))
-</span>
-<span class="cm">/* Given block ptr bp, compute address of next and previous blocks */</span>
-<span class="cp">#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(((char *)(bp)-WSIZE)))
-#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE(((char *)(bp)-(WSIZE*2))))
-</span>
-<span class="cp">#define NEXT_FREE(bp) (*(void **)(bp)) // bp를 형변환 한거야 이중연결리스트로 그래서 bp가 가르키는 메모리공간에 다른블록을 가르키는 포인터가 생겨버리는거지 그걸 역참조해서 NEXT_FREE(bp)는 bp안에 다른블록을 가르키는 포인터의 값을 나타 내는 아이가 된거야.
-#define PREV_FREE(bp) (*(void **)((char *)(bp) + PTR_SIZE)) // 그럼이것도 NEXT_FREE와 비슷하지만 한가지 다른게 bp의 시작주소 payload가 가르키는 메모리공간이 아니라 payload에다 4를 더한 주소에 prev_free를 저장하거나 읽는거야
-</span>
-<span class="cp">#define SET_NEXT_FREE(bp, ptr) (NEXT_FREE(bp) = (ptr)) // 그럼 이건 위에는 포인터주소에 역참조한 상황이니까 거기에다가 ptr이라는 주소값을 넣은거지 즉 next인 주소를 넣은거지
-#define SET_PREV_FREE(bp, ptr) (PREV_FREE(bp) = (ptr)) // 현재 가르키는 블록의 payload+wsize 위치에 이전 free블록의 주소를 저장하는거지
-</span>
-<span class="c1">// #define NEXT_FRPTR(bp) (bp)</span>
-<span class="cp">#define PREV_FRPTR(bp) ((char *)(bp) + GET_SIZE(((char *)(bp)+(WSIZE*2))))
-</span>
-<span class="cm">/* rounds up to the nearest multiple of ALIGNMENT */</span>
-<span class="cp">#define ALIGN(size) (((size) + (ALIGNMENT - 1)) &amp; ~0xf)
-</span>
-<span class="cp">#define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
-</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="n">free_root</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="cm">/* Pointer to the first free block */</span>
-<span class="k">static</span> <span class="kt">char</span> <span class="o">*</span><span class="n">heap_listp</span><span class="p">;</span>
-
-<span class="c1">// Helper functions for free list manipulation</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">add_to_free_list</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">remove_from_free_list</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">);</span>
-
-<span class="kt">int</span> <span class="nf">mm_init</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">extend_heap</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">words</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">find_fit</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">asize</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">place</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">asize</span><span class="p">);</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">coalesce</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">);</span>
-
-
-<span class="cm">/*
- * mm_init - initialize the malloc package.
- */</span>
-<span class="kt">int</span> <span class="nf">mm_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="cm">/* Create the initial empty heap */</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">heap_listp</span> <span class="o">=</span> <span class="n">mem_sbrk</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">))</span> <span class="o">==</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">heap_listp</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">heap_listp</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">),</span> <span class="n">PACK</span><span class="p">((</span><span class="n">WSIZE</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="p">));</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">heap_listp</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">),</span> <span class="n">PACK</span><span class="p">((</span><span class="n">WSIZE</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="p">));</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">heap_listp</span> <span class="o">+</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-    <span class="n">heap_listp</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">WSIZE</span><span class="p">);</span>
-    <span class="n">free_root</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-    <span class="c1">// next_ptr = heap_listp; /* Reset next_ptr to NULL */</span>
-
-    <span class="cm">/* Extend the empty heap with a free block of CHUNKSIZE bytes */</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">extend_heap</span><span class="p">(</span><span class="n">CHUNKSIZE</span><span class="o">/</span><span class="n">WSIZE</span><span class="p">)</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">extend_heap</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">words</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">char</span> <span class="o">*</span><span class="n">bp</span><span class="p">;</span>
-    <span class="kt">size_t</span> <span class="n">size</span><span class="p">;</span>
-
-    <span class="cm">/* Allocate an even number of words to maintain alignment */</span>
-    <span class="c1">// size 계산은 바이트 단위로, ALIGNMENT(16)의 배수로 맞춤</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">words</span> <span class="o">*</span> <span class="n">WSIZE</span><span class="p">);</span> <span class="c1">// words는 WSIZE 단위이므로 총 바이트 계산</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="n">ALIGN</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>     <span class="c1">// 최종 크기를 16의 배수로 올림 (이게 더 안전)</span>
-    <span class="c1">// size = (words % 2) ? (words + 1) * WSIZE : words * WSIZE; // 원래 로직도 가능은 함</span>
-
-    <span class="k">if</span> <span class="p">((</span><span class="kt">long</span><span class="p">)(</span><span class="n">bp</span> <span class="o">=</span> <span class="n">mem_sbrk</span><span class="p">(</span><span class="n">size</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-
-    <span class="cm">/* Initialize free block header/footer and the epilogue header */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>           <span class="cm">/* Free block header */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>           <span class="cm">/* Free block footer */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span> <span class="cm">/* New epilogue header */</span>
-
-    <span class="cm">/* Coalesce if the previous block was free and add block to free list */</span>
-    <span class="c1">// free_root 설정 및 포인터 초기화는 coalesce에서 처리</span>
-    <span class="k">return</span> <span class="n">coalesce</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="cm">/*
- * mm_malloc - Allocate a block by incrementing the brk pointer.
- *     Always allocate a block whose size is a multiple of the alignment.
- */</span>
-<span class="kt">void</span> <span class="o">*</span><span class="nf">mm_malloc</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">asize</span><span class="p">;</span>
-    <span class="kt">size_t</span> <span class="n">extendsize</span><span class="p">;</span>
-    <span class="kt">char</span> <span class="o">*</span> <span class="n">bp</span><span class="p">;</span>
-
-    <span class="cm">/* Ignore spurious requests */</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-
-    <span class="kt">size_t</span> <span class="n">needed</span> <span class="o">=</span> <span class="n">size</span> <span class="o">+</span> <span class="p">(</span><span class="n">WSIZE</span> <span class="o">*</span> <span class="mi">2</span><span class="p">);</span>
-    
-    <span class="cm">/* Adjust block size to include overhead and alignment reqs. */</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">needed</span> <span class="o">&lt;=</span> <span class="n">MIN_FREE_BLOCK_SIZE</span><span class="p">)</span>
-        <span class="n">asize</span> <span class="o">=</span> <span class="n">MIN_FREE_BLOCK_SIZE</span><span class="p">;</span>
-    <span class="k">else</span>
-        <span class="n">asize</span> <span class="o">=</span> <span class="n">ALIGN</span><span class="p">(</span><span class="n">needed</span><span class="p">);</span>
-
-    <span class="cm">/* Search the free list for a fit */</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">bp</span> <span class="o">=</span> <span class="n">find_fit</span><span class="p">(</span><span class="n">asize</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">place</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">asize</span><span class="p">);</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="cm">/* No fit found. Get more memory and place the block */</span>
-    <span class="n">extendsize</span> <span class="o">=</span> <span class="n">MAX</span><span class="p">(</span><span class="n">asize</span><span class="p">,</span> <span class="n">CHUNKSIZE</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">bp</span> <span class="o">=</span> <span class="n">extend_heap</span><span class="p">(</span><span class="n">extendsize</span><span class="o">/</span><span class="n">WSIZE</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-    <span class="n">place</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">asize</span><span class="p">);</span>
-    <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-<span class="p">}</span>
-
-
-
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">find_fit</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">asize</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="cm">/* First-fit search */</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">;</span>
-
-    <span class="c1">// free_root (리스트 헤드) 부터 시작해서 NULL 만날 때까지 순회</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">bp</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span> <span class="n">bp</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="n">bp</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">))</span>
-    <span class="p">{</span>
-        <span class="c1">// GET_ALLOC은 필요 없을 수 있음 (free list에는 free 블록만 있어야 함)</span>
-        <span class="c1">// 하지만 안전을 위해 남겨둘 수 있음</span>
-        <span class="c1">// if (!GET_ALLOC(HDRP(bp)) &amp;&amp; (asize &lt;= GET_SIZE(HDRP(bp))))</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">asize</span> <span class="o">&lt;=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">)))</span> <span class="c1">// 크기만 비교</span>
-        <span class="p">{</span>
-            <span class="k">return</span> <span class="n">bp</span><span class="p">;</span> <span class="c1">// 적합한 블록 찾음</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span> <span class="cm">/* No fit */</span>
-<span class="p">}</span>
-
-<span class="c1">// place 함수 수정</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">place</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">asize</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">csize</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-    <span class="c1">// void *cur_free_next = NEXT_FREE(bp); // Helper 사용 시 필요 없어짐</span>
-    <span class="c1">// void *cur_free_prev = PREV_FREE(bp); // Helper 사용 시 필요 없어짐</span>
-
-    <span class="c1">// 먼저 free list에서 현재 블록(bp)을 제거</span>
-    <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-
-    <span class="k">if</span> <span class="p">((</span><span class="n">csize</span> <span class="o">-</span> <span class="n">asize</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">MIN_FREE_BLOCK_SIZE</span><span class="p">))</span> <span class="c1">// 분할 가능한 경우</span>
-    <span class="p">{</span>
-        <span class="c1">// 할당될 부분 설정</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">asize</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">asize</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-
-        <span class="c1">// 남은 free 부분 설정</span>
-        <span class="kt">void</span> <span class="o">*</span><span class="n">next_bp</span> <span class="o">=</span> <span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span> <span class="c1">// 남은 블록 포인터</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">next_bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">csize</span> <span class="o">-</span> <span class="n">asize</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">next_bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">csize</span> <span class="o">-</span> <span class="n">asize</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-
-        <span class="c1">// 남은 free 블록을 free list에 다시 추가</span>
-        <span class="n">add_to_free_list</span><span class="p">(</span><span class="n">next_bp</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="c1">// 분할 불가능한 경우 (전체 블록 사용)</span>
-    <span class="p">{</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">csize</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">csize</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
-        <span class="c1">// free list에서 이미 제거했으므로 추가 작업 필요 없음</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="cm">/*
- * mm_free - Freeing a block does nothing.
- */</span>
-<span class="kt">void</span> <span class="nf">mm_free</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">ptr</span><span class="p">));</span>
-
-    <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">ptr</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="cm">/* 헤더에 동일한 사이즈와 할당되지 않은 정보로 update */</span>
-    <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">ptr</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="cm">/* 푸터에 동일한 사이즈와 할당되지 않은 정보로 update */</span>
-    <span class="n">coalesce</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span> <span class="cm">/* free 끼리 병합 */</span>
-<span class="p">}</span>
-
-<span class="c1">// coalesce 함수 수정 (Helper 함수 사용)</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">coalesce</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="c1">// 프롤로그 블록 바로 뒤 또는 에필로그 블록 바로 앞인지 확인하여 FTRP/HDRP 접근 보호</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_blk</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">next_blk</span> <span class="o">=</span> <span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-
-    <span class="c1">// GET_ALLOC은 헤더/푸터에서 읽으므로 주소 유효성 먼저 체크</span>
-    <span class="c1">// Prologue block's footer is always allocated.</span>
-    <span class="c1">// Epilogue block's header is always allocated.</span>
-    <span class="kt">size_t</span> <span class="n">prev_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">));</span> <span class="c1">// Can read footer unless bp is first block</span>
-    <span class="kt">size_t</span> <span class="n">next_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">next_blk</span><span class="p">));</span> <span class="c1">// Can read header unless bp is last block</span>
-    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-
-    <span class="c1">// Case 1: No merge needed</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">add_to_free_list</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span> <span class="c1">// Add the newly freed block to the list</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="c1">// Case 2: Merge with next block</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">next_alloc</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">next_blk</span><span class="p">);</span> <span class="c1">// Remove next block from list</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">next_blk</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="c1">// Footer position is now FTRP(next_blk), but FTRP uses HDRP size, so this works</span>
-        <span class="n">add_to_free_list</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span> <span class="c1">// Add the merged block to the list</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="c1">// Case 3: Merge with previous block</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">);</span> <span class="c1">// Remove previous block from list</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">));</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">prev_blk</span><span class="p">;</span> <span class="c1">// Move bp to the beginning of the merged block</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="c1">// Footer position is original FTRP(bp)</span>
-        <span class="n">add_to_free_list</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span> <span class="c1">// Add the merged block to the list</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="c1">// Case 4: Merge with both previous and next blocks</span>
-    <span class="k">else</span> <span class="p">{</span> <span class="c1">// (!prev_alloc &amp;&amp; !next_alloc)</span>
-        <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">);</span> <span class="c1">// Remove previous block</span>
-        <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">next_blk</span><span class="p">);</span> <span class="c1">// Remove next block</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">))</span> <span class="o">+</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">next_blk</span><span class="p">));</span> <span class="c1">// Use HDRP for next block size</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">prev_blk</span><span class="p">;</span> <span class="c1">// Move bp to the beginning of the merged block</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="c1">// Footer position is FTRP(next_blk)</span>
-        <span class="n">add_to_free_list</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span> <span class="c1">// Add the final merged block to the list</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="c1">// 마지막 free_root = bp; 제거</span>
-<span class="p">}</span>
-
-<span class="cm">/*
- * mm_realloc - Implemented simply in terms of mm_malloc and mm_free
- */</span>
-<span class="kt">void</span> <span class="o">*</span><span class="nf">mm_realloc</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">oldptr</span> <span class="o">=</span> <span class="n">ptr</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">newptr</span><span class="p">;</span>
-    <span class="kt">size_t</span> <span class="n">copySize</span><span class="p">;</span>
-
-    <span class="n">newptr</span> <span class="o">=</span> <span class="n">mm_malloc</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">newptr</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
-    <span class="n">copySize</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">oldptr</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">WSIZE</span><span class="o">*</span><span class="mi">2</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">copySize</span><span class="p">)</span>
-        <span class="n">copySize</span> <span class="o">=</span> <span class="n">size</span><span class="p">;</span>
-    <span class="n">memcpy</span><span class="p">(</span><span class="n">newptr</span><span class="p">,</span> <span class="n">oldptr</span><span class="p">,</span> <span class="n">copySize</span><span class="p">);</span>
-    <span class="n">mm_free</span><span class="p">(</span><span class="n">oldptr</span><span class="p">);</span>
-    <span class="k">return</span> <span class="n">newptr</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="c1">// --- Helper 함수 (place, coalesce 에서 사용) ---</span>
-<span class="c1">// Free list 맨 앞에 블록 추가 (LIFO)</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">add_to_free_list</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 리스트가 비어있을 때</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// 리스트에 블록이 있을 때</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">free_root</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span> <span class="c1">// 기존 루트의 PREV를 새 블록으로</span>
-        <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span> <span class="c1">// 루트를 새 블록으로 업데이트</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// Free list에서 블록 제거</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">remove_from_free_list</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">next_free</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">prev_free</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// bp가 리스트의 첫 번째 블록일 때</span>
-        <span class="n">free_root</span> <span class="o">=</span> <span class="n">next_free</span><span class="p">;</span> <span class="c1">// 다음 블록을 루트로 설정</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// bp가 중간 또는 마지막 블록일 때</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">prev_free</span><span class="p">,</span> <span class="n">next_free</span><span class="p">);</span> <span class="c1">// 이전 블록의 NEXT를 다음 블록으로</span>
-    <span class="p">}</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">next_free</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// bp가 마지막 블록이 아닐 때</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">next_free</span><span class="p">,</span> <span class="n">prev_free</span><span class="p">);</span> <span class="c1">// 다음 블록의 PREV를 이전 블록으로</span>
-    <span class="p">}</span>
-    <span class="c1">// bp의 포인터는 초기화할 필요 없음 (어차피 할당되거나 병합될 것임)</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>결과는 아래와 같다. 1점이 오른걸 확인할 수 있다. 명시적 list로는 best-fit이 메모리 효율이 제일 좋다. best-fit까지 구현을 할까 생각했는데, 주 마지막날이어서 다음날 발표를 준비해야 했다. 그래서 포기했다..</p>
-
-<p><img src="/assets/img/blog/computerscience/implicitnext.png" alt="명시적 first-fit 결과" /></p>
-
-<h2 id="명시적-리스트explicit-list에서의-refactoring">명시적 리스트(Explicit list)에서의 refactoring</h2>
-
-<p>명시적 리스트를 구현하기 위해서 조금 복잡하게 구현했던 내용 개선에 대해서 얘기하려고 해</p>
-
-<p>명시적 리스트를 구현하기 위해서는 가용 블록의 포인터 생성/변경 고려가 필요, 포인터 생성/변경 같은 경우 아래 사진과 같이 구현해야 함</p>
-
-<p><img src="/assets/img/blog/computerscience/case4.png" alt="Case 4" /></p>
-
-<p>Case 4 같은 경우에 포인터 8개의 생성/변경이 필요하기 때문에 아래와 같은 코드가 나옴</p>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">coalesce</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">size_t</span> <span class="n">prev_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-    <span class="kt">size_t</span> <span class="n">next_alloc</span> <span class="o">=</span> <span class="n">GET_ALLOC</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free_root</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free_root_prev</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">next_free_blk_next</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">next_free_blk_prev</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free_blk_next</span><span class="p">;</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free_blk_prev</span><span class="p">;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span>               <span class="c1">// Case 1</span>
-    <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="p">}</span>
-        <span class="k">else</span>
-        <span class="p">{</span>
-            <span class="n">prev_free_root</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_root</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>
-            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">prev_free_root</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">next_alloc</span><span class="p">)</span>         <span class="c1">// Case 2</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="p">}</span>
-        <span class="k">else</span>
-        <span class="p">{</span>
-            <span class="n">prev_free_root</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span>
-            <span class="n">prev_free_root_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">);</span>
-            <span class="n">next_free_blk_next</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-            <span class="n">next_free_blk_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">next_free_blk_prev</span><span class="p">,</span> <span class="n">next_free_blk_next</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">next_free_blk_next</span><span class="p">,</span> <span class="n">next_free_blk_prev</span><span class="p">);</span>
-            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">prev_free_root</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_root_prev</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>
-            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-        <span class="p">}</span>
-
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">prev_alloc</span> <span class="o">&amp;&amp;</span> <span class="n">next_alloc</span><span class="p">)</span>         <span class="c1">// Case 3</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
-        <span class="p">{</span>
-            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="p">}</span>
-        <span class="k">else</span>
-        <span class="p">{</span>
-            <span class="n">prev_free_root</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span>
-            <span class="n">prev_free_root_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">);</span>
-            <span class="n">prev_free_blk_next</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-            <span class="n">prev_free_blk_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">prev_free_blk_prev</span><span class="p">,</span> <span class="n">prev_free_blk_next</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_blk_next</span><span class="p">,</span> <span class="n">prev_free_blk_prev</span><span class="p">);</span>
-            <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">prev_free_root</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-            <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_root_prev</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>
-            <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-        <span class="p">}</span>
-
-    <span class="p">}</span>
-    <span class="k">else</span>                                        <span class="c1">// Case 4</span>
-    <span class="p">{</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)))</span> <span class="o">+</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">)),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-
-        <span class="n">prev_free_root</span> <span class="o">=</span> <span class="n">free_root</span><span class="p">;</span>
-        <span class="n">prev_free_root_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">);</span>
-        <span class="n">prev_free_blk_next</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-        <span class="n">prev_free_blk_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">PREV_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-        <span class="n">next_free_blk_next</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-        <span class="n">next_free_blk_prev</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">NEXT_BLKP</span><span class="p">(</span><span class="n">bp</span><span class="p">));</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">prev_free_blk_prev</span><span class="p">,</span> <span class="n">prev_free_blk_next</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_blk_next</span><span class="p">,</span> <span class="n">prev_free_blk_prev</span><span class="p">);</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">next_free_blk_prev</span><span class="p">,</span> <span class="n">next_free_blk_next</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">next_free_blk_next</span><span class="p">,</span> <span class="n">next_free_blk_prev</span><span class="p">);</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">prev_free_root</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">prev_free_root_prev</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>
-        <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>동료의 의견도 있었고 Google AI Studio의 의견에 따라서 함수 구현함</p>
-
-<p><img src="/assets/img/blog/computerscience/googleaistudio.png" alt="Google AI Studio" /></p>
-
-<h3 id="refactoring-함수">Refactoring 함수</h3>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// --- Helper 함수 (place, coalesce 에서 사용) ---</span>
-<span class="c1">// Free list 맨 앞에 블록 추가 (LIFO)</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">add_to_free_list</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">free_root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 리스트가 비어있을 때</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
-        <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// 리스트에 블록이 있을 때</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">free_root</span><span class="p">);</span>   <span class="c1">// 현재 위치의 next를 기존 첫번째 free block</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>        <span class="c1">// 현재 위치의 prev를 NULL</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">free_root</span><span class="p">,</span> <span class="n">bp</span><span class="p">);</span>   <span class="c1">// 기존 첫번째 free block의 PREV를 현재 블록으로</span>
-        <span class="n">free_root</span> <span class="o">=</span> <span class="n">bp</span><span class="p">;</span> <span class="c1">// 루트를 새 블록으로 업데이트</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// Free list에서 블록 제거</span>
-<span class="k">static</span> <span class="kt">void</span> <span class="nf">remove_from_free_list</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">bp</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">prev_free</span> <span class="o">=</span> <span class="n">PREV_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-    <span class="kt">void</span> <span class="o">*</span><span class="n">next_free</span> <span class="o">=</span> <span class="n">NEXT_FREE</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">prev_free</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// bp가 리스트의 첫 번째 블록일 때</span>
-        <span class="n">free_root</span> <span class="o">=</span> <span class="n">next_free</span><span class="p">;</span> <span class="c1">// 다음 블록을 루트로 설정</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// bp가 중간 또는 마지막 블록일 때</span>
-        <span class="n">SET_NEXT_FREE</span><span class="p">(</span><span class="n">prev_free</span><span class="p">,</span> <span class="n">next_free</span><span class="p">);</span> <span class="c1">// 이전 블록의 NEXT를 다음 블록으로</span>
-    <span class="p">}</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">next_free</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// bp가 마지막 블록이 아닐 때</span>
-        <span class="n">SET_PREV_FREE</span><span class="p">(</span><span class="n">next_free</span><span class="p">,</span> <span class="n">prev_free</span><span class="p">);</span> <span class="c1">// 다음 블록의 PREV를 이전 블록으로</span>
-    <span class="p">}</span>
-    <span class="c1">// bp의 포인터는 초기화할 필요 없음 (어차피 할당되거나 병합될 것임)</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<ul>
-  <li>
-    <p>add_to_free_list : 아래 사진의 ①, ②, ③, ④ 포인터의 변경/생성에 관여</p>
-  </li>
-  <li>
-    <p>remove_from_free_list : 아래 사진의 ⑤, ⑥, ⑦, ⑧ 포인터의 변경/생성에 관여</p>
-  </li>
-</ul>
-
-<p><img src="/assets/img/blog/computerscience/case4pointers.png" alt="Case4 함수별 포인터" /></p>
-
-<h3 id="개선된-case-4">개선된 Case 4</h3>
-
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1">// Case 4: Merge with both previous and next blocks</span>
-    <span class="k">else</span> <span class="p">{</span> <span class="c1">// (!prev_alloc &amp;&amp; !next_alloc)</span>
-        <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">);</span> <span class="c1">// Remove previous block</span>
-        <span class="n">remove_from_free_list</span><span class="p">(</span><span class="n">next_blk</span><span class="p">);</span> <span class="c1">// Remove next block</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">prev_blk</span><span class="p">))</span> <span class="o">+</span> <span class="n">GET_SIZE</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">next_blk</span><span class="p">));</span> <span class="c1">// Use HDRP for next block size</span>
-        <span class="n">bp</span> <span class="o">=</span> <span class="n">prev_blk</span><span class="p">;</span> <span class="c1">// Move bp to the beginning of the merged block</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">HDRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
-        <span class="n">PUT</span><span class="p">(</span><span class="n">FTRP</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">PACK</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span> <span class="c1">// Footer position is FTRP(next_blk)</span>
-        <span class="n">add_to_free_list</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span> <span class="c1">// Add the final merged block to the list</span>
-        <span class="k">return</span> <span class="n">bp</span><span class="p">;</span>
-    <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[C언어로 직접 Malloc을 구현해보자]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</ol>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[응용프로그램(User level code)이 Hardware를 조작하고 싶을때, 무엇을 할까?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
