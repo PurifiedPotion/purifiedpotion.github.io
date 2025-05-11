@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "수작업으로 Malloc 구현(9.9장)"
+title:  "CS:APP 9장 가상메모리 & Malloc C언어로 구현"
 description: >
  C언어로 직접 Malloc을 구현해보자
 date:   2025-04-27
