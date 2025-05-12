@@ -185,3 +185,11 @@ while (조건이 false) {
 pthread_mutex_unlock(&lock);
 ~~~
 (※ wait()할 때 lock을 잠시 반납하고, 조건 충족되면 다시 lock을 잡은 채 깨어나)
+
+### 요약 비교
+
+| 기법 | 주 용도 | 특징 | 주의할 점 |
+|:---:|:---:|:---:|:---:|
+| Lock/Mutex | 임계 구역 보호 | 하나만 진입 허용 | 교착 상태(deadlock) 조심 |
+| Semaphore | 여러 자원 수 조절 | 카운트 기반 | signal/wait 관리 조심 |
+| Condition Variable | 조건 기다리기 | Lock과 세트 사용 | signal/broadcast 명확하게 써야함 |
