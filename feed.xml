@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-12T15:00:08+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-12T15:03:58+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
 </subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">동기화 기법 3대장 : Lock/Semaphore/Condition Variable</title><link href="/blog/computersystem/lock-semaphore-condition/" rel="alternate" type="text/html" title="동기화 기법 3대장 : Lock/Semaphore/Condition Variable" /><published>2025-05-12T00:00:00+00:00</published><updated>2025-05-12T00:00:00+00:00</updated><id>/blog/computersystem/lock-semaphore-condition</id><content type="html" xml:base="/blog/computersystem/lock-semaphore-condition/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동기화synchronization란" id="markdown-toc-동기화synchronization란">동기화(Synchronization)란?</a></li>
   <li><a href="#왜-동기화가-필요할까" id="markdown-toc-왜-동기화가-필요할까">왜 동기화가 필요할까?</a>    <ul>
@@ -10,6 +10,7 @@
       <li><a href="#lock뮤텍스-포함" id="markdown-toc-lock뮤텍스-포함">Lock(뮤텍스 포함)</a></li>
       <li><a href="#semaphore" id="markdown-toc-semaphore">Semaphore</a></li>
       <li><a href="#condition-variable-조건-변수" id="markdown-toc-condition-variable-조건-변수">Condition Variable (조건 변수)</a></li>
+      <li><a href="#요약-비교" id="markdown-toc-요약-비교">요약 비교</a></li>
     </ul>
   </li>
 </ul>
@@ -343,7 +344,40 @@
 <span class="c1">// 조건 만족했으면 수행</span>
 <span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
 </code></pre></div></div>
-<p>(※ wait()할 때 lock을 잠시 반납하고, 조건 충족되면 다시 lock을 잡은 채 깨어나)</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[Lock, Semaphore, Condition Variable 전부 동기화(Synchronization) 기법으로, 여러 스레드/프로세스가 공유 자원을 엉키지 않게 사용하게 만드는 기술이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현</title><link href="/blog/computersystem/network-programming/" rel="alternate" type="text/html" title="CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>/blog/computersystem/network-programming</id><content type="html" xml:base="/blog/computersystem/network-programming/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<p>(※ wait()할 때 lock을 잠시 반납하고, 조건 충족되면 다시 lock을 잡은 채 깨어나)</p>
+
+<h3 id="요약-비교">요약 비교</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">기법</th>
+      <th style="text-align: center">주 용도</th>
+      <th style="text-align: center">특징</th>
+      <th style="text-align: center">주의할 점</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Lock/Mutex</td>
+      <td style="text-align: center">임계 구역 보호</td>
+      <td style="text-align: center">하나만 진입 허용</td>
+      <td style="text-align: center">교착 상태(deadlock) 조심</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Semaphore</td>
+      <td style="text-align: center">여러 자원 수 조절</td>
+      <td style="text-align: center">카운트 기반</td>
+      <td style="text-align: center">signal/wait 관리 조심</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Condition Variable</td>
+      <td style="text-align: center">조건 기다리기</td>
+      <td style="text-align: center">Lock과 세트 사용</td>
+      <td style="text-align: center">signal/broadcast 명확하게 써야함</td>
+    </tr>
+  </tbody>
+</table>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[Lock, Semaphore, Condition Variable 전부 동기화(Synchronization) 기법으로, 여러 스레드/프로세스가 공유 자원을 엉키지 않게 사용하게 만드는 기술이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현</title><link href="/blog/computersystem/network-programming/" rel="alternate" type="text/html" title="CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>/blog/computersystem/network-programming</id><content type="html" xml:base="/blog/computersystem/network-programming/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#클라이언트---서버-프로그래밍-모델" id="markdown-toc-클라이언트---서버-프로그래밍-모델">클라이언트 - 서버 프로그래밍 모델</a></li>
   <li><a href="#네트워크" id="markdown-toc-네트워크">네트워크</a>    <ul>
       <li><a href="#nic-network-interface-card" id="markdown-toc-nic-network-interface-card">NIC (Network Interface Card)</a></li>

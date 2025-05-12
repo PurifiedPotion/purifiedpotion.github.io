@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-05-12T15:00:08+00:00',
+    INDEX_KEY: 'index--2025-05-12T15:03:58+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -288,6 +288,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
       <li><a href="#lock뮤텍스-포함" id="markdown-toc-lock뮤텍스-포함">Lock(뮤텍스 포함)</a></li>
       <li><a href="#semaphore" id="markdown-toc-semaphore">Semaphore</a></li>
       <li><a href="#condition-variable-조건-변수" id="markdown-toc-condition-variable-조건-변수">Condition Variable (조건 변수)</a></li>
+      <li><a href="#요약-비교" id="markdown-toc-요약-비교">요약 비교</a></li>
     </ul>
   </li>
 </ul>
@@ -623,6 +624,39 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 </code></pre></div></div>
 <p>(※ wait()할 때 lock을 잠시 반납하고, 조건 충족되면 다시 lock을 잡은 채 깨어나)</p>
 
+<h3 id="요약-비교">요약 비교</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">기법</th>
+      <th style="text-align: center">주 용도</th>
+      <th style="text-align: center">특징</th>
+      <th style="text-align: center">주의할 점</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Lock/Mutex</td>
+      <td style="text-align: center">임계 구역 보호</td>
+      <td style="text-align: center">하나만 진입 허용</td>
+      <td style="text-align: center">교착 상태(deadlock) 조심</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Semaphore</td>
+      <td style="text-align: center">여러 자원 수 조절</td>
+      <td style="text-align: center">카운트 기반</td>
+      <td style="text-align: center">signal/wait 관리 조심</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Condition Variable</td>
+      <td style="text-align: center">조건 기다리기</td>
+      <td style="text-align: center">Lock과 세트 사용</td>
+      <td style="text-align: center">signal/broadcast 명확하게 써야함</td>
+    </tr>
+  </tbody>
+</table>
+
   
 </article>
 
@@ -757,7 +791,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/topological-sort/" class="flip-title"><span>위상 정렬(Topological sort)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>          <li class="h4">  <a href="/blog/diary/first_month/" class="flip-title"><span>크래프톤 정글에서 첫달을 보낸 후</span></a>  <time class="faded fine" datetime="2025-04-14T00:00:00+00:00">14 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/8th-week/" class="flip-title"><span>8주차 퀴즈</span></a>  <time class="faded fine" datetime="2025-05-06T00:00:00+00:00">06 May 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/connected-component/" class="flip-title"><span>그래프의 연결 요소(Connected component)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>          <li class="h4">  <a href="/blog/computersystem/ip-layer/" class="flip-title"><span>IP Layer</span></a>  <time class="faded fine" datetime="2025-05-05T00:00:00+00:00">05 May 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/x-marks-the-spot-in-hydejack-9-2/" class="flip-title"><span>X Marks the Spot in Hydejack 9.2</span></a>  <time class="faded fine" datetime="2024-09-08T00:00:00+00:00">08 Sep 2024</time></li>      </ul></aside>
 
   
 
