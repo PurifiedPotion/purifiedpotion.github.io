@@ -1,5 +1,349 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-11T13:39:07+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
-</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현</title><link href="/blog/computersystem/network-programming/" rel="alternate" type="text/html" title="CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>/blog/computersystem/network-programming</id><content type="html" xml:base="/blog/computersystem/network-programming/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-12T15:00:08+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">동기화 기법 3대장 : Lock/Semaphore/Condition Variable</title><link href="/blog/computersystem/lock-semaphore-condition/" rel="alternate" type="text/html" title="동기화 기법 3대장 : Lock/Semaphore/Condition Variable" /><published>2025-05-12T00:00:00+00:00</published><updated>2025-05-12T00:00:00+00:00</updated><id>/blog/computersystem/lock-semaphore-condition</id><content type="html" xml:base="/blog/computersystem/lock-semaphore-condition/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#동기화synchronization란" id="markdown-toc-동기화synchronization란">동기화(Synchronization)란?</a></li>
+  <li><a href="#왜-동기화가-필요할까" id="markdown-toc-왜-동기화가-필요할까">왜 동기화가 필요할까?</a>    <ul>
+      <li><a href="#동기화가-없으면-생기는-문제" id="markdown-toc-동기화가-없으면-생기는-문제">동기화가 없으면 생기는 문제</a></li>
+    </ul>
+  </li>
+  <li><a href="#동기화의-목적" id="markdown-toc-동기화의-목적">동기화의 목적</a></li>
+  <li><a href="#동기화하는-방법들-기술" id="markdown-toc-동기화하는-방법들-기술">동기화하는 방법들 (기술)</a>    <ul>
+      <li><a href="#lock뮤텍스-포함" id="markdown-toc-lock뮤텍스-포함">Lock(뮤텍스 포함)</a></li>
+      <li><a href="#semaphore" id="markdown-toc-semaphore">Semaphore</a></li>
+      <li><a href="#condition-variable-조건-변수" id="markdown-toc-condition-variable-조건-변수">Condition Variable (조건 변수)</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="동기화synchronization란">동기화(Synchronization)란?</h2>
+
+<p>동기화란, 여러 개의 스레드나 프로세스가 “공유 자원”을 사용할 때, 충돌이나 오류 없이 올바르게 작동하도록 순서를 맞춰주는 기술이다.</p>
+
+<h2 id="왜-동기화가-필요할까">왜 동기화가 필요할까?</h2>
+
+<p>여러 스레드/프로세스가 동시에 :</p>
+
+<ul>
+  <li>
+    <p>같은 메모리,</p>
+  </li>
+  <li>
+    <p>같은 파일,</p>
+  </li>
+  <li>
+    <p>같은 네트워크 리소스를</p>
+  </li>
+  <li>
+    <p>아무 조정 없이 건드리면,</p>
+  </li>
+</ul>
+
+<p><strong>문제</strong>가 터진다!</p>
+
+<blockquote>
+  <p>값이 꼬인다(데이터 레이스)
+프로그램이 이상하게 동작한다(논리 오류)
+심지어 프로그램이 죽을 수도 있다(crash)</p>
+</blockquote>
+
+<h3 id="동기화가-없으면-생기는-문제">동기화가 없으면 생기는 문제</h3>
+
+<p><strong>1. 데이터 레이스(Data Race)</strong></p>
+
+<blockquote>
+  <p>두 스레드가 동시에 같은 데이터를 읽고 수정해서 예상 못 한 값이 생기는 문제.</p>
+</blockquote>
+
+<p>예시 :</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// counter를 1000번 증가시키는 코드</span>
+<span class="n">counter</span><span class="o">++</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>A 스레드가 <code class="language-plaintext highlighter-rouge">counter</code>를 읽고,</p>
+  </li>
+  <li>
+    <p>B 스레드가 거의 동시에 <code class="language-plaintext highlighter-rouge">counter</code>를 읽으면,</p>
+  </li>
+  <li>
+    <p>둘 다 <code class="language-plaintext highlighter-rouge">counter = 5</code>를 봤고;</p>
+  </li>
+  <li>
+    <p>둘 다 <code class="language-plaintext highlighter-rouge">counter = 6</code>을 저장해버린다.</p>
+  </li>
+  <li>
+    <p>→ 사실은 두 번 증가해야 하는데, 한 번만 증가한 꼴이 됨!</p>
+  </li>
+</ul>
+
+<p>(동시에 수정하면 제대로 합쳐지지 않아)</p>
+
+<p><strong>2. 교착상태(Deadlock)</strong></p>
+
+<blockquote>
+  <p>서로 Lock을 잡고 영원히 기다리는 상황.</p>
+</blockquote>
+
+<p>예시 :</p>
+
+<ul>
+  <li>
+    <p>A는 프린터 락을 잡고 스캐너 락을 기다림.</p>
+  </li>
+  <li>
+    <p>B는 스캐너 락을 잡고 프린터 락을 기다림.</p>
+  </li>
+  <li>
+    <p>둘 다 서로 기다리다 아무것도 못하고 멈춤.</p>
+  </li>
+</ul>
+
+<p><strong>3. 기아(Starvation)</strong></p>
+
+<blockquote>
+  <p>어떤 스레드가 계속 자원을 못 받아서 굶는 문제.</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>높은 우선순위 스레드가 계속 차지하면</p>
+  </li>
+  <li>
+    <p>낮은 우선순위 스레드는 기회 자체를 못 얻는다.</p>
+  </li>
+</ul>
+
+<h2 id="동기화의-목적">동기화의 목적</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">목표</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">일관성 유지</td>
+      <td style="text-align: center">데이터가 꼬이지 않게 한다.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">공정성 보장</td>
+      <td style="text-align: center">모든 스레드가 자원을 쓸 기회를 갖는다.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">교착상태 방지</td>
+      <td style="text-align: center">스레드들이 서로 영원히 기다리지 않게 한다.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">효율적인 협력</td>
+      <td style="text-align: center">여러 스레드가 협력해서 작업할 수 있게 한다.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="동기화하는-방법들-기술">동기화하는 방법들 (기술)</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">기술</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Lock/Mutex</td>
+      <td style="text-align: center">임계 구역 보호 (하나만 들어가게)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Semaphore</td>
+      <td style="text-align: center">자원의 개수 관리 (여러 개도 가능)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Condition Variable</td>
+      <td style="text-align: center">어떤 조건이 충족될 때까지 대기/깨우기</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Monitor</td>
+      <td style="text-align: center">Lock + Condition을 합친 고급 동기화 추상화</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Barrier</td>
+      <td style="text-align: center">여러 스레드가 한 지점에서 다 모일 때까지 기다리기</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>이 글에서는 Lock, Semaphore, Condition Variable에 대해서 다룰거야</p>
+
+<h3 id="lock뮤텍스-포함">Lock(뮤텍스 포함)</h3>
+
+<p><strong>개념</strong></p>
+
+<ul>
+  <li>
+    <p>Critical Section(공유 자원을 접근하는 코드 블록)을 한 번에 하나만 실행하도록 막는 기법.</p>
+  </li>
+  <li>
+    <p>보통 뮤텍스(Mutex)를 통해 구현.</p>
+  </li>
+</ul>
+
+<p><strong>특징</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">내용</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">기본 기능</td>
+      <td style="text-align: center">진입 시 lock, 작업 후 unlock</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">기본 상태</td>
+      <td style="text-align: center">잠금(Locked) / 잠금 해제(Unlocked)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">소유권</td>
+      <td style="text-align: center">있음(lock한 스레드만 unlock할 수 있음)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">주 용도</td>
+      <td style="text-align: center">공유 데이터 보호, 임계 구역 보호</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>간단 예제</strong></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pthread_mutex_t</span> <span class="n">lock</span><span class="p">;</span>
+<span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="c1">// critical section (공유 데이터 접근)</span>
+<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="semaphore">Semaphore</h3>
+
+<p><strong>개념</strong></p>
+
+<ul>
+  <li>“자원의 개수”를 세는 정수 변수를 관리해서, 자원 접근을 조율하는 동기화 도구.</li>
+</ul>
+
+<p><strong>특징</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">내용</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">기본 기능</td>
+      <td style="text-align: center">wait(P) : 자원 요청, signal(V) : 자원 반환</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">기본 상태</td>
+      <td style="text-align: center">0 이상 정수</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">소유권</td>
+      <td style="text-align: center">없음 (누구나 wait, signal 호출 가능)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">주 용도</td>
+      <td style="text-align: center">여러 개의 리소스 접근 제한 (ex. 프린터 5대)</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>
+    <p>Binary Semaphore : Lock처럼 0/1만 관리 (뮤텍스 비슷)</p>
+  </li>
+  <li>
+    <p>Counting Semaphore : 2개 이상 리소스 관리</p>
+  </li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sem_t</span> <span class="n">sem</span><span class="p">;</span>
+<span class="n">sem_wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sem</span><span class="p">);</span>   <span class="c1">// 자원 요청</span>
+<span class="c1">// critical section</span>
+<span class="n">sem_post</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sem</span><span class="p">);</span>   <span class="c1">// 자원 반환</span>
+</code></pre></div></div>
+
+<h3 id="condition-variable-조건-변수">Condition Variable (조건 변수)</h3>
+
+<p><strong>개념</strong></p>
+
+<ul>
+  <li>
+    <p>스레드가 어떤 “특정 조건이 될 때까지 기다리게 하는” 도구</p>
+  </li>
+  <li>
+    <p>Lock과 함께 써야 함! (단독 사용 불가)</p>
+  </li>
+</ul>
+
+<p><strong>특징</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">내용</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">기본 기능</td>
+      <td style="text-align: center">wait(조건), signal(조건 성취 시 알림)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">기본 상태</td>
+      <td style="text-align: center">조건을 기다리는 대기열</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">소유권</td>
+      <td style="text-align: center">Lock과 함께 사용 (Lock 보유해야 wait 가능)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">주 용도</td>
+      <td style="text-align: center">어떤 상태 변화에 따라 스레드 깨우기</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">wait()</code> : 조건이 만족될 때까지 슬립 (잠깐 Lock도 반납)</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">signal()</code> : 대기 중인 스레드 하나 깨우기</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">broadcast()</code> : 대기 중인 스레드 모두 깨우기</p>
+  </li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pthread_mutex_t</span> <span class="n">lock</span><span class="p">;</span>
+<span class="n">pthread_cond_t</span> <span class="n">cond</span><span class="p">;</span>
+
+<span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="k">while</span> <span class="p">(</span><span class="err">조건이</span> <span class="nb">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">pthread_cond_wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cond</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// 조건 만족했으면 수행</span>
+<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+</code></pre></div></div>
+<p>(※ wait()할 때 lock을 잠시 반납하고, 조건 충족되면 다시 lock을 잡은 채 깨어나)</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[Lock, Semaphore, Condition Variable 전부 동기화(Synchronization) 기법으로, 여러 스레드/프로세스가 공유 자원을 엉키지 않게 사용하게 만드는 기술이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현</title><link href="/blog/computersystem/network-programming/" rel="alternate" type="text/html" title="CS:APP 11장 네트워크 프로그래밍 &amp;amp; Proxy 서버 C언어로 구현" /><published>2025-05-08T00:00:00+00:00</published><updated>2025-05-08T00:00:00+00:00</updated><id>/blog/computersystem/network-programming</id><content type="html" xml:base="/blog/computersystem/network-programming/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#클라이언트---서버-프로그래밍-모델" id="markdown-toc-클라이언트---서버-프로그래밍-모델">클라이언트 - 서버 프로그래밍 모델</a></li>
   <li><a href="#네트워크" id="markdown-toc-네트워크">네트워크</a>    <ul>
       <li><a href="#nic-network-interface-card" id="markdown-toc-nic-network-interface-card">NIC (Network Interface Card)</a></li>
@@ -3411,137 +3755,4 @@ final : 1 2 3 4 4 5 5 6</p>]]></content><author><name>Kwansoo Kim</name><email>a
   <li>
     <p>RTOS(FreeRTOS, Zephyr) : MCU마다 별도의 DMAMUX &amp; HAP API 제공</p>
   </li>
-</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[여태까지 컴퓨터는 직접 메모리에 대해 접근하지 않고 가상 메모리를 사용하는 것으로 배웠는데, 만약 직접 메모리 접근이 있다면?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">System Call</title><link href="/blog/computersystem/system-call/" rel="alternate" type="text/html" title="System Call" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/system-call</id><content type="html" xml:base="/blog/computersystem/system-call/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#호출-흐름리눅스-x86-64-예" id="markdown-toc-호출-흐름리눅스-x86-64-예">호출 흐름(리눅스 x86-64 예)</a></li>
-  <li><a href="#대표-범주" id="markdown-toc-대표-범주">대표 범주</a></li>
-  <li><a href="#언제-볼-수-있을까" id="markdown-toc-언제-볼-수-있을까">언제 볼 수 있을까?</a></li>
-  <li><a href="#요약" id="markdown-toc-요약">요약</a>    <ul>
-      <li><a href="#나만의-요약" id="markdown-toc-나만의-요약">나만의 요약</a></li>
-    </ul>
-  </li>
-</ul>
-
-<p>응용 프로그램(유저 레벨 코드)이 직접 하드웨어를 만지면 안 되므로, 운영체제(OS)가 대신 해준다. 프로세스가 커널에게 무언가를 “요청”하는 공식 통로가 바로 <strong>System Call</strong>이다.</p>
-
-<ul>
-  <li>
-    <p>“파일을 열어 줘(open)”, “데이터를 읽어 줘(read)”, “새 프로세스를 만들어 줘(fork)” … 같은 요구 사항을 전달한다</p>
-  </li>
-  <li>
-    <p>커널은 트랩(trap)을 통해 특권 모드(커널 모드)로 올라가 작업을 수행한 뒤, 결과(보통 레지스터 값 또는 errno)를 돌려주고 사용자 모드로 복귀한다</p>
-  </li>
-</ul>
-
-<h2 id="호출-흐름리눅스-x86-64-예">호출 흐름(리눅스 x86-64 예)</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">단계</th>
-      <th style="text-align: left">사용자 공간</th>
-      <th style="text-align: left">커널 공간</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">1</td>
-      <td style="text-align: left">라이브러리 wrapper 함수 (read(int fd, void *buf, size_t n))</td>
-      <td style="text-align: left">-</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">2</td>
-      <td style="text-align: left">시스템 콜 번호와 인수들을 레지스터에 적재하고 syscall(또는 int 0x80) 실행</td>
-      <td style="text-align: left">트랩 발생→권한 레벨 전환, 커널 스택 진입</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">3</td>
-      <td style="text-align: left">시스템 콜 디스패처가 번호를 해석해 해당 핸들러(sys_read) 호출</td>
-      <td style="text-align: left">핸들러가 실제 I/O 수행, 파일 테이블 등 갱신</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">4</td>
-      <td style="text-align: left">반환값을 레지스터에 넣고 sysret</td>
-      <td style="text-align: left">-</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">5</td>
-      <td style="text-align: left">라이브러리 wrapper가 음수면 errno 설정 후 반환</td>
-      <td style="text-align: left">-</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>여기서 <strong>컨텍스트 스위치(레지스터·프로그램 카운터·스택 교체)</strong>는 수십 ~ 수백 나노초가 소요되므로, 시스템 콜은 함수 호출보다 느리다</p>
-
-<h2 id="대표-범주">대표 범주</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">범주</th>
-      <th style="text-align: left">대표 시스템 콜</th>
-      <th style="text-align: left">설명·용도</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">프로세스 제어</td>
-      <td style="text-align: left">fork, execve, waitpid, exit</td>
-      <td style="text-align: left">프로세스 생성·변경·종료</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">파일 I/O</td>
-      <td style="text-align: left">open/close, read/write, lseek, stat</td>
-      <td style="text-align: left">모든 디스크·파이프·소켓 I/O 통일 인터페이스(“Everything is a file”)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">장치 제어</td>
-      <td style="text-align: left">ioctl, mmap, munmap</td>
-      <td style="text-align: left">특수 장치 제어, 파일 매핑 등</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">메모리 관리</td>
-      <td style="text-align: left">brk, mmap</td>
-      <td style="text-align: left">힙 확장(malloc 내부)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">5</td>
-      <td style="text-align: left">라이브러리 wrapper가 음수면 errno 설정 후 반환</td>
-      <td style="text-align: left">-</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="언제-볼-수-있을까">언제 볼 수 있을까?</h2>
-
-<ul>
-  <li>
-    <p>Windows - MEM_COMMIT 없이 VirtualAlloc으로 예약만 한 뒤 접근할 때, 또는 일반 HeapAlloc/new 내부적으로</p>
-  </li>
-  <li>
-    <p>Linux/Unix - 익명 매핑 mmap(…, MAP_ANONYMOUS)·스택·BSS·brk/sbrk 등</p>
-  </li>
-  <li>
-    <p>하이퍼바이저/가상머신 - 게스트가 처음 쓰는 시점까지 진짜 호스트 RAM을 배정하지 않는 ballooning 기법과 결합되기도 함</p>
-  </li>
-</ul>
-
-<h2 id="요약">요약</h2>
-
-<p>Demand-zero memory = “필요할 때 0으로 초기화된 물리 페이지를 뒤늦게 붙이는 가상 메모리 기술”</p>
-
-<p>→ 프로그램 입장에서는 ‘이미 0으로 초기화돼 있는 새 메모리’를 즉시 얻은 것처럼 보이지만, 실제 RAM은 첫 사용 시점까지 쓰이지 않아 메모리를 아끼고 보안을 높여 줌</p>
-
-<h3 id="나만의-요약">나만의 요약</h3>
-
-<ol>
-  <li>
-    <p>물리 메모리 같은 경우 첫 사용 전까지는 메모리 할당이 되지 않음</p>
-  </li>
-  <li>
-    <p>하지만 가상 메모리에서는 공간이 확보된 상태</p>
-  </li>
-  <li>
-    <p>실제 사용시에는 page fault 되면서 물리 메모리 할당이 이루어짐, PTE의 Not-present → Present로 갱신</p>
-  </li>
-</ol>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[응용프로그램(User level code)이 Hardware를 조작하고 싶을때, 무엇을 할까?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[여태까지 컴퓨터는 직접 메모리에 대해 접근하지 않고 가상 메모리를 사용하는 것으로 배웠는데, 만약 직접 메모리 접근이 있다면?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>

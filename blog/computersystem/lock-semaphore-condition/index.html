@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+
+
+
+
+
+
+<head>
+  
+
+
+
+
+
+
+  
+    
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>동기화 기법 3대장 : Lock/Semaphore/Condition Variable | PurifiedPotion’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="동기화 기법 3대장 : Lock/Semaphore/Condition Variable" />
+<meta name="author" content="Kwansoo Kim" />
+<meta property="og:locale" content="ko_KR, en_US" />
+<meta name="description" content="Lock, Semaphore, Condition Variable 전부 동기화(Synchronization) 기법으로, 여러 스레드/프로세스가 공유 자원을 엉키지 않게 사용하게 만드는 기술이다." />
+<meta property="og:description" content="Lock, Semaphore, Condition Variable 전부 동기화(Synchronization) 기법으로, 여러 스레드/프로세스가 공유 자원을 엉키지 않게 사용하게 만드는 기술이다." />
+<meta property="og:site_name" content="PurifiedPotion’s Blog" />
+<meta property="og:image" content="/assets/img/blog/postimage/ComputerSystem.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-05-12T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="/assets/img/blog/postimage/ComputerSystem.png" />
+<meta property="twitter:title" content="동기화 기법 3대장 : Lock/Semaphore/Condition Variable" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Kwansoo Kim"},"dateModified":"2025-05-12T00:00:00+00:00","datePublished":"2025-05-12T00:00:00+00:00","description":"Lock, Semaphore, Condition Variable 전부 동기화(Synchronization) 기법으로, 여러 스레드/프로세스가 공유 자원을 엉키지 않게 사용하게 만드는 기술이다.","headline":"동기화 기법 3대장 : Lock/Semaphore/Condition Variable","image":"/assets/img/blog/postimage/ComputerSystem.png","mainEntityOfPage":{"@type":"WebPage","@id":"/blog/computersystem/lock-semaphore-condition/"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/PurifiedPotion.png"},"name":"Kwansoo Kim"},"url":"/blog/computersystem/lock-semaphore-condition/"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  
+
+
+
+  <meta name="color-scheme" content="dark light">
+
+
+
+  <meta name="theme-color" content="rgb(200,200,200)">
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PurifiedPotion's Blog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<meta name="application-name" content="PurifiedPotion's Blog">
+
+<meta name="generator" content="Hydejack v9.2.1" />
+
+
+<link rel="alternate" href="/blog/computersystem/lock-semaphore-condition/" hreflang="ko-kr, en-us">
+
+<link type="application/atom+xml" rel="alternate" href="/feed.xml" title="PurifiedPotion&apos;s Blog" />
+
+
+<link rel="shortcut icon"    href="/assets/icons/favicon.ico">
+<link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+
+<link rel="manifest" href="/assets/site.webmanifest">
+
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"><link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+
+
+<link rel="preload" href="/assets/img/swipe.svg" as="image" id="_hrefSwipeSVG">
+
+<link rel="dns-prefetch" href="/assets/js/search-worker-9.2.1.js" as="worker" id="_hrefSearch">
+
+
+
+
+
+<script>((r,a)=>{function d(e,t,n,o){e.addEventListener?e.addEventListener(t,n,o):e.attachEvent?e.attachEvent("on"+t,n):e["on"+t]=n}r.loadJS=function(e,t){var n=a.createElement("script"),e=(n.src=e,t&&d(n,"load",t,{once:!0}),a.scripts[0]);return e.parentNode.insertBefore(n,e),n},r._loaded=!1,r.loadJSDeferred=function(e,t){var n=a.createElement("script");function o(){r._loaded=!0,t&&d(n,"load",t,{once:!0});var e=a.scripts[0];e.parentNode.insertBefore(n,e)}return n.src=e,r._loaded?o():d(r,"load",o,{once:!0}),n},r.setRel=r.setRelStylesheet=function(e){d(a.getElementById(e),"load",function(){this.rel="stylesheet"},{once:!0})}})(window,document);
+!function(a){"use strict";var b=function(b,c,d){function e(a){return h.body?a():void setTimeout(function(){e(a)})}function f(){i.addEventListener&&i.removeEventListener("load",f),i.media=d||"all"}var g,h=a.document,i=h.createElement("link");if(c)g=c;else{var j=(h.body||h.getElementsByTagName("head")[0]).childNodes;g=j[j.length-1]}var k=h.styleSheets;i.rel="stylesheet",i.href=b,i.media="only x",e(function(){g.parentNode.insertBefore(i,c?g:g.nextSibling)});var l=function(a){for(var b=i.href,c=k.length;c--;)if(k[c].href===b)return a();setTimeout(function(){l(a)})};return i.addEventListener&&i.addEventListener("load",f),i.onloadcssdefined=l,l(f),i};"undefined"!=typeof exports?exports.loadCSS=b:a.loadCSS=b}("undefined"!=typeof global?global:this);
+!function(a){if(a.loadCSS){var b=loadCSS.relpreload={};if(b.support=function(){try{return a.document.createElement("link").relList.supports("preload")}catch(b){return!1}},b.poly=function(){for(var b=a.document.getElementsByTagName("link"),c=0;c<b.length;c++){var d=b[c];"preload"===d.rel&&"style"===d.getAttribute("as")&&(a.loadCSS(d.href,d,d.getAttribute("media")),d.rel=null)}},!b.support()){b.poly();var c=a.setInterval(b.poly,300);a.addEventListener&&a.addEventListener("load",function(){b.poly(),a.clearInterval(c)}),a.attachEvent&&a.attachEvent("onload",function(){a.clearInterval(c)})}}}(this);
+!function(w) {
+  w._baseURL = '/';
+  w._publicPath = '/assets/js/';
+  w._noPushState = false;
+  w._noDrawer = false;
+  w._noNavbar = false;
+  w._noToc = false;
+  w._noSearch = false;
+  w._advertise = false;
+  w._search = {
+    DATA_URL: '/assets/sitedata.json?no-cache',
+    STORAGE_KEY: 'mini-search/',
+    INDEX_KEY: 'index--2025-05-12T15:00:08+00:00',
+  };
+  w._clapButton = true;
+}(window);</script>
+
+
+<script async src="/assets/bower_components/MathJax/es5/tex-mml-chtml.js" id="_MathJax"></script>
+
+
+<!--[if gt IE 8]><!---->
+
+  
+
+
+
+
+<link rel="stylesheet" href="/assets/css/hydejack-9.2.1.css" id="_stylePreload">
+<link rel="stylesheet" href="/assets/icomoon/style.css" id="_iconsPreload">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700%7CNoto+Sans:400,400i,700,700i&display=swap" id="_fontsPreload">
+
+
+
+  <style id="_pageStyle">
+
+html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5);--accent-color-highlight: rgba(200,200,200,0.1);--accent-color-darkened: #b5b5b5;--theme-color: rgb(200,200,200);--dark-mode-body-bg: #2d2d2d;--dark-mode-border-color: #393939}
+
+</style>
+
+
+<!--<![endif]-->
+
+
+
+
+
+</head>
+
+<body class="no-break-layout">
+  
+<script>
+  window._sunrise = 6;
+  window._sunset =  18;
+  ((e,s)=>{var d="light-mode",a="dark-mode",o=(new Date).getHours();"matchMedia"in e&&e.matchMedia("(prefers-color-scheme)")||(e=(o=o<=e._sunrise||o>=e._sunset?a:d)==a?d:a,s.body.classList.add(o),s.body.classList.remove(e))})(window,document);
+
+</script>
+
+
+
+<hy-push-state
+  id="_pushState"
+  replace-selector="#_main"
+  link-selector="a[href]:not([href^='/assets/']):not(.external):not(.no-push-state)"
+  script-selector="script"
+  duration="500"
+  hashchange
+>
+  
+  
+  <div id="_navbar" class="navbar fixed-top">
+  <div class="content">
+    <span class="sr-only">Jump to:</span>
+    <div class="nav-btn-bar">
+      <a id="_menu" class="nav-btn no-hover" href="#_drawer--opened">
+        <span class="sr-only">Navigation</span>
+        <span class="icon-menu"></span>
+      </a>
+      <div class="nav-span"></div>
+    </div>
+  </div>
+</div>
+<hr class="sr-only" hidden />
+
+  <main
+  id="_main"
+  class="content layout-post"
+  role="main"
+>
+  <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+    <li><a href="/">home</a></li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/">blog</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          
+          
+          <a href="/blog/computersystem/">computersystem</a>
+        
+      </li>
+    
+      <li>
+        
+          <span>/</span>
+          <span>lock-semaphore-condition</span>
+        
+      </li>
+    
+  
+</ul></nav>
+  
+
+
+
+
+
+
+
+
+
+
+<article id="post-blog-computersystem-lock-semaphore-condition" class="page post mb6" role="article">
+  <header>
+    <h1 class="post-title flip-project-title">
+      
+        동기화 기법 3대장 : Lock/Semaphore/Condition Variable
+      
+    </h1>
+
+    <div class="post-date">
+      
+      <span class="ellipsis mr1">
+        <time datetime="2025-05-12T00:00:00+00:00">12 May 2025</time> in <span>Blog</span> / <a href="/computersystem/" class="flip-title">COMPUTER SYSTEM</a> 
+      </span>
+      
+    </div>
+
+    
+    
+      
+        <div class="img-wrapper lead aspect-ratio sixteen-nine flip-project-img">
+          
+
+
+<img
+  
+    src="/assets/img/blog/postimage/ComputerSystem.png"
+  
+  alt="동기화 기법 3대장 : Lock/Semaphore/Condition Variable"
+  
+  
+  width="864"
+  height="486"
+  loading="lazy"
+/>
+
+        </div>
+      
+      
+    
+
+    
+
+
+
+  
+    <p class="note-sm" >
+      Lock, Semaphore, Condition Variable 전부 동기화(Synchronization) 기법으로, 여러 스레드/프로세스가 공유 자원을 엉키지 않게 사용하게 만드는 기술이다.
+
+    </p>
+  
+
+
+  </header>
+
+  
+    <ul class="large-only" id="markdown-toc">
+  <li><a href="#동기화synchronization란" id="markdown-toc-동기화synchronization란">동기화(Synchronization)란?</a></li>
+  <li><a href="#왜-동기화가-필요할까" id="markdown-toc-왜-동기화가-필요할까">왜 동기화가 필요할까?</a>    <ul>
+      <li><a href="#동기화가-없으면-생기는-문제" id="markdown-toc-동기화가-없으면-생기는-문제">동기화가 없으면 생기는 문제</a></li>
+    </ul>
+  </li>
+  <li><a href="#동기화의-목적" id="markdown-toc-동기화의-목적">동기화의 목적</a></li>
+  <li><a href="#동기화하는-방법들-기술" id="markdown-toc-동기화하는-방법들-기술">동기화하는 방법들 (기술)</a>    <ul>
+      <li><a href="#lock뮤텍스-포함" id="markdown-toc-lock뮤텍스-포함">Lock(뮤텍스 포함)</a></li>
+      <li><a href="#semaphore" id="markdown-toc-semaphore">Semaphore</a></li>
+      <li><a href="#condition-variable-조건-변수" id="markdown-toc-condition-variable-조건-변수">Condition Variable (조건 변수)</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="동기화synchronization란">동기화(Synchronization)란?</h2>
+
+<p>동기화란, 여러 개의 스레드나 프로세스가 “공유 자원”을 사용할 때, 충돌이나 오류 없이 올바르게 작동하도록 순서를 맞춰주는 기술이다.</p>
+
+<h2 id="왜-동기화가-필요할까">왜 동기화가 필요할까?</h2>
+
+<p>여러 스레드/프로세스가 동시에 :</p>
+
+<ul>
+  <li>
+    <p>같은 메모리,</p>
+  </li>
+  <li>
+    <p>같은 파일,</p>
+  </li>
+  <li>
+    <p>같은 네트워크 리소스를</p>
+  </li>
+  <li>
+    <p>아무 조정 없이 건드리면,</p>
+  </li>
+</ul>
+
+<p><strong>문제</strong>가 터진다!</p>
+
+<blockquote>
+  <p>값이 꼬인다(데이터 레이스)
+프로그램이 이상하게 동작한다(논리 오류)
+심지어 프로그램이 죽을 수도 있다(crash)</p>
+</blockquote>
+
+<h3 id="동기화가-없으면-생기는-문제">동기화가 없으면 생기는 문제</h3>
+
+<p><strong>1. 데이터 레이스(Data Race)</strong></p>
+
+<blockquote>
+  <p>두 스레드가 동시에 같은 데이터를 읽고 수정해서 예상 못 한 값이 생기는 문제.</p>
+</blockquote>
+
+<p>예시 :</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// counter를 1000번 증가시키는 코드</span>
+<span class="n">counter</span><span class="o">++</span><span class="p">;</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>A 스레드가 <code class="language-plaintext highlighter-rouge">counter</code>를 읽고,</p>
+  </li>
+  <li>
+    <p>B 스레드가 거의 동시에 <code class="language-plaintext highlighter-rouge">counter</code>를 읽으면,</p>
+  </li>
+  <li>
+    <p>둘 다 <code class="language-plaintext highlighter-rouge">counter = 5</code>를 봤고;</p>
+  </li>
+  <li>
+    <p>둘 다 <code class="language-plaintext highlighter-rouge">counter = 6</code>을 저장해버린다.</p>
+  </li>
+  <li>
+    <p>→ 사실은 두 번 증가해야 하는데, 한 번만 증가한 꼴이 됨!</p>
+  </li>
+</ul>
+
+<p>(동시에 수정하면 제대로 합쳐지지 않아)</p>
+
+<p><strong>2. 교착상태(Deadlock)</strong></p>
+
+<blockquote>
+  <p>서로 Lock을 잡고 영원히 기다리는 상황.</p>
+</blockquote>
+
+<p>예시 :</p>
+
+<ul>
+  <li>
+    <p>A는 프린터 락을 잡고 스캐너 락을 기다림.</p>
+  </li>
+  <li>
+    <p>B는 스캐너 락을 잡고 프린터 락을 기다림.</p>
+  </li>
+  <li>
+    <p>둘 다 서로 기다리다 아무것도 못하고 멈춤.</p>
+  </li>
+</ul>
+
+<p><strong>3. 기아(Starvation)</strong></p>
+
+<blockquote>
+  <p>어떤 스레드가 계속 자원을 못 받아서 굶는 문제.</p>
+</blockquote>
+
+<ul>
+  <li>
+    <p>높은 우선순위 스레드가 계속 차지하면</p>
+  </li>
+  <li>
+    <p>낮은 우선순위 스레드는 기회 자체를 못 얻는다.</p>
+  </li>
+</ul>
+
+<h2 id="동기화의-목적">동기화의 목적</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">목표</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">일관성 유지</td>
+      <td style="text-align: center">데이터가 꼬이지 않게 한다.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">공정성 보장</td>
+      <td style="text-align: center">모든 스레드가 자원을 쓸 기회를 갖는다.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">교착상태 방지</td>
+      <td style="text-align: center">스레드들이 서로 영원히 기다리지 않게 한다.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">효율적인 협력</td>
+      <td style="text-align: center">여러 스레드가 협력해서 작업할 수 있게 한다.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="동기화하는-방법들-기술">동기화하는 방법들 (기술)</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">기술</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Lock/Mutex</td>
+      <td style="text-align: center">임계 구역 보호 (하나만 들어가게)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Semaphore</td>
+      <td style="text-align: center">자원의 개수 관리 (여러 개도 가능)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Condition Variable</td>
+      <td style="text-align: center">어떤 조건이 충족될 때까지 대기/깨우기</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Monitor</td>
+      <td style="text-align: center">Lock + Condition을 합친 고급 동기화 추상화</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Barrier</td>
+      <td style="text-align: center">여러 스레드가 한 지점에서 다 모일 때까지 기다리기</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>이 글에서는 Lock, Semaphore, Condition Variable에 대해서 다룰거야</p>
+
+<h3 id="lock뮤텍스-포함">Lock(뮤텍스 포함)</h3>
+
+<p><strong>개념</strong></p>
+
+<ul>
+  <li>
+    <p>Critical Section(공유 자원을 접근하는 코드 블록)을 한 번에 하나만 실행하도록 막는 기법.</p>
+  </li>
+  <li>
+    <p>보통 뮤텍스(Mutex)를 통해 구현.</p>
+  </li>
+</ul>
+
+<p><strong>특징</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">내용</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">기본 기능</td>
+      <td style="text-align: center">진입 시 lock, 작업 후 unlock</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">기본 상태</td>
+      <td style="text-align: center">잠금(Locked) / 잠금 해제(Unlocked)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">소유권</td>
+      <td style="text-align: center">있음(lock한 스레드만 unlock할 수 있음)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">주 용도</td>
+      <td style="text-align: center">공유 데이터 보호, 임계 구역 보호</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>간단 예제</strong></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pthread_mutex_t</span> <span class="n">lock</span><span class="p">;</span>
+<span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="c1">// critical section (공유 데이터 접근)</span>
+<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="semaphore">Semaphore</h3>
+
+<p><strong>개념</strong></p>
+
+<ul>
+  <li>“자원의 개수”를 세는 정수 변수를 관리해서, 자원 접근을 조율하는 동기화 도구.</li>
+</ul>
+
+<p><strong>특징</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">내용</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">기본 기능</td>
+      <td style="text-align: center">wait(P) : 자원 요청, signal(V) : 자원 반환</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">기본 상태</td>
+      <td style="text-align: center">0 이상 정수</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">소유권</td>
+      <td style="text-align: center">없음 (누구나 wait, signal 호출 가능)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">주 용도</td>
+      <td style="text-align: center">여러 개의 리소스 접근 제한 (ex. 프린터 5대)</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>
+    <p>Binary Semaphore : Lock처럼 0/1만 관리 (뮤텍스 비슷)</p>
+  </li>
+  <li>
+    <p>Counting Semaphore : 2개 이상 리소스 관리</p>
+  </li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sem_t</span> <span class="n">sem</span><span class="p">;</span>
+<span class="n">sem_wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sem</span><span class="p">);</span>   <span class="c1">// 자원 요청</span>
+<span class="c1">// critical section</span>
+<span class="n">sem_post</span><span class="p">(</span><span class="o">&amp;</span><span class="n">sem</span><span class="p">);</span>   <span class="c1">// 자원 반환</span>
+</code></pre></div></div>
+
+<h3 id="condition-variable-조건-변수">Condition Variable (조건 변수)</h3>
+
+<p><strong>개념</strong></p>
+
+<ul>
+  <li>
+    <p>스레드가 어떤 “특정 조건이 될 때까지 기다리게 하는” 도구</p>
+  </li>
+  <li>
+    <p>Lock과 함께 써야 함! (단독 사용 불가)</p>
+  </li>
+</ul>
+
+<p><strong>특징</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">내용</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">기본 기능</td>
+      <td style="text-align: center">wait(조건), signal(조건 성취 시 알림)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">기본 상태</td>
+      <td style="text-align: center">조건을 기다리는 대기열</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">소유권</td>
+      <td style="text-align: center">Lock과 함께 사용 (Lock 보유해야 wait 가능)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">주 용도</td>
+      <td style="text-align: center">어떤 상태 변화에 따라 스레드 깨우기</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">wait()</code> : 조건이 만족될 때까지 슬립 (잠깐 Lock도 반납)</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">signal()</code> : 대기 중인 스레드 하나 깨우기</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">broadcast()</code> : 대기 중인 스레드 모두 깨우기</p>
+  </li>
+</ul>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pthread_mutex_t</span> <span class="n">lock</span><span class="p">;</span>
+<span class="n">pthread_cond_t</span> <span class="n">cond</span><span class="p">;</span>
+
+<span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="k">while</span> <span class="p">(</span><span class="err">조건이</span> <span class="nb">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">pthread_cond_wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cond</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// 조건 만족했으면 수행</span>
+<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="p">);</span>
+</code></pre></div></div>
+<p>(※ wait()할 때 lock을 잠시 반납하고, 조건 충족되면 다시 lock을 잡은 채 깨어나)</p>
+
+  
+</article>
+
+
+
+  <hr class="dingbat related mb6" />
+
+
+
+
+
+
+  
+     
+
+
+  <aside class="about related mt4 mb4" role="complementary">
+    
+    
+
+<div class="author mt4">
+  
+
+  
+    
+
+
+<img
+  
+    src="https://via.placeholder.com/128x128"
+    srcset="https://via.placeholder.com/128x128 1x,https://via.placeholder.com/256x256 2x"
+    
+  
+  alt="Kwansoo Kim"
+  class="avatar"
+  
+  width="120"
+  height="120"
+  loading="lazy"
+/>
+
+  
+
+  
+  
+  <h2  class="page-title hr-bottom">
+    About
+  </h2>
+
+  <p>noob in Computer Science, currently getting education in Krafton Jungle.</p>
+
+
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+
+  </aside>
+
+
+  
+
+  
+    
+
+
+  
+
+  
+    
+
+
+  <aside class="other-projects related mb0" role="complementary">  <h2>Related Posts</h2>  <div class="columns">          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/computersystem/network-programming/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/ComputerSystem.png"    alt="CS:APP 11장 네트워크 프로그래밍 & Proxy 서버 C언어로 구현"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/computersystem/network-programming/" class="flip-title">CS:APP 11장 네트워크 프로그래밍 & Proxy 서버 C언어로 구현</a>  </h3>      <p class="project-card-text fine" property="disambiguatingDescription">      우리가 웹을 검색하고, 이메일 메시지를 보내고, 온라인 게임을 하는 등의 모든 경우 우리는 네트워크 응용을 사용한다    </p>      <a class="fill-card no-hover" href="/blog/computersystem/network-programming/" tabindex="-1"><span class="sr-only">Continue reading CS:APP 11장 네트워크 프로그래밍 & Proxy 서버 C언어로 구현</span></a></article>              </div>          <div class="column column-1-2">                  <article class="project-card">  <a href="/blog/computersystem/http-tcp-udp/" class="no-hover no-print-link flip-project" tabindex="-1">    <div class="project-card-img aspect-ratio sixteen-nine flip-project-img">              <img      src="/assets/img/blog/postimage/ComputerSystem.png"    alt="HTTP, TCP, UDP"      width="864"  height="486"  loading="lazy"/>          </div>  </a>  <h3 class="project-card-title flip-project-title">    <a href="/blog/computersystem/http-tcp-udp/" class="flip-title">HTTP, TCP, UDP</a>  </h3>      <p class="project-card-text fine" property="disambiguatingDescription">      HTTP, TCP, UDP는 네트워크 통신에서 자주 등장하는 개념들이고, 이들은 OSI 7계층 모델 또는 TCP/IP 4계층 모델의 서로 다른 계층에 위치해 있어. 아래에 각 개념과 계층별 차이점을 정리해줄게    </p>      <a class="fill-card no-hover" href="/blog/computersystem/http-tcp-udp/" tabindex="-1"><span class="sr-only">Continue reading HTTP, TCP, UDP</span></a></article>              </div>      </div></aside>
+
+  
+
+  
+    
+
+
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/topological-sort/" class="flip-title"><span>위상 정렬(Topological sort)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>          <li class="h4">  <a href="/blog/diary/first_month/" class="flip-title"><span>크래프톤 정글에서 첫달을 보낸 후</span></a>  <time class="faded fine" datetime="2025-04-14T00:00:00+00:00">14 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/8th-week/" class="flip-title"><span>8주차 퀴즈</span></a>  <time class="faded fine" datetime="2025-05-06T00:00:00+00:00">06 May 2025</time></li>      </ul></aside>
+
+  
+
+  
+    
+
+  
+
+
+  
+<footer class="content" role="contentinfo">
+  <hr/>
+  
+    <p><small class="copyright">© 2024. All rights reserved.
+</small></p>
+  
+  
+    <nav class="legal"><small>
+    
+      
+      <a class="heading flip-title" href="/LICENSE/">LICENSE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/NOTICE/">NOTICE</a>
+      |
+    
+      
+      <a class="heading flip-title" href="/CHANGELOG/">CHANGELOG</a>
+      
+    
+    </small></nav>
+  
+  
+  <hr class="sr-only"/>
+</footer>
+
+
+</main>
+
+  <hy-drawer
+  id="_drawer"
+  class=""
+  side="left"
+  threshold="10"
+  noscroll
+  
+>
+  <header id="_sidebar" class="sidebar" role="banner">
+    
+
+
+
+
+<div class="sidebar-bg sidebar-overlay" style="background-color:rgb(200,200,200);background-image:url(/assets/img/sidebar-bg.png)"></div>
+
+    <div class="sidebar-sticky">
+  <div class="sidebar-about">
+    
+      <a class="no-hover" href="/" tabindex="-1">
+        <img src="/assets/img/PurifiedPotion.png" class="avatar" alt="PurifiedPotion's Blog" width="120" height="120" loading="lazy" />
+      </a>
+    
+    <a class="sidebar-title" href="/"><h2 class="h1">PurifiedPotion's Blog</h2></a>
+    
+    
+      <p class="">
+        Blog for Computer Science
+
+      </p>
+    
+  </div>
+
+  <nav class="sidebar-nav heading" role="navigation">
+    <span class="sr-only">Navigation:</span>
+<ul>
+  
+    
+      
+      <li>
+        <a
+          id="_drawer--opened"
+          href="/algorithm/"
+          class="sidebar-nav-item "
+          
+        >
+          ALGORITHM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/c/"
+          class="sidebar-nav-item "
+          
+        >
+          C 언어
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/computersystem/"
+          class="sidebar-nav-item "
+          
+        >
+          COMPUTER SYSTEM
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/diary/"
+          class="sidebar-nav-item "
+          
+        >
+          회고
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/projects/"
+          class="sidebar-nav-item "
+          
+        >
+          PROJECTS
+        </a>
+      </li>
+    
+      
+      <li>
+        <a
+          
+          href="/docs/"
+          class="sidebar-nav-item "
+          
+        >
+          DOCUMENTATION
+        </a>
+      </li>
+    
+  
+</ul>
+
+  </nav>
+
+  
+  <div class="sidebar-social">
+    <span class="sr-only">Social:</span>
+<ul>
+  
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="https://github.com/PurifiedPotion" title="GitHub" class="no-mark-external">
+      <span class="icon-github"></span>
+      <span class="sr-only">GitHub</span>
+    </a>
+  </li>
+
+
+    
+      
+
+
+
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  <li>
+    <a href="mailto:albatrers@gmail.com" title="Email" class="no-mark-external">
+      <span class="icon-mail"></span>
+      <span class="sr-only">Email</span>
+    </a>
+  </li>
+
+
+    
+  
+</ul>
+
+  </div>
+</div>
+  </header>
+</hy-drawer>
+<hr class="sr-only" hidden />
+
+</hy-push-state>
+
+
+  <!--[if gt IE 10]><!---->
+  <script nomodule>(()=>{var t,n=document.createElement("script");!("noModule"in n)&&"onbeforeload"in n&&(t=!1,document.addEventListener("beforeload",function(e){if(e.target===n)t=!0;else if(!e.target.hasAttribute("nomodule")||!t)return;e.preventDefault()},!0),n.type="module",n.src=".",document.head.appendChild(n),n.remove())})();
+</script>
+  <script src="/assets/js/hydejack-9.2.1.js" type="module"></script>
+  <script src="/assets/js/LEGACY-hydejack-9.2.1.js" nomodule defer></script>
+  
+
+  
+
+  <script type="module">
+    if ('serviceWorker' in navigator) {
+      /**/
+      navigator.serviceWorker.getRegistration()
+        .then(r => r.unregister())
+        .catch(() => {});
+      /**/
+    }
+  </script>
+<!--<![endif]-->
+  
+
+
+
+<div hidden>
+  
+  <h2 class="sr-only">Templates (for web app):</h2>
+
+  <template id="_animation-template">
+  <div class="animation-main fixed-top">
+    <nav id="breadcrumbs" class="screen-only"><ul>
+  
+  
+</ul></nav>
+    <div class="content">
+      <div class="page"></div>
+    </div>
+  </div>
+</template>
+
+  <template id="_loading-template">
+  <div class="loading nav-btn fr">
+    <span class="sr-only">Loading…</span>
+    <span class="icon-cog"></span>
+  </div>
+</template>
+
+  <template id="_error-template">
+  <div class="page">
+    <h1 class="page-title">Error</h1>
+    
+    
+    <p class="lead">
+      Sorry, an error occurred while loading <a class="this-link" href=""></a>.
+
+    </p>
+  </div>
+</template>
+
+  <template id="_permalink-template">
+  <a href="#" class="permalink">
+    <span class="sr-only">Permalink</span>
+    <span class="content-hash"></span>
+  </a>
+</template>
+
+  
+    <template id="_cookies-banner-template">
+  <div id="_cookies-banner" class="navbar fixed-bottom CookiesOK">
+    <div class="content">
+      <div class="nav-btn-bar">
+        <small class="faded">
+          <span>This site uses cookies. <a href="/cookies-policy/">Cookies Policy</a>.
+</span>
+          <button id="_cookies-ok" class="btn btn-primary btn-sm">Okay</button>
+        </small>
+      </div>
+    </div>
+  </div>
+</template>
+
+  
+  
+    <template id="_dark-mode-template">
+  <button id="_dark-mode" class="nav-btn no-hover" >
+    <span class="sr-only">Dark Mode</span>
+    <span class="icon-brightness-contrast"></span>
+  </button>
+</template>
+
+  
+  
+    <template id="_search-template">
+  <button id="_search" class="nav-btn no-hover">
+    <label class="sr-only" for="_search-input">Search</label>
+    <span class="icon-search"></span>
+  </button>
+  <div id="_search-box">
+    <div class="nav-btn">
+      <span class="icon-search"></span>
+    </div>
+    <input 
+      id="_search-input"
+      type="search"
+      class="form-control form-control-lg nav-btn"
+      placeholder="Build with JEKYLL_ENV=production to enable search."
+    />
+    <button type="reset" class="nav-btn no-hover">
+      <span class="sr-only">Close</span>
+      <span class="icon-cross"></span>
+    </button>
+  </div>
+  <div id="_hits"></div>
+</template>
+
+  
+</div>
+
+</body>
+</html>
