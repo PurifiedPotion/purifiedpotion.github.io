@@ -175,3 +175,7 @@ int main() {
 **"프로세스 = 자원을 가진 집"**,
 **"스레드 = 집 안에서 일하는 사람"**
 이라고 이해하면 좋아
+
+## 스레드 심화
+
+더 깊고 자세한 내용은 [스레드(Thread) 심화](../../computersystem/thread-advanced){:.heading.flip-title}에서 다루겠다.
