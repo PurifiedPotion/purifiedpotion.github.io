@@ -1,5 +1,601 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-12T15:03:58+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
-</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">동기화 기법 3대장 : Lock/Semaphore/Condition Variable</title><link href="/blog/computersystem/lock-semaphore-condition/" rel="alternate" type="text/html" title="동기화 기법 3대장 : Lock/Semaphore/Condition Variable" /><published>2025-05-12T00:00:00+00:00</published><updated>2025-05-12T00:00:00+00:00</updated><id>/blog/computersystem/lock-semaphore-condition</id><content type="html" xml:base="/blog/computersystem/lock-semaphore-condition/"><![CDATA[<ul class="large-only" id="markdown-toc">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR, en-US"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" hreflang="ko-KR, en-US" /><updated>2025-05-13T01:35:33+00:00</updated><id>/feed.xml</id><title type="html">PurifiedPotion’s Blog</title><subtitle>A blog for computer science
+</subtitle><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><entry><title type="html">스레드(Thread)</title><link href="/blog/computersystem/thread-advanced/" rel="alternate" type="text/html" title="스레드(Thread)" /><published>2025-05-13T00:00:00+00:00</published><updated>2025-05-13T00:00:00+00:00</updated><id>/blog/computersystem/thread-advanced</id><content type="html" xml:base="/blog/computersystem/thread-advanced/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#스레드thread란" id="markdown-toc-스레드thread란">스레드(Thread)란?</a></li>
+  <li><a href="#왜-스레드를-사용할까" id="markdown-toc-왜-스레드를-사용할까">왜 스레드를 사용할까?</a>    <ul>
+      <li><a href="#성능-개선병렬성" id="markdown-toc-성능-개선병렬성">성능 개선(병렬성)</a></li>
+      <li><a href="#리소스-공유" id="markdown-toc-리소스-공유">리소스 공유</a></li>
+      <li><a href="#응답성-향상" id="markdown-toc-응답성-향상">응답성 향상</a></li>
+    </ul>
+  </li>
+  <li><a href="#스레드의-구성-요소" id="markdown-toc-스레드의-구성-요소">스레드의 구성 요소</a></li>
+  <li><a href="#스레드의-상태-변화" id="markdown-toc-스레드의-상태-변화">스레드의 상태 변화</a></li>
+  <li><a href="#스레드의-종류" id="markdown-toc-스레드의-종류">스레드의 종류</a>    <ul>
+      <li><a href="#사용자-수준-스레드user-level-thread-ult" id="markdown-toc-사용자-수준-스레드user-level-thread-ult">사용자 수준 스레드(User-Level Thread, ULT)</a></li>
+      <li><a href="#커널-수준-스레드kernel-level-thread-klt" id="markdown-toc-커널-수준-스레드kernel-level-thread-klt">커널 수준 스레드(Kernel-Level Thread, KLT)</a></li>
+      <li><a href="#하이브리드2-level-model" id="markdown-toc-하이브리드2-level-model">하이브리드(2-Level Model)</a></li>
+    </ul>
+  </li>
+  <li><a href="#스레드-생성-방법-예--c언어-posix-pthread" id="markdown-toc-스레드-생성-방법-예--c언어-posix-pthread">스레드 생성 방법 (예 : C언어 POSIX pthread)</a></li>
+  <li><a href="#스레드-사용-시-주의할-점" id="markdown-toc-스레드-사용-시-주의할-점">스레드 사용 시 주의할 점</a>    <ul>
+      <li><a href="#경쟁-조건race-condition" id="markdown-toc-경쟁-조건race-condition">경쟁 조건(Race Condition)</a></li>
+      <li><a href="#데드락deadlock" id="markdown-toc-데드락deadlock">데드락(Deadlock)</a></li>
+      <li><a href="#기아starvation" id="markdown-toc-기아starvation">기아(Starvation)</a></li>
+    </ul>
+  </li>
+  <li><a href="#스레드와-프로세스-비교-요약" id="markdown-toc-스레드와-프로세스-비교-요약">스레드와 프로세스 비교 요약</a></li>
+  <li><a href="#스레드-활용-예시" id="markdown-toc-스레드-활용-예시">스레드 활용 예시</a></li>
+  <li><a href="#시각화-그림" id="markdown-toc-시각화-그림">시각화 그림</a></li>
+</ul>
+
+<h2 id="스레드thread란">스레드(Thread)란?</h2>
+
+<p>스레드(Thread)는 프로세스(Process) 내에서 실제로 작업을 수행하는 실행 단위를 말해.</p>
+
+<ul>
+  <li>
+    <p>하나의 프로세스는 최소 하나 이상의 스레드를 가지고 있어.</p>
+  </li>
+  <li>
+    <p>스레드들은 <strong>프로세스의 메모리 공간(코드, 데이터, 힙, 파일 디스크립터 등)을 공유</strong>한다.</p>
+  </li>
+  <li>
+    <p>하지만 <strong>각 스레드는 자신의 레지스터 집합과 스택을 별도로 가지고 있어</strong>.</p>
+  </li>
+</ul>
+
+<p>요약하면,</p>
+
+<ul>
+  <li>
+    <p><strong>프로세스</strong> : 리소스를 가진 실행 단위</p>
+  </li>
+  <li>
+    <p><strong>스레드</strong> : 프로세스 내에서 실행 흐름을 가진 실행 단위</p>
+  </li>
+</ul>
+
+<h2 id="왜-스레드를-사용할까">왜 스레드를 사용할까?</h2>
+
+<h3 id="성능-개선병렬성">성능 개선(병렬성)</h3>
+
+<ul>
+  <li>CPU 코어가 여러 개라면 여러 스레드를 동시에 실행시켜 작업 속도를 높일 수 있어.</li>
+</ul>
+
+<h3 id="리소스-공유">리소스 공유</h3>
+
+<ul>
+  <li>같은 프로세스 내 스레드들은 메모리를 공유하기 때문에, 프로세스 간 통신(IPC)보다 훨씬 가볍고 빠른 스레드 간 통신이 가능해.</li>
+</ul>
+
+<h3 id="응답성-향상">응답성 향상</h3>
+
+<ul>
+  <li>예를 들어, 서버가 요청을 처리할 때, 메인 스레드는 계속 사용자 입력을 받고, 다른 스레드가 요청 처리를 맡아버리면 시스템 응답성이 좋아져.</li>
+</ul>
+
+<h2 id="스레드의-구성-요소">스레드의 구성 요소</h2>
+
+<p>각 스레드는 다음을 갖고 있어</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">구성 요소</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Thread ID</td>
+      <td style="text-align: center">스레드를 식별하는 고유 ID</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Program Counter</td>
+      <td style="text-align: center">다음에 실행할 명령어의 주소</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Registers</td>
+      <td style="text-align: center">스레드가 현재 수행 중인 작업에 필요한 데이터 저장</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Stack</td>
+      <td style="text-align: center">함수 호출 정보, 지역 변수 저장</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">State</td>
+      <td style="text-align: center">실행 샅애 (Running, Ready, Blocked 등)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong><em>참고 : 코드 영역, 데이터 영역, 열린 파일들은 같은 프로세스 내 스레드끼리 공유한다.</em></strong></p>
+
+<h2 id="스레드의-상태-변화">스레드의 상태 변화</h2>
+
+<p>스레드는 아래처럼 상태가 변한다.</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">New</span> <span class="o">-</span><span class="k">-&gt;</span> <span class="n">Ready</span> <span class="o">-</span><span class="k">-&gt;</span> <span class="n">Running</span> <span class="o">-</span><span class="k">-&gt;</span> <span class="p">(</span><span class="n">Blocked</span> <span class="n">or</span> <span class="n">Terminated</span><span class="p">)</span>
+             <span class="err">↑</span>          <span class="err">↓</span>
+          <span class="p">(</span><span class="n">Unblocked</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p><strong>New</strong> : 생성됨</p>
+  </li>
+  <li>
+    <p><strong>Ready</strong> : CPU를 기다림</p>
+  </li>
+  <li>
+    <p><strong>Running</strong> : CPU를 점유해서 실행 중</p>
+  </li>
+  <li>
+    <p><strong>Blocked</strong> : 입출력 등으로 기다림</p>
+  </li>
+  <li>
+    <p><strong>Terminated</strong> : 작업 완료하고 종료</p>
+  </li>
+</ul>
+
+<h2 id="스레드의-종류">스레드의 종류</h2>
+
+<h3 id="사용자-수준-스레드user-level-thread-ult">사용자 수준 스레드(User-Level Thread, ULT)</h3>
+
+<ul>
+  <li>
+    <p>커널이 스레드의 존재를 모름.</p>
+  </li>
+  <li>
+    <p>사용자 라이브러리(예: pthread)가 직접 스케줄링.</p>
+  </li>
+  <li>
+    <p>컨텍스트 스위칭이 빠름(커널 호출 없음), 하지만 하나가 Block되면 전체가 Block될 수 있음.</p>
+  </li>
+</ul>
+
+<h3 id="커널-수준-스레드kernel-level-thread-klt">커널 수준 스레드(Kernel-Level Thread, KLT)</h3>
+
+<ul>
+  <li>
+    <p>커널이 스레드를 관리함.</p>
+  </li>
+  <li>
+    <p>하나의 스레드가 Block돼도 다른 스레드는 계속 실행 가능.</p>
+  </li>
+  <li>
+    <p>하지만 스케줄링할 때마다 커널모드 진입/탈출(시스템 콜)이 필요해 느릴 수 있음.</p>
+  </li>
+</ul>
+
+<h3 id="하이브리드2-level-model">하이브리드(2-Level Model)</h3>
+
+<ul>
+  <li>사용자 수준 스레드와 커널 수준 스레드를 조합하여 장점을 살림.</li>
+</ul>
+
+<h2 id="스레드-생성-방법-예--c언어-posix-pthread">스레드 생성 방법 (예 : C언어 POSIX pthread)</h2>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">myThreadFunc</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Thread 실행 중</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+    <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">myThreadFunc</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="n">pthread_join</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> <span class="c1">// main 스레드가 tid 스레드 종료를 기다림</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">pthread_create</code> : 새로운 스레드 생성</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">pthread_join</code> : 생성된 스레드가 끝날 때까지 기다림</p>
+  </li>
+</ul>
+
+<h2 id="스레드-사용-시-주의할-점">스레드 사용 시 주의할 점</h2>
+
+<h3 id="경쟁-조건race-condition">경쟁 조건(Race Condition)</h3>
+
+<ul>
+  <li>
+    <p>여러 스레드가 동시에 같은 데이터를 수정할 때 발생하는 오류</p>
+  </li>
+  <li>
+    <p>해결 방법 : 뮤텍스(Mutex), 세마포어(Semaphore), 락(Lock) 사용</p>
+  </li>
+</ul>
+
+<h3 id="데드락deadlock">데드락(Deadlock)</h3>
+
+<ul>
+  <li>
+    <p>둘 이상의 스레드가 서로 자원을 기다리며 영원히 멈춰버리는 현상</p>
+  </li>
+  <li>
+    <p>해결 방법 : 자원 할당 순서를 정하거나, 타임아웃 적용</p>
+  </li>
+</ul>
+
+<h3 id="기아starvation">기아(Starvation)</h3>
+
+<ul>
+  <li>어떤 스레드가 자원을 독점해서 다른 스레드가 계속 기회를 얻지 못하는 문제</li>
+</ul>
+
+<h2 id="스레드와-프로세스-비교-요약">스레드와 프로세스 비교 요약</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">프로세스</th>
+      <th style="text-align: center">스레드</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">메모리</td>
+      <td style="text-align: center">각각 독립</td>
+      <td style="text-align: center">공유</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">생성 비용</td>
+      <td style="text-align: center">크다</td>
+      <td style="text-align: center">작다</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">통신 비용</td>
+      <td style="text-align: center">IPC(느림)</td>
+      <td style="text-align: center">메모리 공유(빠름)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">오류 전파</td>
+      <td style="text-align: center">프로세스끼리 독립</td>
+      <td style="text-align: center">하나가 죽으면 전체 프로세스 영향 가능</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="스레드-활용-예시">스레드 활용 예시</h2>
+
+<ul>
+  <li>
+    <p><strong>웹 서버</strong> : 요청마다 스레드 하나 생성</p>
+  </li>
+  <li>
+    <p><strong>게임 엔진</strong> : 물리 엔진, 렌더링 엔진, 네트워크 처리 등을 각각 다른 스레드에서 수행</p>
+  </li>
+  <li>
+    <p><strong>멀티미디어 앱</strong> : 음악 재생, 동영상 디코딩, 자막 처리 등을 별도 스레드로 처리</p>
+  </li>
+</ul>
+
+<h2 id="시각화-그림">시각화 그림</h2>
+
+<p>프로세스 하나 안에 여러 스레드가 존재하는 모습은 이렇게 볼 수 있어</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">+</span><span class="c1">----------------------------------------+</span>
+<span class="err">|</span>             <span class="n">Process</span> <span class="p">(</span><span class="err">프로세스</span><span class="p">)</span>          <span class="err">|</span>
+<span class="err">|</span>                                        <span class="err">|</span>
+<span class="err">|</span>    <span class="o">+</span><span class="c1">---------+   +---------+           |</span>
+<span class="err">|</span>    <span class="err">|</span> <span class="n">Thread</span> <span class="mi">1</span><span class="err">|</span>   <span class="err">|</span> <span class="n">Thread</span> <span class="mi">2</span> <span class="err">|</span>           <span class="err">|</span>
+<span class="err">|</span>    <span class="o">+</span><span class="c1">---------+   +---------+           |</span>
+<span class="err">|</span>        <span class="err">↕</span>             <span class="err">↕</span>                 <span class="err">|</span>
+<span class="err">|</span>    <span class="p">(</span><span class="err">공유하는</span> <span class="err">메모리</span><span class="p">,</span> <span class="err">열린</span> <span class="err">파일</span><span class="p">,</span> <span class="err">등등</span><span class="p">)</span>  <span class="err">|</span>
+<span class="o">+</span><span class="c1">----------------------------------------+</span>
+</code></pre></div></div>
+
+<p>요약하면,
+<strong>“프로세스 = 자원을 가진 집”</strong>,
+<strong>“스레드 = 집 안에서 일하는 사람”</strong>
+이라고 이해하면 좋아</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[스레드는 프로세스(process) 내에서 실제로 작업을 수행하는 실행 단위이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">스레드(Thread)</title><link href="/blog/computersystem/thread/" rel="alternate" type="text/html" title="스레드(Thread)" /><published>2025-05-13T00:00:00+00:00</published><updated>2025-05-13T00:00:00+00:00</updated><id>/blog/computersystem/thread</id><content type="html" xml:base="/blog/computersystem/thread/"><![CDATA[<ul class="large-only" id="markdown-toc">
+  <li><a href="#스레드thread란" id="markdown-toc-스레드thread란">스레드(Thread)란?</a></li>
+  <li><a href="#왜-스레드를-사용할까" id="markdown-toc-왜-스레드를-사용할까">왜 스레드를 사용할까?</a>    <ul>
+      <li><a href="#성능-개선병렬성" id="markdown-toc-성능-개선병렬성">성능 개선(병렬성)</a></li>
+      <li><a href="#리소스-공유" id="markdown-toc-리소스-공유">리소스 공유</a></li>
+      <li><a href="#응답성-향상" id="markdown-toc-응답성-향상">응답성 향상</a></li>
+    </ul>
+  </li>
+  <li><a href="#스레드의-구성-요소" id="markdown-toc-스레드의-구성-요소">스레드의 구성 요소</a></li>
+  <li><a href="#스레드의-상태-변화" id="markdown-toc-스레드의-상태-변화">스레드의 상태 변화</a></li>
+  <li><a href="#스레드의-종류" id="markdown-toc-스레드의-종류">스레드의 종류</a>    <ul>
+      <li><a href="#사용자-수준-스레드user-level-thread-ult" id="markdown-toc-사용자-수준-스레드user-level-thread-ult">사용자 수준 스레드(User-Level Thread, ULT)</a></li>
+      <li><a href="#커널-수준-스레드kernel-level-thread-klt" id="markdown-toc-커널-수준-스레드kernel-level-thread-klt">커널 수준 스레드(Kernel-Level Thread, KLT)</a></li>
+      <li><a href="#하이브리드2-level-model" id="markdown-toc-하이브리드2-level-model">하이브리드(2-Level Model)</a></li>
+    </ul>
+  </li>
+  <li><a href="#스레드-생성-방법-예--c언어-posix-pthread" id="markdown-toc-스레드-생성-방법-예--c언어-posix-pthread">스레드 생성 방법 (예 : C언어 POSIX pthread)</a></li>
+  <li><a href="#스레드-사용-시-주의할-점" id="markdown-toc-스레드-사용-시-주의할-점">스레드 사용 시 주의할 점</a>    <ul>
+      <li><a href="#경쟁-조건race-condition" id="markdown-toc-경쟁-조건race-condition">경쟁 조건(Race Condition)</a></li>
+      <li><a href="#데드락deadlock" id="markdown-toc-데드락deadlock">데드락(Deadlock)</a></li>
+      <li><a href="#기아starvation" id="markdown-toc-기아starvation">기아(Starvation)</a></li>
+    </ul>
+  </li>
+  <li><a href="#스레드와-프로세스-비교-요약" id="markdown-toc-스레드와-프로세스-비교-요약">스레드와 프로세스 비교 요약</a></li>
+  <li><a href="#스레드-활용-예시" id="markdown-toc-스레드-활용-예시">스레드 활용 예시</a></li>
+  <li><a href="#시각화-그림" id="markdown-toc-시각화-그림">시각화 그림</a></li>
+</ul>
+
+<h2 id="스레드thread란">스레드(Thread)란?</h2>
+
+<p>스레드(Thread)는 프로세스(Process) 내에서 실제로 작업을 수행하는 실행 단위를 말해.</p>
+
+<ul>
+  <li>
+    <p>하나의 프로세스는 최소 하나 이상의 스레드를 가지고 있어.</p>
+  </li>
+  <li>
+    <p>스레드들은 <strong>프로세스의 메모리 공간(코드, 데이터, 힙, 파일 디스크립터 등)을 공유</strong>한다.</p>
+  </li>
+  <li>
+    <p>하지만 <strong>각 스레드는 자신의 레지스터 집합과 스택을 별도로 가지고 있어</strong>.</p>
+  </li>
+</ul>
+
+<p>요약하면,</p>
+
+<ul>
+  <li>
+    <p><strong>프로세스</strong> : 리소스를 가진 실행 단위</p>
+  </li>
+  <li>
+    <p><strong>스레드</strong> : 프로세스 내에서 실행 흐름을 가진 실행 단위</p>
+  </li>
+</ul>
+
+<h2 id="왜-스레드를-사용할까">왜 스레드를 사용할까?</h2>
+
+<h3 id="성능-개선병렬성">성능 개선(병렬성)</h3>
+
+<ul>
+  <li>CPU 코어가 여러 개라면 여러 스레드를 동시에 실행시켜 작업 속도를 높일 수 있어.</li>
+</ul>
+
+<h3 id="리소스-공유">리소스 공유</h3>
+
+<ul>
+  <li>같은 프로세스 내 스레드들은 메모리를 공유하기 때문에, 프로세스 간 통신(IPC)보다 훨씬 가볍고 빠른 스레드 간 통신이 가능해.</li>
+</ul>
+
+<h3 id="응답성-향상">응답성 향상</h3>
+
+<ul>
+  <li>예를 들어, 서버가 요청을 처리할 때, 메인 스레드는 계속 사용자 입력을 받고, 다른 스레드가 요청 처리를 맡아버리면 시스템 응답성이 좋아져.</li>
+</ul>
+
+<h2 id="스레드의-구성-요소">스레드의 구성 요소</h2>
+
+<p>각 스레드는 다음을 갖고 있어</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">구성 요소</th>
+      <th style="text-align: center">설명</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Thread ID</td>
+      <td style="text-align: center">스레드를 식별하는 고유 ID</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Program Counter</td>
+      <td style="text-align: center">다음에 실행할 명령어의 주소</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Registers</td>
+      <td style="text-align: center">스레드가 현재 수행 중인 작업에 필요한 데이터 저장</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Stack</td>
+      <td style="text-align: center">함수 호출 정보, 지역 변수 저장</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">State</td>
+      <td style="text-align: center">실행 샅애 (Running, Ready, Blocked 등)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong><em>참고 : 코드 영역, 데이터 영역, 열린 파일들은 같은 프로세스 내 스레드끼리 공유한다.</em></strong></p>
+
+<h2 id="스레드의-상태-변화">스레드의 상태 변화</h2>
+
+<p>스레드는 아래처럼 상태가 변한다.</p>
+
+<div class="language-rust highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">New</span> <span class="o">-</span><span class="k">-&gt;</span> <span class="n">Ready</span> <span class="o">-</span><span class="k">-&gt;</span> <span class="n">Running</span> <span class="o">-</span><span class="k">-&gt;</span> <span class="p">(</span><span class="n">Blocked</span> <span class="n">or</span> <span class="n">Terminated</span><span class="p">)</span>
+             <span class="err">↑</span>          <span class="err">↓</span>
+          <span class="p">(</span><span class="n">Unblocked</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p><strong>New</strong> : 생성됨</p>
+  </li>
+  <li>
+    <p><strong>Ready</strong> : CPU를 기다림</p>
+  </li>
+  <li>
+    <p><strong>Running</strong> : CPU를 점유해서 실행 중</p>
+  </li>
+  <li>
+    <p><strong>Blocked</strong> : 입출력 등으로 기다림</p>
+  </li>
+  <li>
+    <p><strong>Terminated</strong> : 작업 완료하고 종료</p>
+  </li>
+</ul>
+
+<h2 id="스레드의-종류">스레드의 종류</h2>
+
+<h3 id="사용자-수준-스레드user-level-thread-ult">사용자 수준 스레드(User-Level Thread, ULT)</h3>
+
+<ul>
+  <li>
+    <p>커널이 스레드의 존재를 모름.</p>
+  </li>
+  <li>
+    <p>사용자 라이브러리(예: pthread)가 직접 스케줄링.</p>
+  </li>
+  <li>
+    <p>컨텍스트 스위칭이 빠름(커널 호출 없음), 하지만 하나가 Block되면 전체가 Block될 수 있음.</p>
+  </li>
+</ul>
+
+<h3 id="커널-수준-스레드kernel-level-thread-klt">커널 수준 스레드(Kernel-Level Thread, KLT)</h3>
+
+<ul>
+  <li>
+    <p>커널이 스레드를 관리함.</p>
+  </li>
+  <li>
+    <p>하나의 스레드가 Block돼도 다른 스레드는 계속 실행 가능.</p>
+  </li>
+  <li>
+    <p>하지만 스케줄링할 때마다 커널모드 진입/탈출(시스템 콜)이 필요해 느릴 수 있음.</p>
+  </li>
+</ul>
+
+<h3 id="하이브리드2-level-model">하이브리드(2-Level Model)</h3>
+
+<ul>
+  <li>사용자 수준 스레드와 커널 수준 스레드를 조합하여 장점을 살림.</li>
+</ul>
+
+<h2 id="스레드-생성-방법-예--c언어-posix-pthread">스레드 생성 방법 (예 : C언어 POSIX pthread)</h2>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">myThreadFunc</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Thread 실행 중</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">pthread_t</span> <span class="n">tid</span><span class="p">;</span>
+    <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tid</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">myThreadFunc</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="n">pthread_join</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> <span class="c1">// main 스레드가 tid 스레드 종료를 기다림</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">pthread_create</code> : 새로운 스레드 생성</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">pthread_join</code> : 생성된 스레드가 끝날 때까지 기다림</p>
+  </li>
+</ul>
+
+<h2 id="스레드-사용-시-주의할-점">스레드 사용 시 주의할 점</h2>
+
+<h3 id="경쟁-조건race-condition">경쟁 조건(Race Condition)</h3>
+
+<ul>
+  <li>
+    <p>여러 스레드가 동시에 같은 데이터를 수정할 때 발생하는 오류</p>
+  </li>
+  <li>
+    <p>해결 방법 : 뮤텍스(Mutex), 세마포어(Semaphore), 락(Lock) 사용</p>
+  </li>
+</ul>
+
+<h3 id="데드락deadlock">데드락(Deadlock)</h3>
+
+<ul>
+  <li>
+    <p>둘 이상의 스레드가 서로 자원을 기다리며 영원히 멈춰버리는 현상</p>
+  </li>
+  <li>
+    <p>해결 방법 : 자원 할당 순서를 정하거나, 타임아웃 적용</p>
+  </li>
+</ul>
+
+<h3 id="기아starvation">기아(Starvation)</h3>
+
+<ul>
+  <li>어떤 스레드가 자원을 독점해서 다른 스레드가 계속 기회를 얻지 못하는 문제</li>
+</ul>
+
+<h2 id="스레드와-프로세스-비교-요약">스레드와 프로세스 비교 요약</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">항목</th>
+      <th style="text-align: center">프로세스</th>
+      <th style="text-align: center">스레드</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">메모리</td>
+      <td style="text-align: center">각각 독립</td>
+      <td style="text-align: center">공유</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">생성 비용</td>
+      <td style="text-align: center">크다</td>
+      <td style="text-align: center">작다</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">통신 비용</td>
+      <td style="text-align: center">IPC(느림)</td>
+      <td style="text-align: center">메모리 공유(빠름)</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">오류 전파</td>
+      <td style="text-align: center">프로세스끼리 독립</td>
+      <td style="text-align: center">하나가 죽으면 전체 프로세스 영향 가능</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="스레드-활용-예시">스레드 활용 예시</h2>
+
+<ul>
+  <li>
+    <p><strong>웹 서버</strong> : 요청마다 스레드 하나 생성</p>
+  </li>
+  <li>
+    <p><strong>게임 엔진</strong> : 물리 엔진, 렌더링 엔진, 네트워크 처리 등을 각각 다른 스레드에서 수행</p>
+  </li>
+  <li>
+    <p><strong>멀티미디어 앱</strong> : 음악 재생, 동영상 디코딩, 자막 처리 등을 별도 스레드로 처리</p>
+  </li>
+</ul>
+
+<h2 id="시각화-그림">시각화 그림</h2>
+
+<p>프로세스 하나 안에 여러 스레드가 존재하는 모습은 이렇게 볼 수 있어</p>
+
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">+</span><span class="c1">----------------------------------------+</span>
+<span class="err">|</span>             <span class="n">Process</span> <span class="p">(</span><span class="err">프로세스</span><span class="p">)</span>          <span class="err">|</span>
+<span class="err">|</span>                                        <span class="err">|</span>
+<span class="err">|</span>    <span class="o">+</span><span class="c1">---------+   +---------+           |</span>
+<span class="err">|</span>    <span class="err">|</span> <span class="n">Thread</span> <span class="mi">1</span><span class="err">|</span>   <span class="err">|</span> <span class="n">Thread</span> <span class="mi">2</span> <span class="err">|</span>           <span class="err">|</span>
+<span class="err">|</span>    <span class="o">+</span><span class="c1">---------+   +---------+           |</span>
+<span class="err">|</span>        <span class="err">↕</span>             <span class="err">↕</span>                 <span class="err">|</span>
+<span class="err">|</span>    <span class="p">(</span><span class="err">공유하는</span> <span class="err">메모리</span><span class="p">,</span> <span class="err">열린</span> <span class="err">파일</span><span class="p">,</span> <span class="err">등등</span><span class="p">)</span>  <span class="err">|</span>
+<span class="o">+</span><span class="c1">----------------------------------------+</span>
+</code></pre></div></div>
+
+<p>요약하면,
+<strong>“프로세스 = 자원을 가진 집”</strong>,
+<strong>“스레드 = 집 안에서 일하는 사람”</strong>
+이라고 이해하면 좋아</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[스레드는 프로세스(process) 내에서 실제로 작업을 수행하는 실행 단위이다.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">동기화 기법 3대장 : Lock/Semaphore/Condition Variable</title><link href="/blog/computersystem/lock-semaphore-condition/" rel="alternate" type="text/html" title="동기화 기법 3대장 : Lock/Semaphore/Condition Variable" /><published>2025-05-12T00:00:00+00:00</published><updated>2025-05-12T00:00:00+00:00</updated><id>/blog/computersystem/lock-semaphore-condition</id><content type="html" xml:base="/blog/computersystem/lock-semaphore-condition/"><![CDATA[<ul class="large-only" id="markdown-toc">
   <li><a href="#동기화synchronization란" id="markdown-toc-동기화synchronization란">동기화(Synchronization)란?</a></li>
   <li><a href="#왜-동기화가-필요할까" id="markdown-toc-왜-동기화가-필요할까">왜 동기화가 필요할까?</a>    <ul>
       <li><a href="#동기화가-없으면-생기는-문제" id="markdown-toc-동기화가-없으면-생기는-문제">동기화가 없으면 생기는 문제</a></li>
@@ -3259,534 +3855,4 @@ Dave O'Hallaron
 ‘4’ : 3 2 1 4 4 5 5 6 
 ‘5’ : 2 1 3 4 4 5 5 6 
 ‘6’ : 1 2 3 4 4 5 5 6 
-final : 1 2 3 4 4 5 5 6</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="algorithm" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/Algorithm.png" /><media:content medium="image" url="/assets/img/blog/postimage/Algorithm.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Demand-zero memory</title><link href="/blog/computersystem/demand-zero-memory/" rel="alternate" type="text/html" title="Demand-zero memory" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/demand-zero-memory</id><content type="html" xml:base="/blog/computersystem/demand-zero-memory/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#동작-흐름" id="markdown-toc-동작-흐름">동작 흐름</a></li>
-  <li><a href="#왜-쓰일까" id="markdown-toc-왜-쓰일까">왜 쓰일까?</a></li>
-  <li><a href="#언제-볼-수-있을까" id="markdown-toc-언제-볼-수-있을까">언제 볼 수 있을까?</a></li>
-  <li><a href="#요약" id="markdown-toc-요약">요약</a>    <ul>
-      <li><a href="#나만의-요약" id="markdown-toc-나만의-요약">나만의 요약</a></li>
-    </ul>
-  </li>
-</ul>
-
-<p><strong>Demand-zero memory(또는 zero-filled-on-demand page)</strong>는 운영체제가 <strong>“필요해질 때(demand)”</strong> 처음 접근되는 순간에만 물리 페이지를 연결하고, 그 페이지의 모든 바이트를 0으로 채워서(zero-fill) 사용자 프로세스에 넘겨주는 메모리 할당 기법</p>
-
-<h2 id="동작-흐름">동작 흐름</h2>
-
-<ol>
-  <li>가상 주소 공간만 잡아 두기</li>
-</ol>
-
-<ul>
-  <li>
-    <p>프로그램이 malloc, VirtualAlloc(…, MEM_RESERVE), 스택 확대, BSS(전역/정적 0-초기화 변수) 등으로 “새 메모리를” 요구하면,</p>
-  </li>
-  <li>
-    <p>커널은 대응되는 물리 페이지 없이 가상 주소 범위를 예약해 두고, PTE(Page-Table Entry)에 “아직 물리 페이지 없음, demand-zero”라는 플래그를 세워 둠</p>
-  </li>
-</ul>
-
-<ol>
-  <li>첫 접근 → 페이지 폴트(page fault)</li>
-</ol>
-
-<ul>
-  <li>CPU가 그 주소를 읽거나 쓰려고 하면 PTE에 실제 프레임이 없으므로 페이지 폴트가 발생</li>
-</ul>
-
-<ol>
-  <li>커널이 물리 페이지 할당 &amp; 0으로 초기화</li>
-</ol>
-
-<ul>
-  <li>
-    <p>커널의 Zero Page List에서 이미 0으로 클리어돼 있는 여유 페이지를 하나 꺼내오거나,</p>
-  </li>
-  <li>
-    <p>여유 페이지가 없다면 새 페이지를 확보한 뒤 memset(page, 0, PAGE_SIZE)로 0-필(fill) 한다</p>
-  </li>
-</ul>
-
-<ol>
-  <li>PTE 갱신 후 재시도</li>
-</ol>
-
-<ul>
-  <li>PTE를 “valid + 해당 물리 프레임”으로 고쳐 놓고, fault 된 명령을 재실행하면 이제 정상적으로 0값이 보임</li>
-</ul>
-
-<h2 id="왜-쓰일까">왜 쓰일까?</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">장점</th>
-      <th style="text-align: center">설명</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">메모리 절약</td>
-      <td style="text-align: center">큰 배열/구조체를 “0으로 초기화”해 예약만 해 놓고, 실제로 접근한 부분만 물리 메모리를 소비함</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">보안 &amp; 안정성</td>
-      <td style="text-align: center">항상 0으로 채워 주므로, 이전 프로세스의 잔류 데이터가 노출되지 않음</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">속도(평균)</td>
-      <td style="text-align: center">초기화 루프를 사용자 코드에서 돌릴 필요가 없고, 커널은 미리 0-클리어 해 둔 zero-page 풀을 재사용해 페이지 폴트 처리 시간을 최소화함</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="언제-볼-수-있을까">언제 볼 수 있을까?</h2>
-
-<ul>
-  <li>
-    <p>Windows - MEM_COMMIT 없이 VirtualAlloc으로 예약만 한 뒤 접근할 때, 또는 일반 HeapAlloc/new 내부적으로</p>
-  </li>
-  <li>
-    <p>Linux/Unix - 익명 매핑 mmap(…, MAP_ANONYMOUS)·스택·BSS·brk/sbrk 등</p>
-  </li>
-  <li>
-    <p>하이퍼바이저/가상머신 - 게스트가 처음 쓰는 시점까지 진짜 호스트 RAM을 배정하지 않는 ballooning 기법과 결합되기도 함</p>
-  </li>
-</ul>
-
-<h2 id="요약">요약</h2>
-
-<p>Demand-zero memory = “필요할 때 0으로 초기화된 물리 페이지를 뒤늦게 붙이는 가상 메모리 기술”</p>
-
-<p>→ 프로그램 입장에서는 ‘이미 0으로 초기화돼 있는 새 메모리’를 즉시 얻은 것처럼 보이지만, 실제 RAM은 첫 사용 시점까지 쓰이지 않아 메모리를 아끼고 보안을 높여 줌</p>
-
-<h3 id="나만의-요약">나만의 요약</h3>
-
-<ol>
-  <li>
-    <p>물리 메모리 같은 경우 첫 사용 전까지는 메모리 할당이 되지 않음</p>
-  </li>
-  <li>
-    <p>하지만 가상 메모리에서는 공간이 확보된 상태</p>
-  </li>
-  <li>
-    <p>실제 사용시에는 page fault 되면서 물리 메모리 할당이 이루어짐, PTE의 Not-present → Present로 갱신</p>
-  </li>
-</ol>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[Demand-zero memory(또는 zero-filled-on-demand page)는 운영체제가 “필요해질 때(demand)” 처음 접근되는 순간에만 물리 페이지를 연결하고, 그 페이지의 모든 바이트를 0으로 채워서(zero-fill) 사용자 프로세스에 넘겨주는 메모리 할당 기법이다]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Direct Memory Access</title><link href="/blog/computersystem/dma/" rel="alternate" type="text/html" title="Direct Memory Access" /><published>2025-04-28T00:00:00+00:00</published><updated>2025-04-28T00:00:00+00:00</updated><id>/blog/computersystem/dma</id><content type="html" xml:base="/blog/computersystem/dma/"><![CDATA[<ul class="large-only" id="markdown-toc">
-  <li><a href="#dmadirect-memory-access란" id="markdown-toc-dmadirect-memory-access란">DMA(Direct Memory Access)란?</a></li>
-  <li><a href="#왜-dma가-필요한가" id="markdown-toc-왜-dma가-필요한가">왜 DMA가 필요한가?</a></li>
-  <li><a href="#기본-구성-요소" id="markdown-toc-기본-구성-요소">기본 구성 요소</a>    <ul>
-      <li><a href="#dma-레지스터-src-dst-len" id="markdown-toc-dma-레지스터-src-dst-len">DMA 레지스터 SRC, DST, LEN</a></li>
-    </ul>
-  </li>
-  <li><a href="#동작-흐름-x86-pc-예시" id="markdown-toc-동작-흐름-x86-pc-예시">동작 흐름 (x86 PC 예시)</a>    <ul>
-      <li><a href="#동작-흐름-더-자세히" id="markdown-toc-동작-흐름-더-자세히">동작 흐름 더 자세히</a>        <ul>
-          <li><a href="#1-단계---cpu까-준비만-하고-손을-뗀다" id="markdown-toc-1-단계---cpu까-준비만-하고-손을-뗀다">1 단계 - CPU까 준비만 하고 손을 뗀다</a></li>
-          <li><a href="#2-단계---버스-소유권-교환" id="markdown-toc-2-단계---버스-소유권-교환">2 단계 - 버스 소유권 교환</a></li>
-          <li><a href="#3-단계---실제-데이터-이동" id="markdown-toc-3-단계---실제-데이터-이동">3 단계 - 실제 데이터 이동</a></li>
-          <li><a href="#4-단계---전송-완료-알림" id="markdown-toc-4-단계---전송-완료-알림">4 단계 - 전송 완료 알림</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#전송-모드" id="markdown-toc-전송-모드">전송 모드</a></li>
-  <li><a href="#현대-시스템에서의-dma-변화" id="markdown-toc-현대-시스템에서의-dma-변화">현대 시스템에서의 DMA 변화</a></li>
-  <li><a href="#장점과-단점-요약" id="markdown-toc-장점과-단점-요약">장점과 단점 요약</a></li>
-  <li><a href="#실무-예시" id="markdown-toc-실무-예시">실무 예시</a></li>
-  <li><a href="#운영체제-관점" id="markdown-toc-운영체제-관점">운영체제 관점</a></li>
-</ul>
-
-<h2 id="dmadirect-memory-access란">DMA(Direct Memory Access)란?</h2>
-
-<p>DMA는 CPU를 거치지 않고 I/O 장치가 주 메모리(RAM)에 직접 읽기·쓰기 할 수 있도록 시스템 버스를 “잠깐” 빌려서 데이터 블록을 전송하는 하드웨어 메커니즘</p>
-
-<h2 id="왜-dma가-필요한가">왜 DMA가 필요한가?</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">문제점(전통적 PIO)</th>
-      <th style="text-align: center">DMA가 주는 이점</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">CPU가 I/O 레지스터를 통해 바이트 단위로 데이터를 옮기면 레이턴시·오버헤드가 큼</td>
-      <td style="text-align: center">한 번에 수십~수천 바이트 블록을 메모리로 직행 ⇒ CPU cycles 절약</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">빠른 장치(SSD, 10 GbE NIC 등)는 CPU 속도보다 I/O 대역폭이 큼 → CPU가 “목”이 됨</td>
-      <td style="text-align: center">DMA 엔진이 버스 마스터로 동작해 메모리 버스를 직접 차단·사용</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">멀티코어 시대에 CPU는 계산에 집중하고 싶음</td>
-      <td style="text-align: center">CPU는 전송 시작/종료만 관리 → I/O wait 시간 줄고, 캐시 miss도 감소</td>
-    </tr>
-  </tbody>
-</table>
-
-<ul>
-  <li>덕분에 대역폭·지연시간 모두 절감, 특히 디스크 I/O, 네트워크 카드, 오디오 스트리밍처럼 폭이 넓고 반복적인 전송에 필수적이다</li>
-</ul>
-
-<h2 id="기본-구성-요소">기본 구성 요소</h2>
-
-<ol>
-  <li>
-    <p>DMA 컨트롤러(DMAC)</p>
-
-    <ul>
-      <li>
-        <p>전용 칩(고전 ISA-DMA) 또는 주변장치 내부 DMA 엔진(PCIe, NVMe 컨트롤러)</p>
-      </li>
-      <li>
-        <p>소스/목적지 물리 주소, 전송 길이, 모드, 제어 플래그 등을 저장하는 레지스터(메모리 맵 레지스터) 보유</p>
-      </li>
-      <li>
-        <p>여러 채널이 있으면 동시에 여러 장치 지원</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>시스템 버스</p>
-
-    <ul>
-      <li>
-        <p>CPU ↔ 메모리 ↔ DMA 컨트롤러가 공유</p>
-      </li>
-      <li>
-        <p>CPU와 DMAC가 동시에 쓰지 않도록 <strong>버스 중재(bus arbitration)</strong> 를 수행</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>메모리 버스</p>
-
-    <ul>
-      <li>DMAC가 버스 마스터(master) 권한을 요청(Bus Request, BR) → 메모리와 직접 주고받음</li>
-    </ul>
-  </li>
-  <li>
-    <p>주변장치(Device)</p>
-
-    <ul>
-      <li>디스크, NIC, GPU, 오디오 코드 … 데이터가 실제로 존재/필요한 곳</li>
-    </ul>
-  </li>
-  <li>
-    <p>CPU &amp; OS</p>
-
-    <ul>
-      <li>전송 파라미터를 DMAC 레지스터에 써 주고, 완료 인터럽트(DMA done)를 처리</li>
-    </ul>
-  </li>
-  <li>
-    <p>I/O 장치(버스 마스터 가능 장치)</p>
-
-    <ul>
-      <li>PCIe NIC, NVMe SSD, GPU 등은 자체 DMA 엔진을 내장해 버스 마스터 가 되기도 한다</li>
-    </ul>
-  </li>
-</ol>
-
-<h3 id="dma-레지스터-src-dst-len">DMA 레지스터 SRC, DST, LEN</h3>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">레지스터</th>
-      <th style="text-align: center">역할</th>
-      <th style="text-align: center">일반적 크기</th>
-      <th style="text-align: center">세부 사항</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">SRC (Source Address)</td>
-      <td style="text-align: center">읽어 올 원본 주소. 장치 → RAM 전송이면 장치 쪽 FIFO 주소, RAM → 장치 전송이면 RAM의 시작 주소</td>
-      <td style="text-align: center">32 bit(SoC) 또는 64 bit(서버)</td>
-      <td style="text-align: center">* 버스트·비버스트 여부, 버스트 길이에 따라 자동 증가(inc) 여부 선택 플래그 존재<br />* Scatter-Gather 모드에선 “다음 표(list) 항목” 주소로 해석되기도 함</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">DST (Destination Address)</td>
-      <td style="text-align: center">쓰기 대상 주소</td>
-      <td style="text-align: center">32/64 bit</td>
-      <td style="text-align: center">* 자동 증가/고정 선택 가능 (예: 오디오 DAC 같은 스트리밍 장치는 고정 주소, 메모리 버퍼는 증가)</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">LEN (Length / Count)</td>
-      <td style="text-align: center">총 바이트(혹은 워드) 수</td>
-      <td style="text-align: center">16 bit(65 kB) ~ 32 bit(4 GB) 이상</td>
-      <td style="text-align: center">* 전송이 끝날 때마다 LEN–; 0 → 인터럽트 발생<br />* 어떤 컨트롤러는 LEN 대신 COUNT×DATA_WIDTH 형태 사용</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><strong>요약</strong> : SRC·DST는 “어디서 → 어디로”를, LEN은 “얼마나”를 알려주는 좌표 + 거리 정보라고 생각하면 된다</p>
-
-<h2 id="동작-흐름-x86-pc-예시">동작 흐름 (x86 PC 예시)</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">단계</th>
-      <th style="text-align: center">신호선 &amp; 동작</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">① CPU 설정</td>
-      <td style="text-align: center">DMAC 레지스터에 &lt;소스, 목적지, 길이, 모드&gt; 기록 후 Bus Request(BR) 활성화</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">② 버스 획득</td>
-      <td style="text-align: center">CPU가 <em>Bus Grant(BG)</em>로 응답 → CPU 파이프라인이 버스를 놓고 다른 연산(레지스터 계산 등) 수행</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">③ 데이터 전송</td>
-      <td style="text-align: center">DMAC가 메모리 ↔ 장치 간 버스 싸이클 생성</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">④ 완료 인터럽트</td>
-      <td style="text-align: center">전송 길이가 0이 되면 DMAC가 CPU에 DMA 완료 인터럽트. CPU는 이후 버스 재획득</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><strong>중요</strong> : DMAC가 버스를 잡은 동안 메모리 전체 버스 주도권을 갖기 때문에 CPU는 RAM을 전혀 접근하지 못한다. 개별 “주소 권한”이 아닌 “버스 소유권”의 문제다. 이 때문에 짝수 클럭마다 한 워드만 빼앗고 바로 돌려주는 Cycle Stealing 모드가 등장했다</p>
-
-<h3 id="동작-흐름-더-자세히">동작 흐름 더 자세히</h3>
-
-<p><img src="/assets/img/blog/computerscience/dma.png" alt="DMA" /></p>
-
-<h4 id="1-단계---cpu까-준비만-하고-손을-뗀다">1 단계 - CPU까 준비만 하고 손을 뗀다</h4>
-
-<ol>
-  <li>
-    <p>전송 파라미터 설정</p>
-
-    <ul>
-      <li>
-        <p>SRC, DST, LEN, MODE을 레지스터에 값을 써 넣습니다</p>
-      </li>
-      <li>
-        <p>마지막으로 Enable 플래그를 1로 두면 DMAC가 “이제 내가 처리할게!”하고 대기</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>버스 요청(BR 신호)</p>
-
-    <ul>
-      <li>DMAC는 버스 중재기(arbiter)에게 “버스 좀 빌려주세요” 라고 손을 듦</li>
-    </ul>
-  </li>
-</ol>
-
-<h4 id="2-단계---버스-소유권-교환">2 단계 - 버스 소유권 교환</h4>
-
-<ol>
-  <li>
-    <p>CPU → DMAC ‘Bus Grant(BG)’</p>
-
-    <ul>
-      <li>
-        <p>CPU가 진행 중인 버스 싸이클을 마치면 주소·데이터 라인을 tristate해 두고 계산 같은 비-버스 작업에 집중함</p>
-
-        <ul>
-          <li>
-            <p>tristate란, 여러개의 마스터(CPU, DMAC, GPU…)가 하나의 전선을 공유하고, 한 쪽이 0V, 다른쪽이 동시에 Vcc를 내보내면 단락(short) 위험을 방지하고자 버스를 넘겨받은 쪽만 드라이버를 켜고 나머지는 Hi-Z로 물러나야 함</p>
-          </li>
-          <li>
-            <p>버스가 필요 없는 작업이란, 파이프라인이 레지스터와 내부 캐시 만으로 실행 가능한 명령들</p>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>DMAC가 버스 장악</p>
-
-    <ul>
-      <li>
-        <p>이 순간부터 RAM과 I/O 장치 사이를 오가는 모든 신호는 DMAC가 생성</p>
-      </li>
-      <li>
-        <p>CPU는 RAM을 못 만지기 때문에 캐시 miss가 나도 대기해야 함</p>
-      </li>
-    </ul>
-  </li>
-</ol>
-
-<h4 id="3-단계---실제-데이터-이동">3 단계 - 실제 데이터 이동</h4>
-
-<ol>
-  <li>
-    <p>전송 모드에 따른 사이클</p>
-
-    <ul>
-      <li>
-        <p>Burst/Block : LEN만큼 연속으로 → 최고속, 대신 CPU 길게 정지</p>
-      </li>
-      <li>
-        <p>Cycle-Stealing : 한 사이클씩 “훔치고” 바로 돌려줌 → 실시간 오디어/비디오</p>
-      </li>
-      <li>
-        <p>Scatter-Gather : 메모리 리스트 따라 다중 블록 자동 전송 → NVMe·NIC</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>주소·카운터 자동 증가</p>
-
-    <ul>
-      <li>DMAC 내부 카운터가 0이 될 때까지 SRC++, DST++, LEN–</li>
-    </ul>
-  </li>
-</ol>
-
-<h4 id="4-단계---전송-완료-알림">4 단계 - 전송 완료 알림</h4>
-
-<ol>
-  <li>
-    <p>DMA 완료 인터럽트</p>
-
-    <ul>
-      <li>
-        <p>LEN==0 → DMAC가 IRQ를 날리고 버스 요청을 내림</p>
-      </li>
-      <li>
-        <p>CPU는 인터럽트 핸들러에서 데이터 후처리(예: 패킷 파싱, 디스크 블록 체크섬) 수행</p>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <p>버스 복귀</p>
-
-    <ul>
-      <li>Arbiter가 다시 CPU에 ‘Bus Grant’ → 평상시 메모리 접근 재개</li>
-    </ul>
-  </li>
-</ol>
-
-<h2 id="전송-모드">전송 모드</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">모드</th>
-      <th style="text-align: center">특징</th>
-      <th style="text-align: center">사용 예시</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">Cycle-Stealing</td>
-      <td style="text-align: center">버스 싸이클 1 개만 “훔친” 뒤 즉시 CPU에 반환 → CPU 지연 최소</td>
-      <td style="text-align: center">실시간 오디오, 비디오 스트림</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Block/Burst</td>
-      <td style="text-align: center">전체 블록(혹은 버스트) 한 번에 전송 → 가장 빠르지만 CPU 길게 정지</td>
-      <td style="text-align: center">SATA, SDIO, 대부분의 PCIe 장치</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Demand/Scatter-Gather</td>
-      <td style="text-align: center">장치가 필요할 때마다, 혹은 메모리 리스트 기반 다중 블록 이동</td>
-      <td style="text-align: center">고성능 NIC, NVMe SSD, GPU VRAM 업로드</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="현대-시스템에서의-dma-변화">현대 시스템에서의 DMA 변화</h2>
-
-<ol>
-  <li>
-    <p>PCIe Bus mastering - 주변장치가 메인 메모리를 완전히 “빌려” 직접 읽고/쓴다</p>
-  </li>
-  <li>
-    <p>IOMMU(DMA-Remapping) - 가상화·보안 목적. 장치가 접근 가능한 주소를 OS가 테이블로 전환 → 버퍼 오염·DMA 공격 방어</p>
-  </li>
-  <li>
-    <p>Cache coherency 문제 - CPU 캐시에 남은 더러운(line dirty) 데이터 vs DMA가 본 메모리 불일치. 해결 : dma_sync_*() - (Linux)·Cache flush, non-cacheable region, snoopint 버스.</p>
-  </li>
-  <li>
-    <p>Zero-copy - 네트워크 스택이나 GPU ↔ CPU 사이에서 “복사 없는” 파이프라인 구축 (DPDK, RDMA, CUDA cudaMemcpyAsync 등)</p>
-
-    <ul>
-      <li>운영체제 버퍼를 추가로 “복사(copy)”하지 않고, 장치 ↔ 응용이 같은 메모리 페이지를 공유하도록 하는 기법. CPU가 불필요한 memcpy()를 안 하므로 지연과 캐시오염↓</li>
-    </ul>
-  </li>
-  <li>
-    <p>RDMA(Remode DMA) - NIC가 원격 호스트의 메모리에까지 DMA 쓰기/읽기를 수행. 커널 네트워크 스택을 우회하여 μs 단위 지연시간을 제공한다. 고속 HPC, 데이터베이스 복제에서 필수</p>
-  </li>
-</ol>
-
-<h2 id="장점과-단점-요약">장점과 단점 요약</h2>
-
-<p><strong>장점</strong></p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- CPU 사용률 감소, 전력 효율 ↑
-
-- 대역폭 활용 극대화(PCIe Gen4 x4 ≈ 8 GB/s 급)
-
-- 실시간 스트리밍 지원(오디오 스터터링 방지 등)
-</code></pre></div></div>
-
-<p><strong>단점</strong></p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- 하드웨어·드라이버 복잡도 증가
-
-- 버스 우선순위 조정 실패 시 CPU 지연 가능
-
-- 캐시 일관성, 보안("DMA 공격") 이슈 처리 필요
-
-    - IOMMU로 보완
-</code></pre></div></div>
-
-<h2 id="실무-예시">실무 예시</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">장치</th>
-      <th style="text-align: center">DMA 활용</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">SSD/NVMe</td>
-      <td style="text-align: center">플래시 컨트롤러가 OS 버퍼를 읽어 와 NAND로 쓰기, 반대 방향 읽기</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">10 GbE NIC</td>
-      <td style="text-align: center">패킷을 커널 버퍼나 XSP ring으로 직접 놓고, 완료 시 인터럽트</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">GPU</td>
-      <td style="text-align: center">대용량 텍스처/버퍼를 PCIe로 복사하거나, VRAM↔CPU RAM pinned transfer</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">Audio Codec</td>
-      <td style="text-align: center">PCM 버퍼를 주기적으로 DMA → DAC, 실시간 재생</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">USB 컨트롤러</td>
-      <td style="text-align: center">호스트 메모리의 전송 링(Transfer Ring)을 DMA 로 순회</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="운영체제-관점">운영체제 관점</h2>
-
-<ul>
-  <li>
-    <p>Linux : dma_map_single(), dma_alloc_coherent(), struct dma_async_tx_descriptor, DMAengine 프레임워크</p>
-  </li>
-  <li>
-    <p>Windows : WdfDmaTransaction*, KeFlushIoBuffers(), Scatter/Gather 목록 지원</p>
-  </li>
-  <li>
-    <p>RTOS(FreeRTOS, Zephyr) : MCU마다 별도의 DMAMUX &amp; HAP API 제공</p>
-  </li>
-</ul>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="computersystem" /><summary type="html"><![CDATA[여태까지 컴퓨터는 직접 메모리에 대해 접근하지 않고 가상 메모리를 사용하는 것으로 배웠는데, 만약 직접 메모리 접근이 있다면?]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/ComputerSystem.png" /><media:content medium="image" url="/assets/img/blog/postimage/ComputerSystem.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+final : 1 2 3 4 4 5 5 6</p>]]></content><author><name>Kwansoo Kim</name><email>albatrers@gmail.com</email></author><category term="blog" /><category term="algorithm" /><summary type="html"><![CDATA[]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/img/blog/postimage/Algorithm.png" /><media:content medium="image" url="/assets/img/blog/postimage/Algorithm.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
