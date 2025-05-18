@@ -51,7 +51,7 @@ hide_last_modified: true
 | Program Counter | 다음에 실행할 명령어의 주소 |
 | Registers | 스레드가 현재 수행 중인 작업에 필요한 데이터 저장 |
 | Stack | 함수 호출 정보, 지역 변수 저장 |
-| State | 실행 샅애 (Running, Ready, Blocked 등) |
+| State | 실행 상태 (Running, Ready, Blocked 등) |
 
 ***참고 : 코드 영역, 데이터 영역, 열린 파일들은 같은 프로세스 내 스레드끼리 공유한다.***
 
