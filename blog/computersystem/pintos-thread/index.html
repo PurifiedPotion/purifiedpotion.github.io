@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-05-18T14:00:38+00:00',
+    INDEX_KEY: 'index--2025-05-18T14:27:21+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -294,7 +294,12 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
       <li><a href="#preemption" id="markdown-toc-preemption">Preemption</a></li>
       <li><a href="#preemption-구현" id="markdown-toc-preemption-구현">Preemption 구현</a></li>
       <li><a href="#synchronization" id="markdown-toc-synchronization">Synchronization</a></li>
-      <li><a href="#donation" id="markdown-toc-donation">Donation</a></li>
+      <li><a href="#donation" id="markdown-toc-donation">Donation</a>        <ul>
+          <li><a href="#one-donation" id="markdown-toc-one-donation">One Donation</a></li>
+          <li><a href="#nested-donation" id="markdown-toc-nested-donation">Nested Donation</a></li>
+          <li><a href="#multiple-donation" id="markdown-toc-multiple-donation">Multiple Donation</a></li>
+        </ul>
+      </li>
     </ul>
   </li>
   <li><a href="#주의사항" id="markdown-toc-주의사항">주의사항</a></li>
@@ -593,6 +598,8 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 
 <p>이렇게 수정한다면, 아래와 같이 결과가 나온다.</p>
 
+<p><img src="/assets/img/blog/computerscience/alarmresult.png" alt="Alarm-result" /></p>
+
 <h2 id="priority-scheduling---preemption기능과-semaphore-condition-variable의-우선순위-기능-구현">Priority Scheduling - Preemption기능과 Semaphore, Condition Variable의 우선순위 기능 구현</h2>
 
 <p>구현에 앞서, Preemption과 Semaphore, Condition Variable의 우선순위 기능을 어떻게 구현할지 설명하겠다.</p>
@@ -699,11 +706,33 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 
 <h3 id="synchronization">Synchronization</h3>
 
-<p>그렇다면, 위에서 언급한 semaphore, condition variable, lock에 대해서 설명하자면, 기본적인 개념은 <a href="../../computersystem/lock-semaphore-condition" class="heading flip-title">동기화 기법 3대장 : Lock/Semaphore/Condition Variable</a>에 나와 있다.</p>
+<p>그렇다면, 위에서 언급한 semaphore, condition variable, lock에 대해서 설명하자면, <a href="../../computersystem/lock-semaphore-condition" class="heading flip-title">동기화 기법 3대장 : Lock/Semaphore/Condition Variable</a>에 나와 있다.</p>
 
 <h3 id="donation">Donation</h3>
 
-<p>Donation</p>
+<p>Donation도 마찬가지로 개념은 <a href="../../computersystem/donation" class="heading flip-title">Donation</a>에 나와 있다. 개념 외적으로, 여기서 구현할 Donation에 대해 알려주겠다.</p>
+
+<h4 id="one-donation">One Donation</h4>
+
+<p>가장 기본적인 Donation으로, lock이 된 semaphore의 waiter리스트에 있는 thread중 priority가 제일 높은 값으로 donation되는것이다.</p>
+
+<p><img src="/assets/img/blog/computerscience/donationone.png" alt="Donation One" /></p>
+
+<h4 id="nested-donation">Nested Donation</h4>
+
+<p>아래 사진처럼, lock을 갖고 있는 thread가 또 다른 lock의 waiter일때의 경우에 적용되는데, priority가 제일 높은 thread 기준으로 요청하고 있는 lock쪽으로 donation이 되는 원리이다.</p>
+
+<p><img src="/assets/img/blog/computerscience/nesteddonation.png" alt="Nested Donation" /></p>
+
+<h4 id="multiple-donation">Multiple Donation</h4>
+
+<p>하나의 thread가 여러개의 lock을 갖고 있을때의 경우이다. 이런 경우에는, 모든 lock에 대한 waiter중 제일 높은 priority가 donation되는것이다. 제일 높은 priority를 내준 thread에게 lock 권한을 넘겨주면, 알래 사진 기준으로 T1의 priority는 T4보다 낮은 제일 높은 priority를 갖게 되고 일할 권한은 T4가 가지게 된다.</p>
+
+<p><img src="/assets/img/blog/computerscience/multipledonation.png" alt="Multiple Donation" /></p>
+
+<p>다른 예를 들어보자, 아래 그림을 보았을때, T3가 T4에게 lock을 넘겨준 후의 얘기이다. 보면, T3의 priority는 계속 높기 때문에, T4는 일을 아직 하지 못한다. T3가 T6가 요청한 lock을 넘겨주고 T6가 모든일을 마쳤을 경우에만, T4가 일을 할 수 있다.</p>
+
+<p><img src="/assets/img/blog/computerscience/multipledonated.png" alt="Multiple Donation" /><img src="/assets/img/blog/computerscience/t3stillrunning.png" alt="Multiple Donation" /></p>
 
 <h2 id="주의사항">주의사항</h2>
 
@@ -845,7 +874,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/computersystem/ip-layer/" class="flip-title"><span>IP Layer</span></a>  <time class="faded fine" datetime="2025-05-05T00:00:00+00:00">05 May 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/time-and-space-complexity(wBig-O)/" class="flip-title"><span>시간과 공간 복잡도(w.BigO)</span></a>  <time class="faded fine" datetime="2025-03-18T00:00:00+00:00">18 Mar 2025</time></li>          <li class="h4">  <a href="/blog/c/gcc/" class="flip-title"><span>gcc(GNU Compiler Collection)</span></a>  <time class="faded fine" datetime="2025-04-13T00:00:00+00:00">13 Apr 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/computersystem/lock-semaphore-condition/" class="flip-title"><span>동기화 기법 3대장 : Lock/Semaphore/Condition Variable</span></a>  <time class="faded fine" datetime="2025-05-12T00:00:00+00:00">12 May 2025</time></li>          <li class="h4">  <a href="/blog/c/gcc/" class="flip-title"><span>gcc(GNU Compiler Collection)</span></a>  <time class="faded fine" datetime="2025-04-13T00:00:00+00:00">13 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/bfs-dfs/" class="flip-title"><span>너비 우선 탐색(Breadth-first search)와 깊이 우선 탐색(Depth-first search)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>      </ul></aside>
 
   
 
