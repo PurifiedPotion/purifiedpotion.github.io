@@ -247,7 +247,7 @@ wakeup_thread (int64_t target_ticks){
 
 이렇게 수정한다면, 아래와 같이 결과가 나온다.
 
-
+![Alarm-result](/assets/img/blog/computerscience/alarmresult.png)
 
 ## Priority Scheduling - Preemption기능과 Semaphore, Condition Variable의 우선순위 기능 구현
 
@@ -359,11 +359,34 @@ thread_set_priority (int new_priority) {
 
 ### Synchronization 
 
-그렇다면, 위에서 언급한 semaphore, condition variable, lock에 대해서 설명하자면, 기본적인 개념은 [동기화 기법 3대장 : Lock/Semaphore/Condition Variable](../../computersystem/lock-semaphore-condition){:.heading.flip-title}에 나와 있다.
+그렇다면, 위에서 언급한 semaphore, condition variable, lock에 대해서 설명하자면, [동기화 기법 3대장 : Lock/Semaphore/Condition Variable](../../computersystem/lock-semaphore-condition){:.heading.flip-title}에 나와 있다.
 
 ### Donation
 
-Donation 
+Donation도 마찬가지로 개념은 [Donation](../../computersystem/donation){:.heading.flip-title}에 나와 있다. 개념 외적으로, 여기서 구현할 Donation에 대해 알려주겠다.
+
+
+#### One Donation
+
+가장 기본적인 Donation으로, lock이 된 semaphore의 waiter리스트에 있는 thread중 priority가 제일 높은 값으로 donation되는것이다.
+
+![Donation One](/assets/img/blog/computerscience/donationone.png)
+
+#### Nested Donation
+
+아래 사진처럼, lock을 갖고 있는 thread가 또 다른 lock의 waiter일때의 경우에 적용되는데, priority가 제일 높은 thread 기준으로 요청하고 있는 lock쪽으로 donation이 되는 원리이다.
+
+![Nested Donation](/assets/img/blog/computerscience/nesteddonation.png)
+
+#### Multiple Donation
+
+하나의 thread가 여러개의 lock을 갖고 있을때의 경우이다. 이런 경우에는, 모든 lock에 대한 waiter중 제일 높은 priority가 donation되는것이다. 제일 높은 priority를 내준 thread에게 lock 권한을 넘겨주면, 알래 사진 기준으로 T1의 priority는 T4보다 낮은 제일 높은 priority를 갖게 되고 일할 권한은 T4가 가지게 된다.
+
+![Multiple Donation](/assets/img/blog/computerscience/multipledonation.png)
+
+다른 예를 들어보자, 아래 그림을 보았을때, T3가 T4에게 lock을 넘겨준 후의 얘기이다. 보면, T3의 priority는 계속 높기 때문에, T4는 일을 아직 하지 못한다. T3가 T6가 요청한 lock을 넘겨주고 T6가 모든일을 마쳤을 경우에만, T4가 일을 할 수 있다.
+
+![Multiple Donation](/assets/img/blog/computerscience/multipledonated.png)![Multiple Donation](/assets/img/blog/computerscience/t3stillrunning.png)
 
 ## 주의사항 
 
