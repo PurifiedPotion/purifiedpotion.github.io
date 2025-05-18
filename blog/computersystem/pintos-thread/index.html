@@ -102,7 +102,7 @@
   w._search = {
     DATA_URL: '/assets/sitedata.json?no-cache',
     STORAGE_KEY: 'mini-search/',
-    INDEX_KEY: 'index--2025-05-18T14:27:21+00:00',
+    INDEX_KEY: 'index--2025-05-18T14:49:00+00:00',
   };
   w._clapButton = true;
 }(window);</script>
@@ -290,7 +290,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     </ul>
   </li>
   <li><a href="#busy-waiting-에서-sleepwakeup-방식으로의-병경-return" id="markdown-toc-busy-waiting-에서-sleepwakeup-방식으로의-병경-return">Busy Waiting 에서 Sleep/Wakeup 방식으로의 병경 return</a></li>
-  <li><a href="#priority-scheduling---preemption기능과-semaphore-condition-variable의-우선순위-기능-구현" id="markdown-toc-priority-scheduling---preemption기능과-semaphore-condition-variable의-우선순위-기능-구현">Priority Scheduling - Preemption기능과 Semaphore, Condition Variable의 우선순위 기능 구현</a>    <ul>
+  <li><a href="#priority-scheduling---preemption기능과-priority-donation-우선순위-기능-구현" id="markdown-toc-priority-scheduling---preemption기능과-priority-donation-우선순위-기능-구현">Priority Scheduling - Preemption기능과 Priority Donation 우선순위 기능 구현</a>    <ul>
       <li><a href="#preemption" id="markdown-toc-preemption">Preemption</a></li>
       <li><a href="#preemption-구현" id="markdown-toc-preemption-구현">Preemption 구현</a></li>
       <li><a href="#synchronization" id="markdown-toc-synchronization">Synchronization</a></li>
@@ -300,6 +300,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
           <li><a href="#multiple-donation" id="markdown-toc-multiple-donation">Multiple Donation</a></li>
         </ul>
       </li>
+      <li><a href="#priority-donation-구현" id="markdown-toc-priority-donation-구현">Priority Donation 구현</a></li>
     </ul>
   </li>
   <li><a href="#주의사항" id="markdown-toc-주의사항">주의사항</a></li>
@@ -600,9 +601,9 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 
 <p><img src="/assets/img/blog/computerscience/alarmresult.png" alt="Alarm-result" /></p>
 
-<h2 id="priority-scheduling---preemption기능과-semaphore-condition-variable의-우선순위-기능-구현">Priority Scheduling - Preemption기능과 Semaphore, Condition Variable의 우선순위 기능 구현</h2>
+<h2 id="priority-scheduling---preemption기능과-priority-donation-우선순위-기능-구현">Priority Scheduling - Preemption기능과 Priority Donation 우선순위 기능 구현</h2>
 
-<p>구현에 앞서, Preemption과 Semaphore, Condition Variable의 우선순위 기능을 어떻게 구현할지 설명하겠다.</p>
+<p>구현에 앞서, Preemption과 Priority Donation 기능에 대해 설명하겠다.</p>
 
 <h3 id="preemption">Preemption</h3>
 
@@ -732,7 +733,182 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
 
 <p>다른 예를 들어보자, 아래 그림을 보았을때, T3가 T4에게 lock을 넘겨준 후의 얘기이다. 보면, T3의 priority는 계속 높기 때문에, T4는 일을 아직 하지 못한다. T3가 T6가 요청한 lock을 넘겨주고 T6가 모든일을 마쳤을 경우에만, T4가 일을 할 수 있다.</p>
 
-<p><img src="/assets/img/blog/computerscience/multipledonated.png" alt="Multiple Donation" /><img src="/assets/img/blog/computerscience/t3stillrunning.png" alt="Multiple Donation" /></p>
+<p><img src="/assets/img/blog/computerscience/multipledonated.png" alt="Multiple Donation" />
+<img src="/assets/img/blog/computerscience/t3stillrunning.png" alt="Multiple Donation" /></p>
+
+<h3 id="priority-donation-구현">Priority Donation 구현</h3>
+
+<p>먼저 thread의 구조체에 donations list, donations list에 넣을 d_elem, 특정 lock에 기다리고 있다는 것을 명시하기 위한 *wait_on_lock을 추가해줘야 한다. 그리고 priority가 계속 변하고 되돌아오기 위해 original_priority를 추가해 줬다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="kr">thread</span> <span class="p">{</span>
+	<span class="cm">/* Owned by thread.c. */</span>
+	<span class="n">tid_t</span> <span class="n">tid</span><span class="p">;</span>                          <span class="cm">/* Thread identifier. */</span>
+	<span class="k">enum</span> <span class="n">thread_status</span> <span class="n">status</span><span class="p">;</span>          <span class="cm">/* Thread state. */</span>
+	<span class="kt">char</span> <span class="n">name</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>                      <span class="cm">/* Name (for debugging purposes). */</span>
+	<span class="kt">int64_t</span> <span class="n">wakeup_tick</span><span class="p">;</span>				<span class="c1">// 깨울시간</span>
+	<span class="kt">int</span> <span class="n">priority</span><span class="p">;</span>                       <span class="cm">/* Priority. */</span>
+	<span class="kt">int</span> <span class="n">original_priority</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list</span> <span class="n">donations</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">list_elem</span> <span class="n">d_elem</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">lock</span> <span class="o">*</span><span class="n">wait_on_lock</span><span class="p">;</span>
+
+
+	<span class="cm">/* Shared between thread.c and synch.c. */</span>
+	<span class="k">struct</span> <span class="n">list_elem</span> <span class="n">elem</span><span class="p">;</span>              <span class="cm">/* List element. */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>위에서 추가해준 donations list를 초기화해 주고, original_priority를 priority로 저장한다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">void</span>
+<span class="nf">init_thread</span> <span class="p">(</span><span class="k">struct</span> <span class="kr">thread</span> <span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">priority</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="n">t</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="n">PRI_MIN</span> <span class="o">&lt;=</span> <span class="n">priority</span> <span class="o">&amp;&amp;</span> <span class="n">priority</span> <span class="o">&lt;=</span> <span class="n">PRI_MAX</span><span class="p">);</span>
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="n">name</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+
+	<span class="n">memset</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span> <span class="o">*</span><span class="n">t</span><span class="p">);</span>
+	<span class="n">t</span><span class="o">-&gt;</span><span class="n">status</span> <span class="o">=</span> <span class="n">THREAD_BLOCKED</span><span class="p">;</span>
+	<span class="n">strlcpy</span> <span class="p">(</span><span class="n">t</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">t</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">);</span>
+	<span class="n">t</span><span class="o">-&gt;</span><span class="n">tf</span><span class="p">.</span><span class="n">rsp</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span> <span class="n">t</span> <span class="o">+</span> <span class="n">PGSIZE</span> <span class="o">-</span> <span class="k">sizeof</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">);</span>
+	<span class="n">t</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span><span class="p">;</span>
+	<span class="n">t</span><span class="o">-&gt;</span><span class="n">magic</span> <span class="o">=</span> <span class="n">THREAD_MAGIC</span><span class="p">;</span>
+	<span class="n">list_init</span> <span class="p">(</span><span class="o">&amp;</span><span class="p">(</span><span class="n">t</span><span class="o">-&gt;</span><span class="n">donations</span><span class="p">));</span> <span class="c1">// 쓰레드 donations리스트</span>
+	<span class="n">t</span><span class="o">-&gt;</span><span class="n">original_priority</span> <span class="o">=</span> <span class="n">priority</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>이제 조금 복잡해진다. Multiple donation과 Nested donation이 같이 나오니 주의깊게 보자. 먼저 lock-&gt;holder가 없다면 바로 lock을 얻을 수 있기 때문에, 그 반대인 lock-&gt;holder가 있으면 donation이 될 수 있게끔 mult_donation함수를 실행시킨다. 여기서 mult_donation은 One donation 기능도 포함되어 있다. mult_donation을 통해 donations list에 들어가는데, 각 lock에 대해서 priority가 최대인 thread의 d_elem이 들어갈 수 있게끔 함수를 짰다.</p>
+
+<p>mult_donation 함수가 끝날때쯤 nested_donation이 조건부로 실행된다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span>
+<span class="nf">lock_acquire</span> <span class="p">(</span><span class="k">struct</span> <span class="n">lock</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="n">lock</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="o">!</span><span class="n">intr_context</span> <span class="p">());</span>
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="o">!</span><span class="n">lock_held_by_current_thread</span> <span class="p">(</span><span class="n">lock</span><span class="p">));</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">mult_donation</span><span class="p">(</span><span class="n">lock</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="n">sema_down</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">semaphore</span><span class="p">);</span>
+	<span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span> <span class="o">=</span> <span class="n">thread_current</span> <span class="p">();</span>
+	<span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">wait_on_lock</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">mult_donation</span><span class="p">(</span><span class="k">struct</span> <span class="n">lock</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">struct</span> <span class="kr">thread</span> <span class="o">*</span><span class="n">lock_holder</span> <span class="o">=</span> <span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span><span class="p">;</span>
+	<span class="k">enum</span> <span class="n">intr_level</span> <span class="n">old_level</span><span class="p">;</span>
+
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="o">!</span><span class="n">intr_context</span> <span class="p">());</span>
+
+	<span class="n">old_level</span> <span class="o">=</span> <span class="n">intr_disable</span> <span class="p">();</span>
+
+	<span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">wait_on_lock</span> <span class="o">=</span> <span class="n">lock</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">list_empty</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">semaphore</span><span class="p">.</span><span class="n">waiters</span><span class="p">))</span>
+		<span class="n">list_insert_ordered</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock_holder</span><span class="o">-&gt;</span><span class="n">donations</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">d_elem</span><span class="p">,</span> <span class="n">cmp_priority_d_elem</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+
+	<span class="k">else</span>
+	<span class="p">{</span>
+		<span class="k">struct</span> <span class="n">list_elem</span> <span class="o">*</span><span class="n">elem</span> <span class="o">=</span> <span class="n">list_begin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">semaphore</span><span class="p">.</span><span class="n">waiters</span><span class="p">);</span>
+		<span class="k">struct</span> <span class="kr">thread</span> <span class="o">*</span><span class="kr">thread</span> <span class="o">=</span> <span class="n">list_entry</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="k">struct</span> <span class="kr">thread</span><span class="p">,</span> <span class="n">elem</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">&lt;</span> <span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="n">list_remove</span><span class="p">(</span><span class="o">&amp;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">d_elem</span><span class="p">);</span>
+			<span class="n">list_insert_ordered</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock_holder</span><span class="o">-&gt;</span><span class="n">donations</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">d_elem</span><span class="p">,</span> <span class="n">cmp_priority_d_elem</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">lock_holder</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">&lt;</span> <span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">lock_holder</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">=</span> <span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span><span class="p">;</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">lock_holder</span><span class="o">-&gt;</span><span class="n">wait_on_lock</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+			<span class="n">nested_donation</span><span class="p">(</span><span class="n">lock_holder</span><span class="o">-&gt;</span><span class="n">wait_on_lock</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="n">intr_set_level</span> <span class="p">(</span><span class="n">old_level</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">nested_donation</span> <span class="p">(</span><span class="k">struct</span> <span class="n">lock</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">&lt;</span> <span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">=</span> <span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span><span class="p">;</span>
+
+			<span class="k">if</span><span class="p">(</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span><span class="o">-&gt;</span><span class="n">wait_on_lock</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+				<span class="n">nested_donation</span><span class="p">(</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span><span class="o">-&gt;</span><span class="n">wait_on_lock</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>lock_release에서는 donations 리스트가 없으면 original_priority로 변경되게끔 하였고, donations 리스트가 있고 그 donations리스트에 lock되어있는 semaphore의 waiter가 있으면 donations리스트에서 waiter를 빼준다. 그리고 자신의 priority를 최대값으로 맞추기 위한 작업을 진행해 준다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span>
+<span class="nf">lock_release</span> <span class="p">(</span><span class="k">struct</span> <span class="n">lock</span> <span class="o">*</span><span class="n">lock</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="n">lock</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">ASSERT</span> <span class="p">(</span><span class="n">lock_held_by_current_thread</span> <span class="p">(</span><span class="n">lock</span><span class="p">));</span>
+	
+	<span class="k">if</span> <span class="p">(</span><span class="n">list_empty</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span><span class="o">-&gt;</span><span class="n">donations</span><span class="p">))</span>
+	<span class="p">{</span>
+		<span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">=</span> <span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">original_priority</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">else</span>
+	<span class="p">{</span>
+		<span class="k">enum</span> <span class="n">intr_level</span> <span class="n">old_level</span><span class="p">;</span>
+		<span class="n">ASSERT</span> <span class="p">(</span><span class="o">!</span><span class="n">intr_context</span> <span class="p">());</span>
+
+		<span class="n">old_level</span> <span class="o">=</span> <span class="n">intr_disable</span> <span class="p">();</span>
+		
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">list_empty</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">semaphore</span><span class="p">.</span><span class="n">waiters</span><span class="p">))</span>
+		<span class="p">{</span>
+			<span class="k">struct</span> <span class="n">list_elem</span> <span class="o">*</span><span class="n">elem</span> <span class="o">=</span> <span class="n">list_begin</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">semaphore</span><span class="p">.</span><span class="n">waiters</span><span class="p">);</span>
+			<span class="k">struct</span> <span class="kr">thread</span> <span class="o">*</span><span class="kr">thread</span> <span class="o">=</span> <span class="n">list_entry</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="k">struct</span> <span class="kr">thread</span><span class="p">,</span> <span class="n">elem</span><span class="p">);</span>
+			<span class="n">list_remove</span><span class="p">(</span><span class="o">&amp;</span><span class="kr">thread</span><span class="o">-&gt;</span><span class="n">d_elem</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">struct</span> <span class="n">list_elem</span> <span class="o">*</span><span class="n">donation_elem</span> <span class="o">=</span> <span class="n">list_max</span><span class="p">(</span><span class="o">&amp;</span><span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">donations</span><span class="p">,</span> <span class="n">cmp_priority</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+		<span class="kt">int</span> <span class="n">donation_max</span> <span class="o">=</span> <span class="n">list_entry</span><span class="p">(</span><span class="n">donation_elem</span><span class="p">,</span> <span class="k">struct</span> <span class="kr">thread</span><span class="p">,</span> <span class="n">d_elem</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">priority</span><span class="p">;</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">original_priority</span> <span class="o">&gt;</span> <span class="n">donation_max</span><span class="p">)</span>
+			<span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">=</span> <span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">original_priority</span><span class="p">;</span>
+		<span class="k">else</span>
+			<span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">=</span> <span class="n">donation_max</span><span class="p">;</span>
+
+		<span class="n">intr_set_level</span> <span class="p">(</span><span class="n">old_level</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="n">lock</span><span class="o">-&gt;</span><span class="n">holder</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="n">sema_up</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">semaphore</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>마지막으로 도중에 priority를 바꾸는 함수 thread_set_priority()를 고쳐주어야 하는데, 아래와 같이 구현했다.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span>
+<span class="nf">thread_set_priority</span> <span class="p">(</span><span class="kt">int</span> <span class="n">new_priority</span><span class="p">)</span> 
+<span class="p">{</span>
+	<span class="n">thread_current</span> <span class="p">()</span><span class="o">-&gt;</span><span class="n">original_priority</span> <span class="o">=</span> <span class="n">new_priority</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">new_priority</span> <span class="o">&gt;</span> <span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span><span class="p">)</span>
+		<span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">=</span> <span class="n">new_priority</span><span class="p">;</span>
+	<span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">list_empty</span><span class="p">(</span><span class="o">&amp;</span><span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">donations</span><span class="p">)){</span>
+		<span class="n">thread_current</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">priority</span> <span class="o">=</span> <span class="n">new_priority</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="c1">// list_sort(&amp;ready_list, cmp_priority, NULL);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">list_empty</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ready_list</span><span class="p">))</span>
+		<span class="n">thread_ready_check</span><span class="p">(</span><span class="n">list_entry</span><span class="p">(</span><span class="n">list_front</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ready_list</span><span class="p">),</span> <span class="k">struct</span> <span class="kr">thread</span><span class="p">,</span> <span class="n">elem</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>이렇게 다 구현을 한다면, 아래와 같은 결과를 볼 수 있다.</p>
+
+<p><img src="/assets/img/blog/computerscience/projectoneresult.png" alt="1주차 결과" /></p>
 
 <h2 id="주의사항">주의사항</h2>
 
@@ -874,7 +1050,7 @@ html{--accent-color: rgb(200,200,200);--accent-color-faded: rgba(200,200,200,0.5
     
 
 
-  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/computersystem/lock-semaphore-condition/" class="flip-title"><span>동기화 기법 3대장 : Lock/Semaphore/Condition Variable</span></a>  <time class="faded fine" datetime="2025-05-12T00:00:00+00:00">12 May 2025</time></li>          <li class="h4">  <a href="/blog/c/gcc/" class="flip-title"><span>gcc(GNU Compiler Collection)</span></a>  <time class="faded fine" datetime="2025-04-13T00:00:00+00:00">13 Apr 2025</time></li>          <li class="h4">  <a href="/blog/algorithm/bfs-dfs/" class="flip-title"><span>너비 우선 탐색(Breadth-first search)와 깊이 우선 탐색(Depth-first search)</span></a>  <time class="faded fine" datetime="2025-03-28T00:00:00+00:00">28 Mar 2025</time></li>      </ul></aside>
+  <aside class="related mb4" role="complementary">  <h2 class="hr-bottom">Random Posts</h2>  <ul class="related-posts">          <li class="h4">  <a href="/blog/algorithm/8th-week/" class="flip-title"><span>8주차 퀴즈</span></a>  <time class="faded fine" datetime="2025-05-06T00:00:00+00:00">06 May 2025</time></li>          <li class="h4">  <a href="/blog/computersystem/dma/" class="flip-title"><span>Direct Memory Access</span></a>  <time class="faded fine" datetime="2025-04-28T00:00:00+00:00">28 Apr 2025</time></li>          <li class="h4">  <a href="/blog/c/malloc-calloc-realloc/" class="flip-title"><span>동적 메모리 할당(Dynamic memory allocation)</span></a>  <time class="faded fine" datetime="2025-04-11T00:00:00+00:00">11 Apr 2025</time></li>      </ul></aside>
 
   
 
