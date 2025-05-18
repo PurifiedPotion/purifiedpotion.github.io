@@ -249,9 +249,9 @@ wakeup_thread (int64_t target_ticks){
 
 ![Alarm-result](/assets/img/blog/computerscience/alarmresult.png)
 
-## Priority Scheduling - Preemption기능과 Semaphore, Condition Variable의 우선순위 기능 구현
+## Priority Scheduling - Preemption기능과 Priority Donation 우선순위 기능 구현
 
-구현에 앞서, Preemption과 Semaphore, Condition Variable의 우선순위 기능을 어떻게 구현할지 설명하겠다.
+구현에 앞서, Preemption과 Priority Donation 기능에 대해 설명하겠다.
 
 ### Preemption
 
@@ -386,7 +386,187 @@ Donation도 마찬가지로 개념은 [Donation](../../computersystem/donation){
 
 다른 예를 들어보자, 아래 그림을 보았을때, T3가 T4에게 lock을 넘겨준 후의 얘기이다. 보면, T3의 priority는 계속 높기 때문에, T4는 일을 아직 하지 못한다. T3가 T6가 요청한 lock을 넘겨주고 T6가 모든일을 마쳤을 경우에만, T4가 일을 할 수 있다.
 
-![Multiple Donation](/assets/img/blog/computerscience/multipledonated.png)![Multiple Donation](/assets/img/blog/computerscience/t3stillrunning.png)
+![Multiple Donation](/assets/img/blog/computerscience/multipledonated.png)
+![Multiple Donation](/assets/img/blog/computerscience/t3stillrunning.png)
+
+### Priority Donation 구현
+
+먼저 thread의 구조체에 donations list, donations list에 넣을 d_elem, 특정 lock에 기다리고 있다는 것을 명시하기 위한 *wait_on_lock을 추가해줘야 한다. 그리고 priority가 계속 변하고 되돌아오기 위해 original_priority를 추가해 줬다.
+
+~~~c
+struct thread {
+	/* Owned by thread.c. */
+	tid_t tid;                          /* Thread identifier. */
+	enum thread_status status;          /* Thread state. */
+	char name[16];                      /* Name (for debugging purposes). */
+	int64_t wakeup_tick;				// 깨울시간
+	int priority;                       /* Priority. */
+	int original_priority;
+	struct list donations;
+	struct list_elem d_elem;
+	struct lock *wait_on_lock;
+
+
+	/* Shared between thread.c and synch.c. */
+	struct list_elem elem;              /* List element. */
+}
+~~~
+
+위에서 추가해준 donations list를 초기화해 주고, original_priority를 priority로 저장한다.
+
+~~~c
+static void
+init_thread (struct thread *t, const char *name, int priority) {
+	ASSERT (t != NULL);
+	ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
+	ASSERT (name != NULL);
+
+	memset (t, 0, sizeof *t);
+	t->status = THREAD_BLOCKED;
+	strlcpy (t->name, name, sizeof t->name);
+	t->tf.rsp = (uint64_t) t + PGSIZE - sizeof (void *);
+	t->priority = priority;
+	t->magic = THREAD_MAGIC;
+	list_init (&(t->donations)); // 쓰레드 donations리스트
+	t->original_priority = priority;
+}
+~~~
+
+이제 조금 복잡해진다. Multiple donation과 Nested donation이 같이 나오니 주의깊게 보자. 먼저 lock->holder가 없다면 바로 lock을 얻을 수 있기 때문에, 그 반대인 lock->holder가 있으면 donation이 될 수 있게끔 mult_donation함수를 실행시킨다. 여기서 mult_donation은 One donation 기능도 포함되어 있다. mult_donation을 통해 donations list에 들어가는데, 각 lock에 대해서 priority가 최대인 thread의 d_elem이 들어갈 수 있게끔 함수를 짰다.
+
+mult_donation 함수가 끝날때쯤 nested_donation이 조건부로 실행된다.
+
+~~~c
+void
+lock_acquire (struct lock *lock) {
+	ASSERT (lock != NULL);
+	ASSERT (!intr_context ());
+	ASSERT (!lock_held_by_current_thread (lock));
+
+	if (lock->holder != NULL)
+	{
+		mult_donation(lock);
+	}
+
+	sema_down (&lock->semaphore);
+	lock->holder = thread_current ();
+	thread_current()->wait_on_lock = NULL;
+}
+
+void
+mult_donation(struct lock *lock)
+{
+	struct thread *lock_holder = lock->holder;
+	enum intr_level old_level;
+
+	ASSERT (!intr_context ());
+
+	old_level = intr_disable ();
+
+	thread_current()->wait_on_lock = lock;
+	if (list_empty(&lock->semaphore.waiters))
+		list_insert_ordered(&lock_holder->donations, &thread_current()->d_elem, cmp_priority_d_elem, NULL);
+
+	else
+	{
+		struct list_elem *elem = list_begin(&lock->semaphore.waiters);
+		struct thread *thread = list_entry(elem, struct thread, elem);
+		if (thread->priority < thread_current()->priority)
+		{
+			list_remove(&thread->d_elem);
+			list_insert_ordered(&lock_holder->donations, &thread_current()->d_elem, cmp_priority_d_elem, NULL);
+		}
+	}
+
+	if (lock_holder->priority < thread_current()->priority)
+	{
+		lock_holder->priority = thread_current()->priority;
+
+		if (lock_holder->wait_on_lock != NULL)
+			nested_donation(lock_holder->wait_on_lock);
+	}
+	intr_set_level (old_level);
+}
+
+void
+nested_donation (struct lock *lock)
+{
+	if (lock->holder != NULL)
+	{
+		if (lock->holder->priority < thread_current()->priority)
+		{
+			lock->holder->priority = thread_current()->priority;
+
+			if(lock->holder->wait_on_lock != NULL)
+				nested_donation(lock->holder->wait_on_lock);
+		}
+	}
+}
+~~~
+
+lock_release에서는 donations 리스트가 없으면 original_priority로 변경되게끔 하였고, donations 리스트가 있고 그 donations리스트에 lock되어있는 semaphore의 waiter가 있으면 donations리스트에서 waiter를 빼준다. 그리고 자신의 priority를 최대값으로 맞추기 위한 작업을 진행해 준다.
+
+~~~c
+void
+lock_release (struct lock *lock) {
+	ASSERT (lock != NULL);
+	ASSERT (lock_held_by_current_thread (lock));
+	
+	if (list_empty(&lock->holder->donations))
+	{
+		thread_current()->priority = thread_current()->original_priority;
+	}
+
+	else
+	{
+		enum intr_level old_level;
+		ASSERT (!intr_context ());
+
+		old_level = intr_disable ();
+		
+		if (!list_empty(&lock->semaphore.waiters))
+		{
+			struct list_elem *elem = list_begin(&lock->semaphore.waiters);
+			struct thread *thread = list_entry(elem, struct thread, elem);
+			list_remove(&thread->d_elem);
+		}
+		struct list_elem *donation_elem = list_max(&thread_current()->donations, cmp_priority, NULL);
+		int donation_max = list_entry(donation_elem, struct thread, d_elem)->priority;
+
+		if (thread_current()->original_priority > donation_max)
+			thread_current()->priority = thread_current()->original_priority;
+		else
+			thread_current()->priority = donation_max;
+
+		intr_set_level (old_level);
+	}
+
+	lock->holder = NULL;
+	sema_up (&lock->semaphore);
+}
+~~~
+
+마지막으로 도중에 priority를 바꾸는 함수 thread_set_priority()를 고쳐주어야 하는데, 아래와 같이 구현했다.
+
+~~~c
+void
+thread_set_priority (int new_priority) 
+{
+	thread_current ()->original_priority = new_priority;
+	if (new_priority > thread_current()->priority)
+		thread_current()->priority = new_priority;
+	else if(list_empty(&thread_current()->donations)){
+		thread_current()->priority = new_priority;
+	}
+	// list_sort(&ready_list, cmp_priority, NULL);
+	if (!list_empty(&ready_list))
+		thread_ready_check(list_entry(list_front(&ready_list), struct thread, elem));
+}
+~~~
+
+이렇게 다 구현을 한다면, 아래와 같은 결과를 볼 수 있다.
+
+![1주차 결과](/assets/img/blog/computerscience/projectoneresult.png)
 
 ## 주의사항 
 
