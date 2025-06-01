@@ -11,7 +11,7 @@ hide_last_modified: true
 * toc  
 {:toc .large-only}
 
-이번 주차부터 PintOS 프로젝트가 시작 되었다. OS를 만드는 프로젝트이다 보니, 두려움이 있었지만, 다행히도 구현하기 위한 자료들이 hint를 많이 줘서 구현하는 데에는 크게 문제가 없었다. 다만 마지막 multiple donation에 관련한 코드들에 대해서는 조금 애먹는 부분이 있었다. 여기서는 Alarm Clock, Priority Scheduling에 대해서 다룰것이다. 그러면 thread 구현 처음부터 시작하겠다.
+저번주에 muliple-thread까지 구현하고 이번주 부터는 argument
 
 ## Alarm Clock - Busy Waiting 에서 Sleep/Wakeup 방식으로의 변경
 
