@@ -2,7 +2,7 @@
 layout: post
 title:  "Essay written in KRAFTON JUNGLE"
 date:   2025-03-14
-image: /assets/img/blog/postimage/크래프톤정글2.jpg
+image: /assets/img/blog/postimage/jungle2.jpg
 hide_last_modified: true
 ---
 

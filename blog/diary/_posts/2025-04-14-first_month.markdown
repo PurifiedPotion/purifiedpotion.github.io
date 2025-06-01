@@ -2,7 +2,7 @@
 layout: post
 title:  "크래프톤 정글에서 첫달을 보낸 후"
 date:   2025-04-14
-image: /assets/img/blog/postimage/크래프톤정글3.jpg
+image: /assets/img/blog/postimage/jungle3.jpg
 hide_last_modified: true
 ---
 
