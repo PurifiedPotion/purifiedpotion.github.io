@@ -2,7 +2,7 @@
 layout: post
 title:  "크래프톤 정글에서 세번째 달을 보낸 후"
 date:   2025-06-01
-image: /assets/img/blog/postimage/크래프톤정글4.jpg
+image: /assets/img/blog/postimage/야간크래프톤정글.jpg
 hide_last_modified: true
 ---
 
