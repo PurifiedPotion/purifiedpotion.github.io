@@ -1,0 +1,68 @@
+---
+layout: post
+title:  "Paging"
+description: >
+ OS가 가상 메모리를 어떻게 관리할까?
+date:   2025-06-10
+image: /assets/img/blog/postimage/ComputerSystem.png
+hide_last_modified: true
+---
+
+* toc  
+{:toc .large-only}
+
+## 페이징(Paging) 기본 개념
+
+| 용어 | 설명 |
+|:---:|:---:|
+| 페이지(Page) | OS가 관리 단위로 삼는 고정 크기(대게 4Kb)의 가상 메모리 블록 |
+| 프레임(Frame) | 물리 메모리에서 페이지와 1 : 1로 매핑되는 동일 크기의 블록 |
+| 페이지 테이블(Page Table) | "가상 페이지 번호 → 물리 프레임 번호 + 접근 권한"을 저장하는 자료구조 |
+| TLB(Translation Look-aside Buffer) | MMU 내부의 작은 캐시. 최근 주소 변환 결과를 보유해 속도를 높임 |
+
+페이징은 **"가상 주소 ↔ 물리 주소"** 사이에 간접층을 삽입해 각 프로세스가 **독립적인 주소 공간**을 갖도록 만드는 기술이다. 이를 통해 ① 보호(Protection), ② 공유(Sharing), ③ 공간 활용(세그먼트 단편화 제거)이라는 세 가지 핵심 목표를 달성한다.
+
+## 주소 변환(Translation) 과정
+
+1. 가상 주소(48 bit) : 상위 9 bit씩 네 번 잘라 PML4→PDPT→PD→PT→오프센 순으로 인덱싱(x86-64 4-level 페이징 구조)
+
+2. **MMU**가 CR3 레지스터에 있는 PML4 물리 주소를 읽어 다단계 테이블을 탐색
+
+3. 최종 PTE(Page Table Entry, PT에 존재)에서 **PFN(프레임 번호)**와 **R/W(read only/writable), U/S, P(present/not-present)** 비트를 읽어
+
+    - 접근 허용이면 **물리 주소 = PFN x 4kb + 오프셋**
+
+    - 접근 위반 x P비트 = 0이면 **Page Fault**발생 → OS 개입
+
+> **TLB**가 히트하면 1 ~ 3 단계가 생략되어 수십 ns 이내로 끝납니다.
+
+## 운영체제의 역할
+
+| 시점 | OS가 수행하는 일 |
+|:---:|:---:|
+| 프로세스 생성 | 새 페이지 테이블 구성, 코드/데이터 영역 PTE를 "not-present"로 표기 |
+| 페이지 폴트 | ⓐ 유효 but 매핑 없음 → **Demand Paging**<br/> - 여유 프레임 할당<br/> - 디스크에서 해당 페이지 로드<br/> - PTE 업데이트, 다시 실행<br/> ⓑ 스택 자동 확장 조건 위배, 보호 위반 → **Segmentation Fault** |
+| 메모리 부족 | **페이지 교체 알고리즘**으로 Victim 선정, → 디스크 스왑 아웃 → PTE 수정 |
+| 컨텍스트 스위칭 | CR3에 새 프로세스 PML4 물리 주소 기록, TLB flush |
+
+## 페이지 교체(Page Replacement)
+
+| 알고리즘 | 개요 | 장단점 |
+|:---:|:---:|:---:|
+| Optimal(OPT) | "앞으로 가장 늦게 재참조될 페이지" 제거 | 이론적 최적 · 실현 불가 |
+| LRU | 최근에 가장 오래 안 쓴 페이지 선택 | 좋은 hit 을, 구현 비용 높음 |
+| Clock(2nd-chance) | 원형 큐 + reference bit로 LRU 근사 | 구현 간단, 성능 무난 |
+
+기존에 올렸던 PintOS Project3에서는 Clock 변형으로 구현하였다.
+
+## PintOS 관점 요약
+
+| 구조체/함수 | 하는 일 |
+|:---:|:---:|
+| `struct page` | 한 가상 페이지의 메타데이터(SPT key), 타입(anon/file), 프레임, dirty등 |
+| Supplemental Page Table(SPT) | 프로세스별 해시 맵/트리. `spt_find_page()`, `spt_insert_page()` |
+| `vm_try_handle_fault()` | 페이지 폴트 핸들러 진입 지접. 스택 성장 ‧ lazy loading 로직 포함 |
+| `swap_in/out()` | 스왑 디스크 I/O 실행. Clock Victim이 anon이면 out, fault시 in |
+| `file_backed_initializer()` | mmap · lazy file load에 사용될 custom swap_in/out 등록 |
+
+## 다단계 페
