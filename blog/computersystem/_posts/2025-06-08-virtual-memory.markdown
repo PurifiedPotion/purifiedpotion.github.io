@@ -17,6 +17,4 @@ hide_last_modified: true
 
 ## 구현에 필요한 개념들
 
-[Paging](../../computersystem/paging){:.heading.flip-title}, [Lazy Loading](../../computersystem/lazy-loading){:.heading.flip-title}, [PML4](../../computersystem/pml4){:.heading.flip-title}, 
-
-### 
+[Paging](../../computersystem/paging){:.heading.flip-title}, [Lazy Loading](../../computersystem/lazy-loading){:.heading.flip-title}, [PML4](../../computersystem/pml4){:.heading.flip-title}, [Anonymous & File-backed Page](../../computersystem/anon-file){:.heading.flip-title}, 
