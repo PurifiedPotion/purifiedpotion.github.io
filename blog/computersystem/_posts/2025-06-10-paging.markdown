@@ -156,7 +156,7 @@ CPU가 가상주소를 던졌을 때 **TLB(주소 변환 캐시)** 안에 그 VA
 ## PintOS 관점 요약
 
 | 구조체/함수 | 하는 일 |
-|:---:|:---:|
+|:---:|:---|
 | `struct page` | 한 가상 페이지의 메타데이터(SPT key), 타입(anon/file), 프레임, dirty등 |
 | Supplemental Page Table(SPT) | 프로세스별 해시 맵/트리. `spt_find_page()`, `spt_insert_page()` |
 | `vm_try_handle_fault()` | 페이지 폴트 핸들러 진입 지접. 스택 성장 ‧ lazy loading 로직 포함 |
