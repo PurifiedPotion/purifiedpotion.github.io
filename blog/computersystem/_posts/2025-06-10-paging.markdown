@@ -65,4 +65,6 @@ hide_last_modified: true
 | `swap_in/out()` | 스왑 디스크 I/O 실행. Clock Victim이 anon이면 out, fault시 in |
 | `file_backed_initializer()` | mmap · lazy file load에 사용될 custom swap_in/out 등록 |
 
-## 다단계 페
+## 다단계 페이징을 쓰는 이유
+
+1. **공간 절약** - 4KB 페이지 x 2<sup>20</sup>(1 TB) → 4MB PTE.
