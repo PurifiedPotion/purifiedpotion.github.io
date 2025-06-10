@@ -13,9 +13,10 @@ hide_last_modified: true
 
 이전에 만들었던 thread와 user program에 더해서 이번주 부터는 가상 메모리에 관한 함수를 구현해야 한다.
 
-구현하기에 앞서서 사전에 알아두어야 하는 개념들에 대해서 먼저 설명하겠다.
+구현하기에 앞서서 사전에 알아두어야 하는 개념들에 대해서 링크를 걸어 두었으니 참고하도록 한다.
 
 ## 구현에 필요한 개념들
 
-[PML4](../../computersystem/pml4){:.heading.flip-title}, [Paging](../../computersystem/paging){:.heading.flip-title}, [Lazy Loading](../../computersystem/lazy-loading){:.heading.flip-title}, [Anonymous & File-backed Page](../../computersystem/anon-file){:.heading.flip-title}, [Swap Disk](../../computersystem/swap-disk){:.heading.flip-title}, [Direct Memory Access](../../computersystem/dma){:.heading.flip-title}
+[PML4](../../computersystem/pml4){:.heading.flip-title}, [Paging](../../computersystem/paging){:.heading.flip-title}, [Lazy Loading](../../computersystem/lazy-loading){:.heading.flip-title}, [Anonymous & File-backed Page](../../computersystem/anon-file){:.heading.flip-title}, [Swap Disk](../../computersystem/swap-disk){:.heading.flip-title}, [Direct Memory Access](../../computersystem/dma){:.heading.flip-title}, [Page Replacement Policy](../../computersystem/page-replacement-policy){:.heading.flip-title}
 
+## 고고
