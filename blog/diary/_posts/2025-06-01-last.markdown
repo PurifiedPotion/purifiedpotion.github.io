@@ -17,13 +17,13 @@ hide_last_modified: true
 다시 과제로 돌아가서, 나는 그냥 게시판 만들기가 싫어서 나는 사용자도 즐길 수 있는 aimpractice라는 게시판을 만들었다. 기본적으로 에임 연습을 하는데, 순위권에 있는 사람(1~3위)들만 게시글을 작성할 수 있는 권한을 줬다.
 
 아래 사진 같은 경우 서비스의 핵심 기능이며, 초록색 네모칸을 빠르게 누르는게 목표이다. 총 15번의 기회가 주어지며, 초록색 네모칸이 발광하고 나서 해당 네모를 누르기까지의 시간을 측정하고 그 측정시간을 평균치 내어서 순위를 정한다.
-![메인 기능](/assets/img/blog/computerscience/aimpractice.PNG)
+![메인 기능](/assets/img/blog/computerscience/aimpractice.png)
 
 게임을 진행한 후 평균 반응속도를 통해서 아래와 같이 랭킹에 등록된다.
-![랭킹 기능](/assets/img/blog/computerscience/aimpracticeranking.PNG)
+![랭킹 기능](/assets/img/blog/computerscience/aimpracticeranking.png)
 
 마지막으로 1~3등을 한 플레이어들은 아래와 같이 게시글을 작성할 수 있다. 댓글 같은 경우 순위와 상관없이 작성할 수 있도록 했다.
-![랭킹 기능](/assets/img/blog/computerscience/aimpracticeranking.PNG)
+![랭킹 기능](/assets/img/blog/computerscience/aimpracticeranking.png)
 
 해당 프로젝트는 flutter를 사용해서 만들었다. 나만의 무기 프로젝트때, 어플리케이션 개발의 욕심이 있어서 flutter로 진행했다. 이걸 만들면서 재밌었다.
 
@@ -53,7 +53,7 @@ Clickstream이라는 단어가 나온 이후로 우리의 '냉장고'라는 아�
 
 우리의 아키텍쳐는 아래와 같았다.
 
-![첫번째 아키텍쳐](/assets/img/blog/computerscience/first_architecture.PNG)
+![첫번째 아키텍쳐](/assets/img/blog/computerscience/first_architecture.png)
 
 여기서 나는 아키텍쳐를 맡았고 위와 같은 아키텍쳐를 구현했다. 쉽지는 않았지만, 2일 정도 걸려서 완성시켰다.
 
