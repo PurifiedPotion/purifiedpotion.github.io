@@ -5,7 +5,7 @@ caption: 나만의 무기 프로젝트
 description: >
   개발자가 되기 위해 퇴사하고 들어갔던 Krafton Jungle. 그곳에서의 마무리를 짓는 '나만의 무기' 프로젝트
 date: 2025-07-31
-image: /assets/img/projects/hydejack-site.jpg
+image: /assets/img/blog/postimage/KlickLab.png
 links:
   - title: Project GitHub Link
     url: https://github.com/Eatventory
@@ -20,7 +20,7 @@ GitHub repository링크는 우측 상단에 Project GitHub Link 눌러서 접속
 
 말로 하는것보다 포스터를 보여주겠다.
 
-![KlickLab 프로젝트 포스터](/assets/img/blog/computerscience/first_architecture.png)
+![KlickLab 프로젝트 포스터](/assets/img/blog/computerscience/KlickLab.pdf)
 
 해당 프로젝트는 [Krafton Jungle 페이지의 프로젝트]에도 올라갔는데, 링크를 눌러보면 발표영상도 볼 수 있다.
 
