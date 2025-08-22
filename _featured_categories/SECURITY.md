@@ -1,5 +1,5 @@
 ---
-layout: grid
+layout: list
 title: SECURITY
 slug: security
 description: >

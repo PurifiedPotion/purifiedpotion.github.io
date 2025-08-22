@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "크래프톤 정글에서의 마지막"
-date:   2025-07-31
-image: /assets/img/blog/postimage/jungle5.jpg
+title:  "AES-256"
+date:   2025-08-22
+image: /assets/img/blog/postimage/Security.png
 hide_last_modified: true
 ---
 
