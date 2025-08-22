@@ -50,6 +50,8 @@ author:
 menu:
   - title:              ALGORITHM
     url:                /algorithm/
+  - title:              SECURITY
+    url:                /security/
   - title:              C 언어
     url:                /c/
   - title:              COMPUTER SYSTEM
